@@ -23,9 +23,6 @@ import 'package:ezinvoice/features/reports/reports_screen.dart';
 // ✅ ADD: SubscriptionManager
 import 'package:ezinvoice/services/purchases/subscription_manager.dart';
 
-// ✅ App version
-import 'package:package_info_plus/package_info_plus.dart';
-
 const String _androidAppUrl =
     'https://play.google.com/store/apps/details?id=com.liisgo.ezinvoice';
 
@@ -41,11 +38,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  static const String _forcedVersionText = 'v1.0.0 (23)';
   // ---- Brand tokens ----
   static const Color brandGreen = Color(0xFF1F6E5C);
   static const Color pageBg = Color(0xFFF6F7F9);
 
-  String _versionText = 'v-'; // ✅ siempre mostramos versión, aunque falle
+  String _versionText = _forcedVersionText;
 
   @override
   void initState() {
@@ -60,25 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
       SubscriptionManager.instance.setCurrentUserEmail(u?.email);
     });
 
-    _loadVersion();
-  }
-
-  Future<void> _loadVersion() async {
-    try {
-      final info = await PackageInfo.fromPlatform();
-      final v = info.version.trim();
-      final b = info.buildNumber.trim();
-
-      if (!mounted) return;
-      setState(() => _versionText = 'v$v ($b)');
-    } catch (e) {
-      // ✅ Muestra el error directo en UI (recortado para que no rompa el layout)
-      final msg = e.toString();
-      final short = msg.length > 60 ? msg.substring(0, 60) : msg;
-
-      if (!mounted) return;
-      setState(() => _versionText = 'ERR: $short');
-    }
+    _versionText = _forcedVersionText;
   }
 
   String get _storeUrl {

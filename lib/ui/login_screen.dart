@@ -2,7 +2,6 @@ import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 // ✅ ADD: SubscriptionManager
 import 'package:ezinvoice/services/purchases/subscription_manager.dart';
@@ -15,12 +14,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  static const String _forcedVersionText = 'v1.0.0 (23)';
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _isLogin = true;
   bool _loading = false;
-  String _versionText = 'v-';
+  String _versionText = _forcedVersionText;
 
   // ✅ Brand color (EzInvoice green)
   static const Color brandGreen = Color(0xFF1F6E5C);
@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _loadVersion();
+    _versionText = _forcedVersionText;
   }
 
   // 🔹 helper YYYY-MM
@@ -44,19 +44,6 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showMessage(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-  }
-
-  Future<void> _loadVersion() async {
-    try {
-      final info = await PackageInfo.fromPlatform();
-      final v = info.version.trim();
-      final b = info.buildNumber.trim();
-      if (!mounted) return;
-      setState(() => _versionText = 'v$v ($b)');
-    } catch (_) {
-      if (!mounted) return;
-      setState(() => _versionText = 'v-');
-    }
   }
 
   // 🔹 create / ensure user doc
