@@ -531,7 +531,15 @@ class _ReportDesignBar extends StatelessWidget {
                           .map(
                             (x) => DropdownMenuItem(
                               value: x.id,
-                              child: Text(x.label),
+                              child: Row(
+                                children: [
+                                  _paletteDot(x.primary),
+                                  const SizedBox(width: 6),
+                                  _paletteDot(x.accent),
+                                  const SizedBox(width: 8),
+                                  Text(x.label),
+                                ],
+                              ),
                             ),
                           )
                           .toList(),
@@ -588,6 +596,17 @@ class _ReportDesignBar extends StatelessWidget {
           },
         );
       },
+    );
+  }
+
+  Widget _paletteDot(int colorValue) {
+    return Container(
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        color: Color(colorValue),
+        shape: BoxShape.circle,
+      ),
     );
   }
 }
