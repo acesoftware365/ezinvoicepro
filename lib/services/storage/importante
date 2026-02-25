@@ -1,0 +1,47 @@
+// crear cliente
+final clientId = await FirestoreService.instance.createClient(
+  name: 'Juan Pérez',
+  phone: '203-555-1111',
+  email: 'juan@email.com',
+);
+
+// crear invoice (YA calculada)
+await FirestoreService.instance.createInvoice({
+  'invoiceNumber': 'INV-001',
+  'status': 'sent',
+  'clientId': clientId,
+  'clientSnapshot': {
+    'name': 'Juan Pérez',
+    'email': 'juan@email.com',
+  },
+  'subtotal': 100,
+  'taxTotal': 6.35,
+  'tipTotal': 10,
+  'total': 116.35,
+  'net': 116.35,
+  'monthKey': '2026-01',
+  'year': 2026,
+});
+
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAsggd_j4PznScfl2MXej-2udvB4gvYa-s",
+  authDomain: "ezinvoice-79d13.firebaseapp.com",
+  projectId: "ezinvoice-79d13",
+  storageBucket: "ezinvoice-79d13.firebasestorage.app",
+  messagingSenderId: "117150050466",
+  appId: "1:117150050466:web:a3f2275cc29a9af3aa8ffb",
+  measurementId: "G-Y4EJ7XFM2C"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);

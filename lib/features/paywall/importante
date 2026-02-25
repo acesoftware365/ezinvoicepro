@@ -1,0 +1,18 @@
+Navigator.push(
+  context,
+  MaterialPageRoute(builder: (_) => const PaywallScreen()),
+);
+
+Nota rápida (muy importante)
+
+Para que muestre precios reales, debes crear los productos en:
+
+iOS: App Store Connect (Subscriptions)
+
+Android: Play Console (Subscriptions)
+
+Usando los IDs:
+
+com.ezinvoice.pro.monthly
+
+com.ezinvoice.pro.yearly

@@ -1,0 +1,341 @@
+{
+  "@@locale": "zh",
+
+  "appName": "Ez Invoice",
+
+  "loginSubtitle": "创建你的账户",
+  "email": "邮箱",
+  "password": "密码",
+  "login": "登录",
+  "register": "创建账户",
+  "alreadyHaveAccount": "已经有账户了吗？",
+  "signIn": "登录",
+  "dontHaveAccount": "还没有账户？",
+  "signUp": "注册",
+  "processing": "处理中...",
+  "invalidCredentials": "请输入有效邮箱和密码（至少6位）",
+  "authError": "认证错误",
+
+  "home": "首页",
+  "clients": "客户",
+  "invoices": "发票",
+  "reports": "报表",
+  "settings": "设置",
+  "logout": "退出登录",
+  "business": "商家",
+
+  "settingsLanguage": "语言",
+  "settingsLanguageDescription": "选择应用语言。",
+  "systemDefault": "系统默认",
+
+  "privacyPolicy": "隐私政策",
+
+  "clientMessageTemplateMultiline": "你好 {name}，\n我正在通过 EzInvoice 发送你的发票。✅",
+  "@clientMessageTemplateMultiline": {
+    "placeholders": { "name": {} }
+  },
+
+  "invoiceEmailSubject": "发票 - EzInvoice",
+
+  "dashboardTitle": "仪表盘",
+  "monthWord": "月",
+
+  "planLabel": "方案",
+  "invoicesRemaining": "剩余发票数量",
+  "proUnlimitedLabel": "PRO · 无限",
+
+  "createNewInvoice": "创建新发票",
+  "limitReachedSubtitle": "已达上限 • 升级到 Pro",
+  "createInvoiceFastSubtitle": "几秒内生成发票 + PDF",
+
+  "limitReachedTitle": "已达上限",
+  "limitReachedBody": "升级到 Pro 以获得无限发票并移除广告。",
+  "upgrade": "升级",
+
+  "monthSummaryTitle": "本月概览",
+  "salesTitle": "销售额",
+  "tipTitle": "小费",
+  "subtotalTitle": "小计",
+  "taxTitle": "税",
+  "beforeTaxTip": "税/小费前",
+  "collectedThisMonth": "本月已收",
+
+  "quickAccessTitle": "快捷入口",
+  "clientsManageSubtitle": "创建 / 编辑客户",
+  "invoicesViewSendSubtitle": "查看并发送 PDF",
+  "monthlyYearlySubtitle": "月度 / 年度",
+  "businessProfileSubtitle": "资料 / 标志 / 税率",
+
+  "invoiceCount": "{count} 张发票",
+  "@invoiceCount": { "placeholders": { "count": {} } },
+
+  "paywallTitle": "Ez Invoice Pro",
+  "close": "关闭",
+  "paywallHeaderTitle": "解锁你生意所需的一切",
+  "paywallHeaderSubtitle": "无广告 • 无限发票 • 税务报表 • 高级模板",
+
+  "bestValue": "最超值",
+  "proYearly": "Pro 年付",
+  "saveMoreYearly": "年付更省",
+  "proMonthly": "Pro 月付",
+  "flexible": "灵活",
+  "cancelAnytime": "随时取消",
+
+  "processingPurchase": "正在处理购买…",
+  "restoringPurchases": "正在恢复购买…",
+  "restorePurchases": "恢复购买",
+  "continueFreeWithAds": "继续使用带广告的免费版",
+
+  "alreadyProTitle": "你已是 Pro ✅",
+  "alreadyProBody": "享受无限发票、报表与无广告体验。",
+  "continueText": "继续",
+
+  "includesInPro": "Pro 包含",
+  "benefitNoAds": "无广告（横幅/插屏/激励）",
+  "benefitUnlimitedInvoices": "无限发票 + 状态（草稿/已发送/已付款）",
+  "benefitPremiumTemplates": "高级模板 + 颜色 + 商家标志",
+  "benefitNoWatermarkPdf": "无水印专业 PDF",
+  "benefitTaxReports": "税务报表：月度与年度（税/小费/净额）",
+  "benefitExport": "导出 PDF/CSV/Excel（用于会计）",
+  "benefitCloudBackup": "云备份 + 恢复（多设备）",
+
+  "continueWithPlan": "使用 {plan} 继续",
+  "@continueWithPlan": { "placeholders": { "plan": {} } },
+
+  "paywallFinePrint": "订阅后，费用将从你的 {store} 账户扣款。订阅会自动续订，除非你在当前周期结束前至少24小时取消。你可以在商店设置中管理或取消订阅。",
+  "@paywallFinePrint": { "placeholders": { "store": {} } },
+
+  "reportsTitle": "报表",
+  "proBadge": "PRO",
+
+  "byMonth": "按月",
+  "byYear": "按年",
+  "monthLabel": "月份",
+  "yearLabel": "年份",
+
+  "businessProfileTitle": "商家资料",
+  "save": "保存",
+  "uploadLogo": "上传标志",
+  "remove": "移除",
+
+  "businessNameLabel": "商家名称",
+  "ownerNameLabel": "负责人 / 联系人",
+  "phoneLabel": "电话",
+  "addressLabel": "地址",
+
+  "currencyLabel": "货币",
+  "taxDefaultLabel": "默认税率（%）",
+
+  "invalidNumber": "无效数字",
+  "range0to100": "必须在 0 到 100 之间",
+  "requiredField": "必填",
+
+  "footerNoteLabel": "页脚备注（PDF）",
+  "saveChanges": "保存更改",
+
+  "businessFooterDefault": "感谢你的惠顾。",
+  "businessSavedSuccess": "商家资料保存成功",
+
+  "businessInfoSection": "商家信息",
+  "settingsSection": "设置",
+  "footerSection": "页脚备注（PDF）",
+  "upgradeToPro": "升级到 Pro",
+
+  "bestValueStar": "⭐ 最超值",
+
+  "invoicesTitle": "发票",
+  "noInvoicesYet": "还没有发票。",
+
+  "freePlanMonthlyLimitBanner": "免费版：每月上限 {limit} 张发票 • 升级解锁无限",
+  "@freePlanMonthlyLimitBanner": { "placeholders": { "limit": {} } },
+
+  "filtersTitle": "筛选",
+  "clientLabel": "客户",
+  "allMonths": "所有月份",
+  "allClients": "所有客户",
+  "clear": "清除",
+
+  "invoicesSummaryLabel": "发票",
+  "totalTitle": "总计",
+  "dateLabel": "日期",
+
+  "noResultsForFilters": "所选筛选条件下没有结果。",
+
+  "freePlanLimitDialogBody": "免费版：本月 {current} / {limit} 张发票。\n\n升级到 Pro 解锁无限。",
+  "@freePlanLimitDialogBody": { "placeholders": { "current": {}, "limit": {} } },
+
+  "deleteInvoiceTitle": "删除发票？",
+  "deleteInvoiceBody": "确定要删除 {invNo} 吗？",
+  "@deleteInvoiceBody": { "placeholders": { "invNo": {} } },
+
+  "cancel": "取消",
+  "delete": "删除",
+  "edit": "编辑",
+  "sendPdf": "发送 PDF",
+
+  "shareInvoiceText": "发票 {invNo} - {client}",
+  "@shareInvoiceText": { "placeholders": { "invNo": {}, "client": {} } },
+
+  "pdfSendError": "生成/发送 PDF 出错：{error}",
+  "@pdfSendError": { "placeholders": { "error": {} } },
+
+  "reportTitleMonth": "报表 • {month} {year}",
+  "@reportTitleMonth": { "placeholders": { "month": {}, "year": {} } },
+
+  "reportTitleYear": "报表 • 年 {year}",
+  "@reportTitleYear": { "placeholders": { "year": {} } },
+
+  "invoicesLine": "发票：{count}",
+  "@invoicesLine": { "placeholders": { "count": {} } },
+
+  "totalSalesLine": "总销售额：${amount}",
+  "@totalSalesLine": { "placeholders": { "amount": {} } },
+
+  "totalTaxLine": "总税额：${amount}",
+  "@totalTaxLine": { "placeholders": { "amount": {} } },
+
+  "totalTipLine": "总小费：${amount}",
+  "@totalTipLine": { "placeholders": { "amount": {} } },
+
+  "netLine": "净额：${amount}",
+  "@netLine": { "placeholders": { "amount": {} } },
+
+  "calculatedFromInvoices": "根据 Firestore 中的发票计算。",
+  "noInvoicesInPeriod": "该期间没有发票。",
+
+  "exportPdf": "导出 PDF",
+  "exportCsv": "导出 CSV",
+
+  "yearlyProReason": "年度报表为 PRO 功能。升级解锁。",
+  "exportPdfProReason": "导出报表 PDF 为 PRO 功能。",
+  "exportCsvProReason": "导出 CSV 为 PRO 功能。",
+
+  "noDataToExport": "没有可导出的数据。",
+  "freePlanReportsNote": "免费版：仅支持月度报表。升级解锁年度报表与导出。",
+
+  "genericError": "出错了，请重试。",
+
+  "newInvoiceTitle": "新建发票",
+  "editInvoiceTitle": "编辑发票",
+  "pickClient": "选择客户",
+
+  "invoiceAutoNumberLabel": "发票号（自动）",
+  "invoiceDateLabel": "发票日期：{date}",
+  "@invoiceDateLabel": { "placeholders": { "date": {} } },
+
+  "clientNameLabel": "客户名称",
+  "clientNameRequired": "客户名称必填",
+  "clientEmailOptionalLabel": "客户邮箱（可选）",
+  "clientPhoneOptionalLabel": "客户电话（可选）",
+  "invalidEmailFormat": "邮箱格式无效",
+
+  "itemsTitle": "项目",
+  "descriptionLabel": "描述",
+  "itemDateLabel": "项目日期：{date}",
+  "@itemDateLabel": { "placeholders": { "date": {} } },
+
+  "qtyLabel": "数量",
+  "priceLabel": "价格",
+  "lineTotalLabel": "行合计：${amount}",
+  "@lineTotalLabel": { "placeholders": { "amount": {} } },
+
+  "taxDefaultOwnerLabel": "税率 %（默认）",
+
+  "tipPercentChip": "小费 %",
+  "tipAmountChip": "小费 $",
+  "tipPercentLabel": "小费比例（%）",
+  "tipAmountLabel": "小费金额（$）",
+
+  "messageOptionalLabel": "留言（可选）",
+
+  "totalsBlock": "小计：${sub}\n税：${tax}\n小费：${tip}\n总计：${total}",
+  "@totalsBlock": {
+    "placeholders": { "sub": {}, "tax": {}, "tip": {}, "total": {} }
+  },
+
+  "saving": "保存中…",
+  "saveInvoice": "保存发票",
+  "updateInvoice": "更新发票",
+
+  "addAtLeastOneItem": "至少添加 1 个项目",
+  "errorSavingInvoice": "保存发票出错：{error}",
+  "@errorSavingInvoice": { "placeholders": { "error": {} } },
+
+  "savedTab": "已保存",
+  "contactsTab": "联系人",
+  "noSavedClients": "没有已保存的客户",
+  "permissionDeniedContacts": "联系人权限被拒绝",
+  "noContactsFound": "此设备/模拟器未找到联系人",
+  "contactsError": "联系人错误：{error}",
+  "@contactsError": { "placeholders": { "error": {} } },
+
+  "noName": "(无名称)",
+
+  "newClientTitle": "新建客户",
+  "editClientTitle": "编辑客户",
+  "clientInfoSection": "客户信息",
+  "notesLabel": "备注",
+  "notesHint": "添加备注（可选）",
+  "clientCreateHint": "提示：添加邮箱/电话可更快发送发票。",
+  "clientEditHint": "你可以随时更新客户信息。",
+  "errorSavingClient": "保存客户出错：{error}",
+  "@errorSavingClient": { "placeholders": { "error": {} } },
+
+  "clientsTitle": "客户",
+  "searchClientsLabel": "搜索客户",
+  "clientsCount": "{count} 位客户",
+  "@clientsCount": { "placeholders": { "count": {} } },
+
+  "noClientsYet": "还没有客户。",
+  "noClientsForSearch": "没有匹配的客户。",
+
+  "cannotOpenDialer": "无法打开拨号器",
+  "cannotOpenSms": "无法打开短信",
+  "whatsAppNotAvailable": "WhatsApp 不可用",
+  "cannotOpenEmail": "无法打开邮箱",
+
+  "deleteClientTitle": "删除客户？",
+  "deleteClientBody": "移除 {name}？",
+  "@deleteClientBody": { "placeholders": { "name": {} } },
+
+  "call": "拨打",
+  "sms": "短信",
+  "whatsapp": "WhatsApp",
+  "emailAction": "邮箱",
+
+  "shareAppTitle": "试试 EzInvoice 👇",
+  "shareAppBody": "轻松创建发票、发送 PDF，并跟踪报表。",
+  "shareAppTooltip": "分享应用",
+  "openGooglePlayTooltip": "打开 Google Play",
+  "openAppStoreTooltip": "打开 App Store",
+  "openWebsiteTooltip": "打开网站",
+  "availableLanguages": "可用语言",
+  "usePhoneLanguage": "使用手机语言",
+
+  "shareReceiptText": "收据 {invoiceNumber} - {clientName}",
+  "@shareReceiptText": {
+    "placeholders": {
+      "invoiceNumber": {},
+      "clientName": {}
+    }
+  },
+
+  "report": "报表",
+  "invoicesLabel": "发票",
+  "totalSalesLabel": "总销售额",
+  "totalTaxLabel": "总税额",
+  "totalTipLabel": "总小费",
+  "netLabel": "净额",
+  "sentLabel": "已发送",
+  "paidLabel": "已付款",
+  "overdueLabel": "已逾期",
+  "reportCalculatedHint": "根据 Firestore 中的发票计算。",
+  "exportPdfComingSoon": "导出 PDF（即将推出）",
+  "exportCsvComingSoon": "导出 CSV（即将推出）",
+  "unsentLabel": "未发送",
+  "deleteAccountTitle": "删除账户",
+  "deleteAccountWarning": "此操作将永久删除您的账户及所有相关数据。",
+  "deleteAccountButton": "删除账户",
+  "deleteAccountConfirmTitle": "确认删除",
+  "deleteAccountConfirmMessage": "您确定吗？此操作无法撤销。"
+}

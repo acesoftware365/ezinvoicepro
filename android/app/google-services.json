@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "117150050466",
+    "project_id": "ezinvoice-79d13",
+    "storage_bucket": "ezinvoice-79d13.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:117150050466:android:c60fff0041e4c463aa8ffb",
+        "android_client_info": {
+          "package_name": "com.liisgo.ezinvoice"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzUzrMOavQXWDAq7AW9XwjGKNCyMuummA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

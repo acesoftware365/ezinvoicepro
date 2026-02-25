@@ -1,0 +1,341 @@
+{
+  "@@locale": "de",
+
+  "appName": "Ez Invoice",
+
+  "loginSubtitle": "Erstelle dein Konto",
+  "email": "E-Mail",
+  "password": "Passwort",
+  "login": "Anmelden",
+  "register": "Konto erstellen",
+  "alreadyHaveAccount": "Hast du bereits ein Konto?",
+  "signIn": "Anmelden",
+  "dontHaveAccount": "Noch kein Konto?",
+  "signUp": "Registrieren",
+  "processing": "Wird verarbeitet...",
+  "invalidCredentials": "Gib eine gültige E-Mail und ein Passwort ein (6+ Zeichen)",
+  "authError": "Authentifizierungsfehler",
+
+  "home": "Start",
+  "clients": "Kunden",
+  "invoices": "Rechnungen",
+  "reports": "Berichte",
+  "settings": "Einstellungen",
+  "logout": "Abmelden",
+  "business": "Unternehmen",
+
+  "settingsLanguage": "Sprache",
+  "settingsLanguageDescription": "Wähle die Sprache der App.",
+  "systemDefault": "Systemstandard",
+
+  "privacyPolicy": "Datenschutzerklärung",
+
+  "clientMessageTemplateMultiline": "Hallo {name},\nich sende dir deine Rechnung von EzInvoice. ✅",
+  "@clientMessageTemplateMultiline": {
+    "placeholders": { "name": {} }
+  },
+
+  "invoiceEmailSubject": "Rechnung - EzInvoice",
+
+  "dashboardTitle": "Dashboard",
+  "monthWord": "Monat",
+
+  "planLabel": "Plan",
+  "invoicesRemaining": "Verbleibende Rechnungen",
+  "proUnlimitedLabel": "PRO · Unbegrenzt",
+
+  "createNewInvoice": "Neue Rechnung erstellen",
+  "limitReachedSubtitle": "Limit erreicht • Upgrade auf Pro",
+  "createInvoiceFastSubtitle": "Rechnung + PDF in Sekunden erstellen",
+
+  "limitReachedTitle": "Limit erreicht",
+  "limitReachedBody": "Upgrade auf Pro für unbegrenzte Rechnungen und ohne Werbung.",
+  "upgrade": "Upgrade",
+
+  "monthSummaryTitle": "Monatsübersicht",
+  "salesTitle": "Umsatz",
+  "tipTitle": "Trinkgeld",
+  "subtotalTitle": "Zwischensumme",
+  "taxTitle": "Steuer",
+  "beforeTaxTip": "Vor Steuer/Trinkgeld",
+  "collectedThisMonth": "Diesen Monat eingenommen",
+
+  "quickAccessTitle": "Schnellzugriff",
+  "clientsManageSubtitle": "Kunden erstellen / bearbeiten",
+  "invoicesViewSendSubtitle": "PDF ansehen und senden",
+  "monthlyYearlySubtitle": "Monatlich / jährlich",
+  "businessProfileSubtitle": "Profil / Logo / Steuer",
+
+  "invoiceCount": "{count} Rechnung(en)",
+  "@invoiceCount": { "placeholders": { "count": {} } },
+
+  "paywallTitle": "Ez Invoice Pro",
+  "close": "Schließen",
+  "paywallHeaderTitle": "Schalte alles für dein Business frei",
+  "paywallHeaderSubtitle": "Keine Werbung • Unbegrenzte Rechnungen • Steuerberichte • Premium-Vorlagen",
+
+  "bestValue": "Bestes Angebot",
+  "proYearly": "Pro jährlich",
+  "saveMoreYearly": "Spare mehr mit Jahreszahlung",
+  "proMonthly": "Pro monatlich",
+  "flexible": "Flexibel",
+  "cancelAnytime": "Jederzeit kündbar",
+
+  "processingPurchase": "Kauf wird verarbeitet…",
+  "restoringPurchases": "Käufe werden wiederhergestellt…",
+  "restorePurchases": "Käufe wiederherstellen",
+  "continueFreeWithAds": "Mit kostenloser Version mit Werbung fortfahren",
+
+  "alreadyProTitle": "Du bist Pro ✅",
+  "alreadyProBody": "Genieße unbegrenzte Rechnungen, Berichte und keine Werbung.",
+  "continueText": "Weiter",
+
+  "includesInPro": "In Pro enthalten",
+  "benefitNoAds": "Keine Werbung (Banner/Interstitial/Rewarded)",
+  "benefitUnlimitedInvoices": "Unbegrenzte Rechnungen + Status (Entwurf/gesendet/bezahlt)",
+  "benefitPremiumTemplates": "Premium-Vorlagen + Farben + Business-Logo",
+  "benefitNoWatermarkPdf": "Professionelles PDF ohne Wasserzeichen",
+  "benefitTaxReports": "Steuerberichte: monatlich & jährlich (Steuern/Trinkgeld/Netto)",
+  "benefitExport": "Export PDF/CSV/Excel (für Buchhaltung)",
+  "benefitCloudBackup": "Cloud-Backup + Wiederherstellung (Multi-Device)",
+
+  "continueWithPlan": "Weiter mit {plan}",
+  "@continueWithPlan": { "placeholders": { "plan": {} } },
+
+  "paywallFinePrint": "Mit dem Abonnement wird die Zahlung deinem {store}-Konto belastet. Das Abonnement verlängert sich automatisch, sofern du nicht mindestens 24 Stunden vor Ablauf des aktuellen Zeitraums kündigst. Du kannst dein Abonnement in den Einstellungen deines Stores verwalten oder kündigen.",
+  "@paywallFinePrint": { "placeholders": { "store": {} } },
+
+  "reportsTitle": "Berichte",
+  "proBadge": "PRO",
+
+  "byMonth": "Nach Monat",
+  "byYear": "Nach Jahr",
+  "monthLabel": "Monat",
+  "yearLabel": "Jahr",
+
+  "businessProfileTitle": "Business-Profil",
+  "save": "Speichern",
+  "uploadLogo": "Logo hochladen",
+  "remove": "Entfernen",
+
+  "businessNameLabel": "Firmenname",
+  "ownerNameLabel": "Inhaber / Kontaktname",
+  "phoneLabel": "Telefon",
+  "addressLabel": "Adresse",
+
+  "currencyLabel": "Währung",
+  "taxDefaultLabel": "Standardsteuer (%)",
+
+  "invalidNumber": "Ungültige Zahl",
+  "range0to100": "Muss zwischen 0 und 100 liegen",
+  "requiredField": "Erforderlich",
+
+  "footerNoteLabel": "Fußzeile (PDF)",
+  "saveChanges": "Änderungen speichern",
+
+  "businessFooterDefault": "Vielen Dank für Ihr Vertrauen.",
+  "businessSavedSuccess": "Business-Profil erfolgreich gespeichert",
+
+  "businessInfoSection": "Business-Informationen",
+  "settingsSection": "Einstellungen",
+  "footerSection": "Fußzeile (PDF)",
+  "upgradeToPro": "Upgrade auf Pro",
+
+  "bestValueStar": "⭐ Bestes Angebot",
+
+  "invoicesTitle": "Rechnungen",
+  "noInvoicesYet": "Noch keine Rechnungen.",
+
+  "freePlanMonthlyLimitBanner": "Kostenloser Plan: Monatslimit {limit} Rechnungen • Upgrade für unbegrenzt",
+  "@freePlanMonthlyLimitBanner": { "placeholders": { "limit": {} } },
+
+  "filtersTitle": "Filter",
+  "clientLabel": "Kunde",
+  "allMonths": "Alle Monate",
+  "allClients": "Alle Kunden",
+  "clear": "Zurücksetzen",
+
+  "invoicesSummaryLabel": "Rechnungen",
+  "totalTitle": "Gesamt",
+  "dateLabel": "Datum",
+
+  "noResultsForFilters": "Keine Ergebnisse für die ausgewählten Filter.",
+
+  "freePlanLimitDialogBody": "Kostenloser Plan: {current} / {limit} Rechnungen diesen Monat.\n\nUpgrade auf Pro für unbegrenzt.",
+  "@freePlanLimitDialogBody": { "placeholders": { "current": {}, "limit": {} } },
+
+  "deleteInvoiceTitle": "Rechnung löschen?",
+  "deleteInvoiceBody": "Möchtest du {invNo} wirklich löschen?",
+  "@deleteInvoiceBody": { "placeholders": { "invNo": {} } },
+
+  "cancel": "Abbrechen",
+  "delete": "Löschen",
+  "edit": "Bearbeiten",
+  "sendPdf": "PDF senden",
+
+  "shareInvoiceText": "Rechnung {invNo} - {client}",
+  "@shareInvoiceText": { "placeholders": { "invNo": {}, "client": {} } },
+
+  "pdfSendError": "Fehler beim Erstellen/Senden des PDFs: {error}",
+  "@pdfSendError": { "placeholders": { "error": {} } },
+
+  "reportTitleMonth": "Bericht • {month} {year}",
+  "@reportTitleMonth": { "placeholders": { "month": {}, "year": {} } },
+
+  "reportTitleYear": "Bericht • Jahr {year}",
+  "@reportTitleYear": { "placeholders": { "year": {} } },
+
+  "invoicesLine": "Rechnungen: {count}",
+  "@invoicesLine": { "placeholders": { "count": {} } },
+
+  "totalSalesLine": "Umsatz gesamt: ${amount}",
+  "@totalSalesLine": { "placeholders": { "amount": {} } },
+
+  "totalTaxLine": "Steuer gesamt: ${amount}",
+  "@totalTaxLine": { "placeholders": { "amount": {} } },
+
+  "totalTipLine": "Trinkgeld gesamt: ${amount}",
+  "@totalTipLine": { "placeholders": { "amount": {} } },
+
+  "netLine": "Netto: ${amount}",
+  "@netLine": { "placeholders": { "amount": {} } },
+
+  "calculatedFromInvoices": "Aus deinen Rechnungen in Firestore berechnet.",
+  "noInvoicesInPeriod": "Keine Rechnungen in diesem Zeitraum.",
+
+  "exportPdf": "PDF exportieren",
+  "exportCsv": "CSV exportieren",
+
+  "yearlyProReason": "Jahresbericht ist PRO. Upgrade zum Freischalten.",
+  "exportPdfProReason": "PDF-Export des Berichts ist PRO.",
+  "exportCsvProReason": "CSV-Export ist PRO.",
+
+  "noDataToExport": "Keine Daten zum Exportieren.",
+  "freePlanReportsNote": "Kostenloser Plan: nur Monatsberichte. Upgrade für Jahresberichte und Export.",
+
+  "genericError": "Etwas ist schiefgelaufen. Bitte erneut versuchen.",
+
+  "newInvoiceTitle": "Neue Rechnung",
+  "editInvoiceTitle": "Rechnung bearbeiten",
+  "pickClient": "Kunden auswählen",
+
+  "invoiceAutoNumberLabel": "Rechnung # (auto)",
+  "invoiceDateLabel": "Rechnungsdatum: {date}",
+  "@invoiceDateLabel": { "placeholders": { "date": {} } },
+
+  "clientNameLabel": "Kundenname",
+  "clientNameRequired": "Kundenname erforderlich",
+  "clientEmailOptionalLabel": "Kunden-E-Mail (optional)",
+  "clientPhoneOptionalLabel": "Kundentelefon (optional)",
+  "invalidEmailFormat": "Ungültiges E-Mail-Format",
+
+  "itemsTitle": "Positionen",
+  "descriptionLabel": "Beschreibung",
+  "itemDateLabel": "Positionsdatum: {date}",
+  "@itemDateLabel": { "placeholders": { "date": {} } },
+
+  "qtyLabel": "Menge",
+  "priceLabel": "Preis",
+  "lineTotalLabel": "Positionssumme: ${amount}",
+  "@lineTotalLabel": { "placeholders": { "amount": {} } },
+
+  "taxDefaultOwnerLabel": "Steuer % (Standard-Inhaber)",
+
+  "tipPercentChip": "Trinkgeld %",
+  "tipAmountChip": "Trinkgeld $",
+  "tipPercentLabel": "Trinkgeld-Prozent (%)",
+  "tipAmountLabel": "Trinkgeldbetrag ($)",
+
+  "messageOptionalLabel": "Nachricht (optional)",
+
+  "totalsBlock": "Zwischensumme: ${sub}\nSteuer: ${tax}\nTrinkgeld: ${tip}\nGesamt: ${total}",
+  "@totalsBlock": {
+    "placeholders": { "sub": {}, "tax": {}, "tip": {}, "total": {} }
+  },
+
+  "saving": "Speichern…",
+  "saveInvoice": "Rechnung speichern",
+  "updateInvoice": "Rechnung aktualisieren",
+
+  "addAtLeastOneItem": "Füge mindestens 1 Position hinzu",
+  "errorSavingInvoice": "Fehler beim Speichern: {error}",
+  "@errorSavingInvoice": { "placeholders": { "error": {} } },
+
+  "savedTab": "Gespeichert",
+  "contactsTab": "Kontakte",
+  "noSavedClients": "Keine gespeicherten Kunden",
+  "permissionDeniedContacts": "Berechtigung verweigert: Kontakte",
+  "noContactsFound": "Keine Kontakte auf diesem Gerät/Emulator gefunden",
+  "contactsError": "Kontaktfehler: {error}",
+  "@contactsError": { "placeholders": { "error": {} } },
+
+  "noName": "(Kein Name)",
+
+  "newClientTitle": "Neuer Kunde",
+  "editClientTitle": "Kunde bearbeiten",
+  "clientInfoSection": "Kundeninformationen",
+  "notesLabel": "Notizen",
+  "notesHint": "Notizen hinzufügen (optional)",
+  "clientCreateHint": "Tipp: E-Mail/Telefon hinzufügen, um Rechnungen schneller zu senden.",
+  "clientEditHint": "Du kannst Kundendaten jederzeit aktualisieren.",
+  "errorSavingClient": "Fehler beim Speichern des Kunden: {error}",
+  "@errorSavingClient": { "placeholders": { "error": {} } },
+
+  "clientsTitle": "Kunden",
+  "searchClientsLabel": "Kunden suchen",
+  "clientsCount": "{count} Kunde(n)",
+  "@clientsCount": { "placeholders": { "count": {} } },
+
+  "noClientsYet": "Noch keine Kunden.",
+  "noClientsForSearch": "Keine Kunden passen zu deiner Suche.",
+
+  "cannotOpenDialer": "Wähltastatur kann nicht geöffnet werden",
+  "cannotOpenSms": "SMS kann nicht geöffnet werden",
+  "whatsAppNotAvailable": "WhatsApp nicht verfügbar",
+  "cannotOpenEmail": "E-Mail kann nicht geöffnet werden",
+
+  "deleteClientTitle": "Kunde löschen?",
+  "deleteClientBody": "{name} entfernen?",
+  "@deleteClientBody": { "placeholders": { "name": {} } },
+
+  "call": "Anrufen",
+  "sms": "SMS",
+  "whatsapp": "WhatsApp",
+  "emailAction": "E-Mail",
+
+  "shareAppTitle": "Probiere EzInvoice 👇",
+  "shareAppBody": "Rechnungen erstellen, PDFs senden und Berichte einfach verfolgen.",
+  "shareAppTooltip": "App teilen",
+  "openGooglePlayTooltip": "Google Play öffnen",
+  "openAppStoreTooltip": "App Store öffnen",
+  "openWebsiteTooltip": "Website öffnen",
+  "availableLanguages": "Verfügbare Sprachen",
+  "usePhoneLanguage": "Gerätesprache verwenden",
+
+  "shareReceiptText": "Beleg {invoiceNumber} für {clientName}",
+  "@shareReceiptText": {
+    "placeholders": {
+      "invoiceNumber": {},
+      "clientName": {}
+    }
+  },
+
+  "report": "Bericht",
+  "invoicesLabel": "Rechnungen",
+  "totalSalesLabel": "Umsatz gesamt",
+  "totalTaxLabel": "Steuer gesamt",
+  "totalTipLabel": "Trinkgeld gesamt",
+  "netLabel": "Netto",
+  "sentLabel": "Gesendet",
+  "paidLabel": "Bezahlt",
+  "overdueLabel": "Überfällig",
+  "reportCalculatedHint": "Aus deinen Rechnungen in Firestore berechnet.",
+  "exportPdfComingSoon": "PDF exportieren (kommt bald)",
+  "exportCsvComingSoon": "CSV exportieren (kommt bald)",
+  "unsentLabel": "Nicht gesendet",
+  "deleteAccountTitle": "Konto löschen",
+  "deleteAccountWarning": "Diese Aktion löscht Ihr Konto und alle zugehörigen Daten dauerhaft.",
+  "deleteAccountButton": "Konto löschen",
+  "deleteAccountConfirmTitle": "Löschen bestätigen",
+  "deleteAccountConfirmMessage": "Sind Sie sicher? Diese Aktion kann nicht rückgängig gemacht werden."
+}

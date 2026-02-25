@@ -1,0 +1,1 @@
+//IMPORTANTE: cambia los IDs por los tuyos reales cuando los crees en App Store / Play Console.

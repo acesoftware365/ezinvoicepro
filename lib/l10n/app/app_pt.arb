@@ -1,0 +1,341 @@
+{
+  "@@locale": "pt",
+
+  "appName": "Ez Invoice",
+
+  "loginSubtitle": "Crie sua conta",
+  "email": "E-mail",
+  "password": "Senha",
+  "login": "Entrar",
+  "register": "Criar conta",
+  "alreadyHaveAccount": "Já tem uma conta?",
+  "signIn": "Entrar",
+  "dontHaveAccount": "Não tem uma conta?",
+  "signUp": "Cadastrar",
+  "processing": "Processando...",
+  "invalidCredentials": "Digite um e-mail válido e uma senha (6+ caracteres)",
+  "authError": "Erro de autenticação",
+
+  "home": "Início",
+  "clients": "Clientes",
+  "invoices": "Faturas",
+  "reports": "Relatórios",
+  "settings": "Configurações",
+  "logout": "Sair",
+  "business": "Negócio",
+
+  "settingsLanguage": "Idioma",
+  "settingsLanguageDescription": "Escolha o idioma do app.",
+  "systemDefault": "Padrão do sistema",
+
+  "privacyPolicy": "Política de Privacidade",
+
+  "clientMessageTemplateMultiline": "Olá {name},\nestou enviando sua fatura pelo EzInvoice. ✅",
+  "@clientMessageTemplateMultiline": {
+    "placeholders": { "name": {} }
+  },
+
+  "invoiceEmailSubject": "Fatura - EzInvoice",
+
+  "dashboardTitle": "Painel",
+  "monthWord": "Mês",
+
+  "planLabel": "Plano",
+  "invoicesRemaining": "Faturas restantes",
+  "proUnlimitedLabel": "PRO · Ilimitado",
+
+  "createNewInvoice": "Criar nova fatura",
+  "limitReachedSubtitle": "Limite atingido • Atualize para Pro",
+  "createInvoiceFastSubtitle": "Crie fatura + PDF em segundos",
+
+  "limitReachedTitle": "Limite atingido",
+  "limitReachedBody": "Atualize para Pro para faturas ilimitadas e remover anúncios.",
+  "upgrade": "Atualizar",
+
+  "monthSummaryTitle": "Resumo do mês",
+  "salesTitle": "Vendas",
+  "tipTitle": "Gorjeta",
+  "subtotalTitle": "Subtotal",
+  "taxTitle": "Imposto",
+  "beforeTaxTip": "Antes de imposto/gorjeta",
+  "collectedThisMonth": "Recebido neste mês",
+
+  "quickAccessTitle": "Acesso rápido",
+  "clientsManageSubtitle": "Criar / editar clientes",
+  "invoicesViewSendSubtitle": "Ver e enviar PDF",
+  "monthlyYearlySubtitle": "Mensal / anual",
+  "businessProfileSubtitle": "Perfil / logo / imposto",
+
+  "invoiceCount": "{count} fatura(s)",
+  "@invoiceCount": { "placeholders": { "count": {} } },
+
+  "paywallTitle": "Ez Invoice Pro",
+  "close": "Fechar",
+  "paywallHeaderTitle": "Desbloqueie tudo para o seu negócio",
+  "paywallHeaderSubtitle": "Sem anúncios • Faturas ilimitadas • Relatórios de impostos • Modelos premium",
+
+  "bestValue": "Melhor custo-benefício",
+  "proYearly": "Pro Anual",
+  "saveMoreYearly": "Economize mais pagando anual",
+  "proMonthly": "Pro Mensal",
+  "flexible": "Flexível",
+  "cancelAnytime": "Cancele a qualquer momento",
+
+  "processingPurchase": "Processando compra…",
+  "restoringPurchases": "Restaurando compras…",
+  "restorePurchases": "Restaurar compras",
+  "continueFreeWithAds": "Continuar com a versão grátis com anúncios",
+
+  "alreadyProTitle": "Você é Pro ✅",
+  "alreadyProBody": "Aproveite faturas ilimitadas, relatórios e sem anúncios.",
+  "continueText": "Continuar",
+
+  "includesInPro": "Incluído no Pro",
+  "benefitNoAds": "Sem anúncios (Banner/Interstitial/Rewarded)",
+  "benefitUnlimitedInvoices": "Faturas ilimitadas + status (rascunho/enviada/paga)",
+  "benefitPremiumTemplates": "Modelos premium + cores + logo do negócio",
+  "benefitNoWatermarkPdf": "PDF profissional sem marca d’água",
+  "benefitTaxReports": "Relatórios: mensal e anual (impostos/gorjetas/líquido)",
+  "benefitExport": "Exportar PDF/CSV/Excel (para contabilidade)",
+  "benefitCloudBackup": "Backup na nuvem + restauração (multi-dispositivo)",
+
+  "continueWithPlan": "Continuar com {plan}",
+  "@continueWithPlan": { "placeholders": { "plan": {} } },
+
+  "paywallFinePrint": "Ao assinar, o pagamento será cobrado da sua conta {store}. A assinatura renova automaticamente, a menos que você cancele pelo menos 24 horas antes do fim do período atual. Você pode gerenciar ou cancelar sua assinatura nas configurações da loja.",
+  "@paywallFinePrint": { "placeholders": { "store": {} } },
+
+  "reportsTitle": "Relatórios",
+  "proBadge": "PRO",
+
+  "byMonth": "Por mês",
+  "byYear": "Por ano",
+  "monthLabel": "Mês",
+  "yearLabel": "Ano",
+
+  "businessProfileTitle": "Perfil do Negócio",
+  "save": "Salvar",
+  "uploadLogo": "Enviar logo",
+  "remove": "Remover",
+
+  "businessNameLabel": "Nome do negócio",
+  "ownerNameLabel": "Proprietário / contato",
+  "phoneLabel": "Telefone",
+  "addressLabel": "Endereço",
+
+  "currencyLabel": "Moeda",
+  "taxDefaultLabel": "Imposto padrão (%)",
+
+  "invalidNumber": "Número inválido",
+  "range0to100": "Deve estar entre 0 e 100",
+  "requiredField": "Obrigatório",
+
+  "footerNoteLabel": "Nota no rodapé (PDF)",
+  "saveChanges": "Salvar alterações",
+
+  "businessFooterDefault": "Obrigado pelo seu negócio.",
+  "businessSavedSuccess": "Perfil do negócio salvo com sucesso",
+
+  "businessInfoSection": "Informações do negócio",
+  "settingsSection": "Configurações",
+  "footerSection": "Nota no rodapé (PDF)",
+  "upgradeToPro": "Atualizar para Pro",
+
+  "bestValueStar": "⭐ Melhor valor",
+
+  "invoicesTitle": "Faturas",
+  "noInvoicesYet": "Nenhuma fatura ainda.",
+
+  "freePlanMonthlyLimitBanner": "Plano grátis: limite mensal {limit} faturas • Atualize para ilimitado",
+  "@freePlanMonthlyLimitBanner": { "placeholders": { "limit": {} } },
+
+  "filtersTitle": "Filtros",
+  "clientLabel": "Cliente",
+  "allMonths": "Todos os meses",
+  "allClients": "Todos os clientes",
+  "clear": "Limpar",
+
+  "invoicesSummaryLabel": "Faturas",
+  "totalTitle": "Total",
+  "dateLabel": "Data",
+
+  "noResultsForFilters": "Sem resultados para os filtros selecionados.",
+
+  "freePlanLimitDialogBody": "Plano grátis: {current} / {limit} faturas neste mês.\n\nAtualize para Pro para ilimitado.",
+  "@freePlanLimitDialogBody": { "placeholders": { "current": {}, "limit": {} } },
+
+  "deleteInvoiceTitle": "Excluir fatura?",
+  "deleteInvoiceBody": "Tem certeza que deseja excluir {invNo}?",
+  "@deleteInvoiceBody": { "placeholders": { "invNo": {} } },
+
+  "cancel": "Cancelar",
+  "delete": "Excluir",
+  "edit": "Editar",
+  "sendPdf": "Enviar PDF",
+
+  "shareInvoiceText": "Fatura {invNo} - {client}",
+  "@shareInvoiceText": { "placeholders": { "invNo": {}, "client": {} } },
+
+  "pdfSendError": "Erro ao criar/enviar PDF: {error}",
+  "@pdfSendError": { "placeholders": { "error": {} } },
+
+  "reportTitleMonth": "Relatório • {month} {year}",
+  "@reportTitleMonth": { "placeholders": { "month": {}, "year": {} } },
+
+  "reportTitleYear": "Relatório • Ano {year}",
+  "@reportTitleYear": { "placeholders": { "year": {} } },
+
+  "invoicesLine": "Faturas: {count}",
+  "@invoicesLine": { "placeholders": { "count": {} } },
+
+  "totalSalesLine": "Vendas totais: ${amount}",
+  "@totalSalesLine": { "placeholders": { "amount": {} } },
+
+  "totalTaxLine": "Imposto total: ${amount}",
+  "@totalTaxLine": { "placeholders": { "amount": {} } },
+
+  "totalTipLine": "Gorjeta total: ${amount}",
+  "@totalTipLine": { "placeholders": { "amount": {} } },
+
+  "netLine": "Líquido: ${amount}",
+  "@netLine": { "placeholders": { "amount": {} } },
+
+  "calculatedFromInvoices": "Calculado a partir das suas faturas no Firestore.",
+  "noInvoicesInPeriod": "Nenhuma fatura nesse período.",
+
+  "exportPdf": "Exportar PDF",
+  "exportCsv": "Exportar CSV",
+
+  "yearlyProReason": "Relatório anual é PRO. Atualize para desbloquear.",
+  "exportPdfProReason": "Exportar PDF do relatório é PRO.",
+  "exportCsvProReason": "Exportar CSV é PRO.",
+
+  "noDataToExport": "Sem dados para exportar.",
+  "freePlanReportsNote": "Plano grátis: apenas relatórios mensais. Atualize para relatórios anuais e exportação.",
+
+  "genericError": "Algo deu errado. Tente novamente.",
+
+  "newInvoiceTitle": "Nova fatura",
+  "editInvoiceTitle": "Editar fatura",
+  "pickClient": "Selecionar cliente",
+
+  "invoiceAutoNumberLabel": "Fatura # (auto)",
+  "invoiceDateLabel": "Data da fatura: {date}",
+  "@invoiceDateLabel": { "placeholders": { "date": {} } },
+
+  "clientNameLabel": "Nome do cliente",
+  "clientNameRequired": "Nome do cliente é obrigatório",
+  "clientEmailOptionalLabel": "E-mail do cliente (opcional)",
+  "clientPhoneOptionalLabel": "Telefone do cliente (opcional)",
+  "invalidEmailFormat": "Formato de e-mail inválido",
+
+  "itemsTitle": "Itens",
+  "descriptionLabel": "Descrição",
+  "itemDateLabel": "Data do item: {date}",
+  "@itemDateLabel": { "placeholders": { "date": {} } },
+
+  "qtyLabel": "Qtd",
+  "priceLabel": "Preço",
+  "lineTotalLabel": "Total da linha: ${amount}",
+  "@lineTotalLabel": { "placeholders": { "amount": {} } },
+
+  "taxDefaultOwnerLabel": "Imposto % (padrão do dono)",
+
+  "tipPercentChip": "Gorjeta %",
+  "tipAmountChip": "Gorjeta $",
+  "tipPercentLabel": "Percentual de gorjeta (%)",
+  "tipAmountLabel": "Valor da gorjeta ($)",
+
+  "messageOptionalLabel": "Mensagem (opcional)",
+
+  "totalsBlock": "Subtotal: ${sub}\nImposto: ${tax}\nGorjeta: ${tip}\nTotal: ${total}",
+  "@totalsBlock": {
+    "placeholders": { "sub": {}, "tax": {}, "tip": {}, "total": {} }
+  },
+
+  "saving": "Salvando…",
+  "saveInvoice": "Salvar fatura",
+  "updateInvoice": "Atualizar fatura",
+
+  "addAtLeastOneItem": "Adicione pelo menos 1 item",
+  "errorSavingInvoice": "Erro ao salvar fatura: {error}",
+  "@errorSavingInvoice": { "placeholders": { "error": {} } },
+
+  "savedTab": "Salvos",
+  "contactsTab": "Contatos",
+  "noSavedClients": "Nenhum cliente salvo",
+  "permissionDeniedContacts": "Permissão negada: Contatos",
+  "noContactsFound": "Nenhum contato encontrado neste dispositivo/emulador",
+  "contactsError": "Erro de contatos: {error}",
+  "@contactsError": { "placeholders": { "error": {} } },
+
+  "noName": "(Sem nome)",
+
+  "newClientTitle": "Novo cliente",
+  "editClientTitle": "Editar cliente",
+  "clientInfoSection": "Informações do cliente",
+  "notesLabel": "Notas",
+  "notesHint": "Adicionar notas (opcional)",
+  "clientCreateHint": "Dica: Adicione e-mail/telefone para enviar faturas mais rápido.",
+  "clientEditHint": "Você pode atualizar as informações do cliente a qualquer momento.",
+  "errorSavingClient": "Erro ao salvar cliente: {error}",
+  "@errorSavingClient": { "placeholders": { "error": {} } },
+
+  "clientsTitle": "Clientes",
+  "searchClientsLabel": "Buscar clientes",
+  "clientsCount": "{count} cliente(s)",
+  "@clientsCount": { "placeholders": { "count": {} } },
+
+  "noClientsYet": "Nenhum cliente ainda.",
+  "noClientsForSearch": "Nenhum cliente corresponde à sua busca.",
+
+  "cannotOpenDialer": "Não foi possível abrir o discador",
+  "cannotOpenSms": "Não foi possível abrir SMS",
+  "whatsAppNotAvailable": "WhatsApp não disponível",
+  "cannotOpenEmail": "Não foi possível abrir e-mail",
+
+  "deleteClientTitle": "Excluir cliente?",
+  "deleteClientBody": "Remover {name}?",
+  "@deleteClientBody": { "placeholders": { "name": {} } },
+
+  "call": "Ligar",
+  "sms": "SMS",
+  "whatsapp": "WhatsApp",
+  "emailAction": "E-mail",
+
+  "shareAppTitle": "Experimente o EzInvoice 👇",
+  "shareAppBody": "Crie faturas, envie PDFs e acompanhe relatórios facilmente.",
+  "shareAppTooltip": "Compartilhar app",
+  "openGooglePlayTooltip": "Abrir Google Play",
+  "openAppStoreTooltip": "Abrir App Store",
+  "openWebsiteTooltip": "Abrir site",
+  "availableLanguages": "Idiomas disponíveis",
+  "usePhoneLanguage": "Usar idioma do telefone",
+
+  "shareReceiptText": "Recibo {invoiceNumber} para {clientName}",
+  "@shareReceiptText": {
+    "placeholders": {
+      "invoiceNumber": {},
+      "clientName": {}
+    }
+  },
+
+  "report": "Relatório",
+  "invoicesLabel": "Faturas",
+  "totalSalesLabel": "Vendas totais",
+  "totalTaxLabel": "Imposto total",
+  "totalTipLabel": "Gorjeta total",
+  "netLabel": "Líquido",
+  "sentLabel": "Enviadas",
+  "paidLabel": "Pagas",
+  "overdueLabel": "Em atraso",
+  "reportCalculatedHint": "Calculado a partir das suas faturas no Firestore.",
+  "exportPdfComingSoon": "Exportar PDF (em breve)",
+  "exportCsvComingSoon": "Exportar CSV (em breve)",
+  "unsentLabel": "Não enviadas",
+  "deleteAccountTitle": "Excluir conta",
+  "deleteAccountWarning": "Esta ação excluirá permanentemente sua conta e todos os dados associados.",
+  "deleteAccountButton": "Excluir conta",
+  "deleteAccountConfirmTitle": "Confirmar exclusão",
+  "deleteAccountConfirmMessage": "Tem certeza? Esta ação não pode ser desfeita."
+}

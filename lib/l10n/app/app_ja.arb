@@ -1,0 +1,336 @@
+{
+  "@@locale": "ja",
+
+  "appName": "Ez Invoice",
+
+  "loginSubtitle": "アカウントを作成",
+  "email": "メール",
+  "password": "パスワード",
+  "login": "ログイン",
+  "register": "アカウント作成",
+  "alreadyHaveAccount": "すでにアカウントをお持ちですか？",
+  "signIn": "サインイン",
+  "dontHaveAccount": "アカウントをお持ちではありませんか？",
+  "signUp": "サインアップ",
+  "processing": "処理中...",
+  "invalidCredentials": "有効なメールアドレスとパスワード（6文字以上）を入力してください",
+  "authError": "認証エラー",
+
+  "home": "ホーム",
+  "clients": "顧客",
+  "invoices": "請求書",
+  "reports": "レポート",
+  "settings": "設定",
+  "logout": "ログアウト",
+  "business": "事業",
+
+  "settingsLanguage": "言語",
+  "settingsLanguageDescription": "アプリの言語を選択してください。",
+  "systemDefault": "システム既定",
+
+  "privacyPolicy": "プライバシーポリシー",
+
+  "clientMessageTemplateMultiline": "こんにちは {name} さん、\nEzInvoice から請求書をお送りします。✅",
+  "@clientMessageTemplateMultiline": {
+    "placeholders": { "name": {} }
+  },
+
+  "invoiceEmailSubject": "請求書 - EzInvoice",
+
+  "dashboardTitle": "ダッシュボード",
+  "monthWord": "月",
+
+  "planLabel": "プラン",
+  "invoicesRemaining": "残りの請求書数",
+  "proUnlimitedLabel": "PRO · 無制限",
+
+  "createNewInvoice": "新しい請求書を作成",
+  "limitReachedSubtitle": "上限に達しました • Pro にアップグレード",
+  "createInvoiceFastSubtitle": "数秒で請求書 + PDF を作成",
+
+  "limitReachedTitle": "上限に達しました",
+  "limitReachedBody": "無制限の請求書と広告削除のために Pro にアップグレードしてください。",
+  "upgrade": "アップグレード",
+
+  "monthSummaryTitle": "月次サマリー",
+  "salesTitle": "売上",
+  "tipTitle": "チップ",
+  "subtotalTitle": "小計",
+  "taxTitle": "税",
+  "beforeTaxTip": "税/チップ前",
+  "collectedThisMonth": "今月の回収額",
+
+  "quickAccessTitle": "クイックアクセス",
+  "clientsManageSubtitle": "顧客の作成 / 編集",
+  "invoicesViewSendSubtitle": "PDF を表示して送信",
+  "monthlyYearlySubtitle": "月次 / 年次",
+  "businessProfileSubtitle": "プロフィール / ロゴ / 税",
+
+  "invoiceCount": "{count} 件の請求書",
+  "@invoiceCount": { "placeholders": { "count": {} } },
+
+  "paywallTitle": "Ez Invoice Pro",
+  "close": "閉じる",
+  "paywallHeaderTitle": "ビジネスのためにすべてを解放",
+  "paywallHeaderSubtitle": "広告なし • 請求書無制限 • 税レポート • プレミアムテンプレート",
+
+  "bestValue": "お得",
+  "proYearly": "Pro 年額",
+  "saveMoreYearly": "年額払いでさらにお得",
+  "proMonthly": "Pro 月額",
+  "flexible": "柔軟",
+  "cancelAnytime": "いつでも解約可能",
+
+  "processingPurchase": "購入を処理中…",
+  "restoringPurchases": "購入を復元中…",
+  "restorePurchases": "購入を復元",
+  "continueFreeWithAds": "広告付きの無料版を続ける",
+
+  "alreadyProTitle": "Pro です ✅",
+  "alreadyProBody": "無制限の請求書、レポート、広告なしをお楽しみください。",
+  "continueText": "続ける",
+
+  "includesInPro": "Pro に含まれるもの",
+  "benefitNoAds": "広告なし（バナー/インタースティシャル/リワード）",
+  "benefitUnlimitedInvoices": "請求書無制限 + ステータス（下書き/送信済み/支払い済み）",
+  "benefitPremiumTemplates": "プレミアムテンプレート + カラー + 事業ロゴ",
+  "benefitNoWatermarkPdf": "透かしなしのプロ仕様 PDF",
+  "benefitTaxReports": "税レポート：月次・年次（税/チップ/純利益）",
+  "benefitExport": "PDF/CSV/Excel へエクスポート（会計用）",
+  "benefitCloudBackup": "クラウドバックアップ + 復元（複数端末）",
+
+  "continueWithPlan": "{plan} で続ける",
+  "@continueWithPlan": { "placeholders": { "plan": {} } },
+
+  "paywallFinePrint": "購読すると、お支払いは {store} アカウントに請求されます。キャンセルしない限り自動更新されます（現在の期間終了の24時間前までにキャンセルが必要）。購読の管理・キャンセルはストア設定から行えます。",
+  "@paywallFinePrint": { "placeholders": { "store": {} } },
+
+  "reportsTitle": "レポート",
+  "proBadge": "PRO",
+
+  "byMonth": "月別",
+  "byYear": "年別",
+  "monthLabel": "月",
+  "yearLabel": "年",
+
+  "businessProfileTitle": "事業プロフィール",
+  "save": "保存",
+  "uploadLogo": "ロゴをアップロード",
+  "remove": "削除",
+
+  "businessNameLabel": "事業名",
+  "ownerNameLabel": "オーナー / 連絡先名",
+  "phoneLabel": "電話",
+  "addressLabel": "住所",
+
+  "currencyLabel": "通貨",
+  "taxDefaultLabel": "既定の税率（%）",
+
+  "invalidNumber": "無効な数値",
+  "range0to100": "0〜100 の範囲で入力してください",
+  "requiredField": "必須",
+
+  "footerNoteLabel": "フッターノート（PDF）",
+  "saveChanges": "変更を保存",
+
+  "businessFooterDefault": "ご利用ありがとうございます。",
+  "businessSavedSuccess": "事業プロフィールを保存しました",
+
+  "businessInfoSection": "事業情報",
+  "settingsSection": "設定",
+  "footerSection": "フッターノート（PDF）",
+  "upgradeToPro": "Pro にアップグレード",
+
+  "bestValueStar": "⭐ お得",
+
+  "invoicesTitle": "請求書",
+  "noInvoicesYet": "まだ請求書がありません。",
+
+  "freePlanMonthlyLimitBanner": "無料プラン：月間上限 {limit} 件 • 無制限にするにはアップグレード",
+  "@freePlanMonthlyLimitBanner": { "placeholders": { "limit": {} } },
+
+  "filtersTitle": "フィルター",
+  "clientLabel": "顧客",
+  "allMonths": "すべての月",
+  "allClients": "すべての顧客",
+  "clear": "クリア",
+
+  "invoicesSummaryLabel": "請求書",
+  "totalTitle": "合計",
+  "dateLabel": "日付",
+
+  "noResultsForFilters": "選択したフィルターの結果がありません。",
+
+  "freePlanLimitDialogBody": "無料プラン：今月 {current} / {limit} 件。\n\n無制限にするには Pro にアップグレードしてください。",
+  "@freePlanLimitDialogBody": { "placeholders": { "current": {}, "limit": {} } },
+
+  "deleteInvoiceTitle": "請求書を削除しますか？",
+  "deleteInvoiceBody": "{invNo} を削除してもよろしいですか？",
+  "@deleteInvoiceBody": { "placeholders": { "invNo": {} } },
+
+  "cancel": "キャンセル",
+  "delete": "削除",
+  "edit": "編集",
+  "sendPdf": "PDF を送信",
+
+  "shareInvoiceText": "請求書 {invNo} - {client}",
+  "@shareInvoiceText": { "placeholders": { "invNo": {}, "client": {} } },
+
+  "pdfSendError": "PDF の作成/送信エラー: {error}",
+  "@pdfSendError": { "placeholders": { "error": {} } },
+
+  "reportTitleMonth": "レポート • {month} {year}",
+  "@reportTitleMonth": { "placeholders": { "month": {}, "year": {} } },
+
+  "reportTitleYear": "レポート • 年 {year}",
+  "@reportTitleYear": { "placeholders": { "year": {} } },
+
+  "invoicesLine": "請求書: {count}",
+  "@invoicesLine": { "placeholders": { "count": {} } },
+
+  "totalSalesLine": "総売上: ${amount}",
+  "@totalSalesLine": { "placeholders": { "amount": {} } },
+
+  "totalTaxLine": "総税額: ${amount}",
+  "@totalTaxLine": { "placeholders": { "amount": {} } },
+
+  "totalTipLine": "総チップ: ${amount}",
+  "@totalTipLine": { "placeholders": { "amount": {} } },
+
+  "netLine": "純利益: ${amount}",
+  "@netLine": { "placeholders": { "amount": {} } },
+
+  "calculatedFromInvoices": "Firestore の請求書から計算されました。",
+  "noInvoicesInPeriod": "その期間の請求書はありません。",
+
+  "exportPdf": "PDF を出力",
+  "exportCsv": "CSV を出力",
+
+  "yearlyProReason": "年次レポートは PRO です。アップグレードで解放できます。",
+  "exportPdfProReason": "レポートの PDF 出力は PRO です。",
+  "exportCsvProReason": "CSV 出力は PRO です。",
+
+  "noDataToExport": "出力するデータがありません。",
+  "freePlanReportsNote": "無料プラン：月次レポートのみ。年次レポートと出力はアップグレードで利用できます。",
+
+  "genericError": "問題が発生しました。もう一度お試しください。",
+
+  "newInvoiceTitle": "新しい請求書",
+  "editInvoiceTitle": "請求書を編集",
+  "pickClient": "顧客を選択",
+
+  "invoiceAutoNumberLabel": "請求書 #（自動）",
+  "invoiceDateLabel": "請求日: {date}",
+  "@invoiceDateLabel": { "placeholders": { "date": {} } },
+
+  "clientNameLabel": "顧客名",
+  "clientNameRequired": "顧客名は必須です",
+  "clientEmailOptionalLabel": "顧客メール（任意）",
+  "clientPhoneOptionalLabel": "顧客電話（任意）",
+  "invalidEmailFormat": "メール形式が正しくありません",
+
+  "itemsTitle": "項目",
+  "descriptionLabel": "説明",
+  "itemDateLabel": "項目日付: {date}",
+  "@itemDateLabel": { "placeholders": { "date": {} } },
+
+  "qtyLabel": "数量",
+  "priceLabel": "単価",
+  "lineTotalLabel": "明細合計: ${amount}",
+  "@lineTotalLabel": { "placeholders": { "amount": {} } },
+
+  "taxDefaultOwnerLabel": "税率 %（既定）",
+
+  "tipPercentChip": "チップ %",
+  "tipAmountChip": "チップ $",
+  "tipPercentLabel": "チップ率（%）",
+  "tipAmountLabel": "チップ額（$）",
+
+  "messageOptionalLabel": "メッセージ（任意）",
+
+  "totalsBlock": "小計: ${sub}\n税: ${tax}\nチップ: ${tip}\n合計: ${total}",
+  "@totalsBlock": {
+    "placeholders": { "sub": {}, "tax": {}, "tip": {}, "total": {} }
+  },
+
+  "saving": "保存中…",
+  "saveInvoice": "請求書を保存",
+  "updateInvoice": "請求書を更新",
+
+  "addAtLeastOneItem": "少なくとも 1 件の項目を追加してください",
+  "errorSavingInvoice": "請求書の保存エラー: {error}",
+  "@errorSavingInvoice": { "placeholders": { "error": {} } },
+
+  "savedTab": "保存済み",
+  "contactsTab": "連絡先",
+  "noSavedClients": "保存済みの顧客がありません",
+  "permissionDeniedContacts": "連絡先の権限が拒否されました",
+  "noContactsFound": "この端末/エミュレーターに連絡先が見つかりません",
+  "contactsError": "連絡先エラー: {error}",
+  "@contactsError": { "placeholders": { "error": {} } },
+
+  "noName": "(名前なし)",
+
+  "newClientTitle": "新しい顧客",
+  "editClientTitle": "顧客を編集",
+  "clientInfoSection": "顧客情報",
+  "notesLabel": "メモ",
+  "notesHint": "メモを追加（任意）",
+  "clientCreateHint": "ヒント：メール/電話を追加すると請求書を早く送れます。",
+  "clientEditHint": "顧客情報はいつでも更新できます。",
+  "errorSavingClient": "顧客の保存エラー: {error}",
+  "@errorSavingClient": { "placeholders": { "error": {} } },
+
+  "clientsTitle": "顧客",
+  "searchClientsLabel": "顧客を検索",
+  "clientsCount": "{count} 件の顧客",
+  "@clientsCount": { "placeholders": { "count": {} } },
+
+  "noClientsYet": "まだ顧客がいません。",
+  "noClientsForSearch": "検索に一致する顧客がいません。",
+
+  "cannotOpenDialer": "ダイヤラーを開けません",
+  "cannotOpenSms": "SMS を開けません",
+  "whatsAppNotAvailable": "WhatsApp を利用できません",
+  "cannotOpenEmail": "メールを開けません",
+
+  "deleteClientTitle": "顧客を削除しますか？",
+  "deleteClientBody": "{name} を削除しますか？",
+  "@deleteClientBody": { "placeholders": { "name": {} } },
+
+  "call": "通話",
+  "sms": "SMS",
+  "whatsapp": "WhatsApp",
+  "emailAction": "メール",
+
+  "shareAppTitle": "EzInvoice を試してみて 👇",
+  "shareAppBody": "請求書作成、PDF送信、レポート管理が簡単に。",
+  "shareAppTooltip": "アプリを共有",
+  "openGooglePlayTooltip": "Google Play を開く",
+  "openAppStoreTooltip": "App Store を開く",
+  "openWebsiteTooltip": "Webサイトを開く",
+  "availableLanguages": "利用可能な言語",
+  "usePhoneLanguage": "端末の言語を使用",
+
+  "shareReceiptText": "領収書 {invoiceNumber}（{clientName}）",
+  "@shareReceiptText": {
+    "placeholders": {
+      "invoiceNumber": {},
+      "clientName": {}
+    }
+  },
+
+  "report": "レポート",
+  "invoicesLabel": "請求書",
+  "totalSalesLabel": "総売上",
+  "totalTaxLabel": "総税額",
+  "totalTipLabel": "総チップ",
+  "netLabel": "純利益",
+  "sentLabel": "送信済み",
+  "paidLabel": "支払い済み",
+  "overdueLabel": "期限超過",
+  "reportCalculatedHint": "Firestore の請求書から計算されました。",
+  "exportPdfComingSoon": "PDF 出力（近日）",
+  "exportCsvComingSoon": "CSV 出力（近日）",
+  "unsentLabel": "未送信"
+}
