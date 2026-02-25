@@ -464,6 +464,7 @@ class _ReportDesignBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final repo = BusinessProfileRepository();
     return StreamBuilder<BusinessProfile>(
       stream: repo.stream(),
@@ -487,7 +488,7 @@ class _ReportDesignBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Report style',
+                    t.reportStyleTitle,
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
                       color: Colors.black.withOpacity(0.78),
@@ -496,7 +497,7 @@ class _ReportDesignBar extends StatelessWidget {
                   const SizedBox(height: 10),
                   if (!isPro) ...[
                     Text(
-                      'Free plan uses one report version (Minimal). Upgrade to Pro to unlock all layouts and palettes.',
+                      t.reportFreeStyleHint,
                       style: TextStyle(
                         color: Colors.black.withOpacity(0.62),
                         fontWeight: FontWeight.w600,
@@ -517,15 +518,15 @@ class _ReportDesignBar extends StatelessWidget {
                         foregroundColor: Colors.white,
                       ),
                       icon: const Icon(Icons.workspace_premium_outlined),
-                      label: const Text('Upgrade to Pro'),
+                      label: Text(t.upgradeToPro),
                     ),
                   ] else ...[
                     DropdownButtonFormField<String>(
                       key: ValueKey('report_palette_$paletteId'),
                       initialValue: paletteId,
-                      decoration: const InputDecoration(
-                        labelText: 'Report palette',
-                        prefixIcon: Icon(Icons.palette_outlined),
+                      decoration: InputDecoration(
+                        labelText: t.reportPaletteLabel,
+                        prefixIcon: const Icon(Icons.palette_outlined),
                       ),
                       items: AppThemePresets.palettes
                           .map(
@@ -552,9 +553,7 @@ class _ReportDesignBar extends StatelessWidget {
                         } catch (_) {
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Could not save report palette.'),
-                            ),
+                            SnackBar(content: Text(t.saveReportPaletteError)),
                           );
                         }
                       },
@@ -563,9 +562,9 @@ class _ReportDesignBar extends StatelessWidget {
                     DropdownButtonFormField<String>(
                       key: ValueKey('report_layout_$layoutId'),
                       initialValue: layoutId,
-                      decoration: const InputDecoration(
-                        labelText: 'Report layout',
-                        prefixIcon: Icon(Icons.dashboard_outlined),
+                      decoration: InputDecoration(
+                        labelText: t.reportLayoutLabel,
+                        prefixIcon: const Icon(Icons.dashboard_outlined),
                       ),
                       items: AppThemePresets.layouts
                           .map(
@@ -582,9 +581,7 @@ class _ReportDesignBar extends StatelessWidget {
                         } catch (_) {
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Could not save report layout.'),
-                            ),
+                            SnackBar(content: Text(t.saveReportLayoutError)),
                           );
                         }
                       },

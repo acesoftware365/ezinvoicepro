@@ -3,6 +3,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/widgets.dart';
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -100,6 +102,7 @@ class InvoicePdfService {
   static Future<Uint8List> generatePdfBytes(
     InvoiceData invoice, {
     PdfDocType type = PdfDocType.invoice,
+    BuildContext? context,
   }) async {
     final BusinessProfile business = await BusinessProfileRepository().load();
     final isProTemplates = FeatureGate.allowed(ProFeature.premiumTemplates);
@@ -109,9 +112,17 @@ class InvoicePdfService {
     final layoutId = isProTemplates
         ? AppThemePresets.normalizeLayout(business.invoiceLayoutId)
         : AppThemePresets.layoutMinimal;
+    final isReceipt = type == PdfDocType.receipt;
     final style = _styleForPalette(paletteId);
     final layoutLabel = AppThemePresets.layoutLabel(layoutId);
     final paletteLabel = AppThemePresets.paletteLabel(paletteId);
+    final docTypeLabel = isReceipt ? 'Receipt' : 'Invoice';
+    final stylePaletteLine = _stylePaletteLine(
+      context: context,
+      docType: docTypeLabel,
+      style: layoutLabel,
+      palette: paletteLabel,
+    );
 
     final doc = pw.Document();
     final logoImage = await _loadLogoImage(business.logoFilePath);
@@ -138,8 +149,6 @@ class InvoicePdfService {
     // ✅ Branding: Free = true, Pro = false
     final showBranding = !FeatureGate.allowed(ProFeature.removePdfBranding);
     final showFreeWatermark = showBranding;
-
-    final isReceipt = type == PdfDocType.receipt;
 
     doc.addPage(
       pw.MultiPage(
@@ -215,9 +224,7 @@ class InvoicePdfService {
             business: business,
             showBranding: showBranding,
             style: style,
-            docTypeLabel: isReceipt ? 'Receipt' : 'Invoice',
-            layoutLabel: layoutLabel,
-            paletteLabel: paletteLabel,
+            stylePaletteLine: stylePaletteLine,
           ),
         ],
       ),
@@ -229,8 +236,9 @@ class InvoicePdfService {
   static Future<File> generateAndSavePdf(
     InvoiceData invoice, {
     PdfDocType type = PdfDocType.invoice,
+    BuildContext? context,
   }) async {
-    final bytes = await generatePdfBytes(invoice, type: type);
+    final bytes = await generatePdfBytes(invoice, type: type, context: context);
 
     final dir = await getApplicationDocumentsDirectory();
     final folder = Directory('${dir.path}/ez_invoice');
@@ -686,9 +694,7 @@ class InvoicePdfService {
     required BusinessProfile business,
     required bool showBranding,
     required _InvoicePdfStyle style,
-    required String docTypeLabel,
-    required String layoutLabel,
-    required String paletteLabel,
+    required String stylePaletteLine,
   }) {
     final footerText = business.footerNote.trim().isEmpty
         ? 'Gracias por su preferencia.'
@@ -702,7 +708,7 @@ class InvoicePdfService {
           pw.Text(footerText, style: const pw.TextStyle(fontSize: 10)),
           pw.SizedBox(height: 6),
           pw.Text(
-            '$docTypeLabel style: $layoutLabel | Palette: $paletteLabel',
+            stylePaletteLine,
             style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey600),
           ),
           if (showBranding) ...[
@@ -817,6 +823,19 @@ class InvoicePdfService {
   static String _fmtQty(double n) {
     if (n % 1 == 0) return n.toInt().toString();
     return n.toStringAsFixed(2);
+  }
+
+  static String _stylePaletteLine({
+    required BuildContext? context,
+    required String docType,
+    required String style,
+    required String palette,
+  }) {
+    if (context != null) {
+      final t = AppLocalizations.of(context);
+      return t.stylePaletteFootnote(docType, style, palette);
+    }
+    return '$docType style: $style | Palette: $palette';
   }
 }
 

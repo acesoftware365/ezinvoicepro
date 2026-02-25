@@ -748,6 +748,80 @@ class AppLocalizationsPt extends AppLocalizations {
   String get unsentLabel => 'Não enviadas';
 
   @override
+  String get servicePresetsTitle => 'Service presets';
+
+  @override
+  String get servicePresetsScreenTitle => 'Service Presets';
+
+  @override
+  String get servicePresetsAddNew => 'Add new preset';
+
+  @override
+  String get servicePresetsHint => 'e.g. Cleaning, Repair, Consultation...';
+
+  @override
+  String get servicePresetsAddButton => 'Add';
+
+  @override
+  String get addServiceLabel => 'Add a service';
+
+  @override
+  String get yourPresets => 'Your presets';
+
+  @override
+  String get noPresetsYet => 'No presets yet.';
+
+  @override
+  String get notNow => 'Not now';
+
+  @override
+  String get openPaywallPlaceholder =>
+      'Open Paywall (connect PaywallScreen here)';
+
+  @override
+  String get invoiceStyleTitle => 'Invoice style';
+
+  @override
+  String get invoiceFreeStyleHint =>
+      'Free plan uses one invoice version (Minimal). Upgrade to Pro to unlock all layouts and palettes.';
+
+  @override
+  String get invoicePaletteLabel => 'Invoice palette';
+
+  @override
+  String get invoiceLayoutLabel => 'Invoice layout';
+
+  @override
+  String get saveInvoicePaletteError => 'Could not save invoice palette.';
+
+  @override
+  String get saveInvoiceLayoutError => 'Could not save invoice layout.';
+
+  @override
+  String get reportStyleTitle => 'Report style';
+
+  @override
+  String get reportFreeStyleHint =>
+      'Free plan uses one report version (Minimal). Upgrade to Pro to unlock all layouts and palettes.';
+
+  @override
+  String get reportPaletteLabel => 'Report palette';
+
+  @override
+  String get reportLayoutLabel => 'Report layout';
+
+  @override
+  String get saveReportPaletteError => 'Could not save report palette.';
+
+  @override
+  String get saveReportLayoutError => 'Could not save report layout.';
+
+  @override
+  String stylePaletteFootnote(Object docType, Object style, Object palette) {
+    return '$docType style: $style | Palette: $palette';
+  }
+
+  @override
   String get deleteAccountTitle => 'Excluir conta';
 
   @override

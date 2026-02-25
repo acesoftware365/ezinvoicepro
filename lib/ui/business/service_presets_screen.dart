@@ -1,6 +1,7 @@
 // lib/ui/business/service_presets_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import '../../repositories/business_profile_repository.dart';
 
 class ServicePresetsScreen extends StatefulWidget {
@@ -48,6 +49,7 @@ class _ServicePresetsScreenState extends State<ServicePresetsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
     return Theme(
@@ -58,13 +60,13 @@ class _ServicePresetsScreenState extends State<ServicePresetsScreen> {
         ),
       ),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Service Presets'),
-        ),
+        appBar: AppBar(title: Text(t.servicePresetsScreenTitle)),
         body: StreamBuilder(
           stream: _repo.stream(),
           builder: (context, snap) {
-            final presets = snap.hasData ? (snap.data!.servicePresets) : <String>[];
+            final presets = snap.hasData
+                ? (snap.data!.servicePresets)
+                : <String>[];
             final list = presets.toList()..sort((a, b) => a.compareTo(b));
 
             return ListView(
@@ -87,8 +89,8 @@ class _ServicePresetsScreenState extends State<ServicePresetsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        'Add new preset',
+                      Text(
+                        t.servicePresetsAddNew,
                         style: TextStyle(fontWeight: FontWeight.w900),
                       ),
                       const SizedBox(height: 10),
@@ -97,7 +99,7 @@ class _ServicePresetsScreenState extends State<ServicePresetsScreen> {
                         textInputAction: TextInputAction.done,
                         onSubmitted: (_) => _busy ? null : _add(),
                         decoration: InputDecoration(
-                          hintText: 'e.g. Cleaning, Repair, Consultation...',
+                          hintText: t.servicePresetsHint,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
@@ -107,7 +109,7 @@ class _ServicePresetsScreenState extends State<ServicePresetsScreen> {
                       FilledButton.icon(
                         onPressed: _busy ? null : _add,
                         icon: const Icon(Icons.add),
-                        label: const Text('Add'),
+                        label: Text(t.servicePresetsAddButton),
                         style: FilledButton.styleFrom(
                           backgroundColor: brandGreen,
                           foregroundColor: Colors.white,
@@ -117,28 +119,34 @@ class _ServicePresetsScreenState extends State<ServicePresetsScreen> {
                   ),
                 ),
                 const SizedBox(height: 14),
-                const Text(
-                  'Your presets',
-                  style: TextStyle(fontWeight: FontWeight.w900),
+                Text(
+                  t.yourPresets,
+                  style: const TextStyle(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 10),
                 if (list.isEmpty)
                   Text(
-                    'No presets yet.',
+                    t.noPresetsYet,
                     style: TextStyle(color: Colors.black.withOpacity(0.6)),
                   )
                 else
                   ...list.map(
-                        (p) => Card(
+                    (p) => Card(
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                         side: BorderSide(color: Colors.black.withOpacity(0.06)),
                       ),
                       child: ListTile(
-                        title: Text(p, style: const TextStyle(fontWeight: FontWeight.w800)),
+                        title: Text(
+                          p,
+                          style: const TextStyle(fontWeight: FontWeight.w800),
+                        ),
                         trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.redAccent,
+                          ),
                           onPressed: _busy ? null : () => _remove(p),
                         ),
                       ),

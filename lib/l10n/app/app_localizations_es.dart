@@ -749,6 +749,84 @@ class AppLocalizationsEs extends AppLocalizations {
   String get unsentLabel => 'No enviadas';
 
   @override
+  String get servicePresetsTitle => 'Servicios guardados';
+
+  @override
+  String get servicePresetsScreenTitle => 'Servicios guardados';
+
+  @override
+  String get servicePresetsAddNew => 'Agregar nuevo servicio';
+
+  @override
+  String get servicePresetsHint => 'ej. Limpieza, Reparación, Consultoría...';
+
+  @override
+  String get servicePresetsAddButton => 'Agregar';
+
+  @override
+  String get addServiceLabel => 'Agregar un servicio';
+
+  @override
+  String get yourPresets => 'Tus servicios';
+
+  @override
+  String get noPresetsYet => 'Aún no hay servicios guardados.';
+
+  @override
+  String get notNow => 'Ahora no';
+
+  @override
+  String get openPaywallPlaceholder =>
+      'Abrir Paywall (conecta PaywallScreen aquí)';
+
+  @override
+  String get invoiceStyleTitle => 'Estilo de factura';
+
+  @override
+  String get invoiceFreeStyleHint =>
+      'El plan Free usa una sola versión de factura (Minimal). Actualiza a Pro para desbloquear todos los layouts y paletas.';
+
+  @override
+  String get invoicePaletteLabel => 'Paleta de factura';
+
+  @override
+  String get invoiceLayoutLabel => 'Layout de factura';
+
+  @override
+  String get saveInvoicePaletteError =>
+      'No se pudo guardar la paleta de factura.';
+
+  @override
+  String get saveInvoiceLayoutError =>
+      'No se pudo guardar el layout de factura.';
+
+  @override
+  String get reportStyleTitle => 'Estilo de reporte';
+
+  @override
+  String get reportFreeStyleHint =>
+      'El plan Free usa una sola versión de reporte (Minimal). Actualiza a Pro para desbloquear todos los layouts y paletas.';
+
+  @override
+  String get reportPaletteLabel => 'Paleta de reporte';
+
+  @override
+  String get reportLayoutLabel => 'Layout de reporte';
+
+  @override
+  String get saveReportPaletteError =>
+      'No se pudo guardar la paleta de reporte.';
+
+  @override
+  String get saveReportLayoutError =>
+      'No se pudo guardar el layout de reporte.';
+
+  @override
+  String stylePaletteFootnote(Object docType, Object style, Object palette) {
+    return 'Estilo de $docType: $style | Paleta: $palette';
+  }
+
+  @override
   String get deleteAccountTitle => 'Eliminar cuenta';
 
   @override

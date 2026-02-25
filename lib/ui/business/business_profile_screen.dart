@@ -413,14 +413,14 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                         const SizedBox(height: 14),
 
                         // ✅ NEW: Service Presets
-                        _sectionTitle('Service presets'),
+                        _sectionTitle(t.servicePresetsTitle),
                         const SizedBox(height: 10),
                         _card(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Guarda descripciones frecuentes (ej: “Haircut”, “Car Wash”, “Consulting”).',
+                                t.servicePresetsHint,
                                 style: TextStyle(
                                   color: Colors.black.withOpacity(0.65),
                                   fontWeight: FontWeight.w600,
@@ -432,9 +432,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                                   Expanded(
                                     child: TextField(
                                       controller: _presetCtrl,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Add a service',
-                                        prefixIcon: Icon(Icons.playlist_add),
+                                      decoration: InputDecoration(
+                                        labelText: t.addServiceLabel,
+                                        prefixIcon: const Icon(
+                                          Icons.playlist_add,
+                                        ),
                                       ),
                                       onSubmitted: (_) => _addPreset(),
                                     ),
@@ -446,14 +448,14 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                                       backgroundColor: brandGreen,
                                       foregroundColor: Colors.white,
                                     ),
-                                    child: const Text('Add'),
+                                    child: Text(t.servicePresetsAddButton),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 12),
                               if (_presets.isEmpty)
                                 Text(
-                                  'No presets yet.',
+                                  t.noPresetsYet,
                                   style: TextStyle(
                                     color: Colors.black.withOpacity(0.55),
                                     fontWeight: FontWeight.w600,

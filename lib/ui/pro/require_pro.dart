@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:ezinvoice/services/purchases/feature_gate.dart';
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
 // TODO: importa tu paywall screen real
 // import 'package:ezinvoice/features/paywall/paywall_screen.dart';
 
 class RequirePro {
   static Future<void> run(
-      BuildContext context, {
-        required ProFeature feature,
-        required VoidCallback onAllowed,
-      }) async {
+    BuildContext context, {
+    required ProFeature feature,
+    required VoidCallback onAllowed,
+  }) async {
+    final t = AppLocalizations.of(context);
     if (FeatureGate.allowed(feature)) {
       onAllowed();
       return;
@@ -22,11 +24,11 @@ class RequirePro {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Not now'),
+            child: Text(t.notNow),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Upgrade to Pro'),
+            child: Text(t.upgradeToPro),
           ),
         ],
       ),
@@ -35,9 +37,9 @@ class RequirePro {
     if (ok == true) {
       // ✅ Aquí empujas tu paywall real
       // Navigator.push(context, MaterialPageRoute(builder: (_) => const PaywallScreen()));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Open Paywall (connect PaywallScreen here)')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.openPaywallPlaceholder)));
     }
   }
 }

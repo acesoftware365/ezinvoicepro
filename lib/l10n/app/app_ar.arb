@@ -337,5 +337,35 @@
   "deleteAccountWarning": "سيؤدي هذا الإجراء إلى حذف حسابك وجميع البيانات المرتبطة به نهائيًا.",
   "deleteAccountButton": "حذف الحساب",
   "deleteAccountConfirmTitle": "تأكيد الحذف",
-  "deleteAccountConfirmMessage": "هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء."
+  "deleteAccountConfirmMessage": "هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء.",
+  "servicePresetsTitle": "Service presets",
+  "servicePresetsScreenTitle": "Service Presets",
+  "servicePresetsAddNew": "Add new preset",
+  "servicePresetsHint": "e.g. Cleaning, Repair, Consultation...",
+  "servicePresetsAddButton": "Add",
+  "addServiceLabel": "Add a service",
+  "yourPresets": "Your presets",
+  "noPresetsYet": "No presets yet.",
+  "notNow": "Not now",
+  "openPaywallPlaceholder": "Open Paywall (connect PaywallScreen here)",
+  "invoiceStyleTitle": "Invoice style",
+  "invoiceFreeStyleHint": "Free plan uses one invoice version (Minimal). Upgrade to Pro to unlock all layouts and palettes.",
+  "invoicePaletteLabel": "Invoice palette",
+  "invoiceLayoutLabel": "Invoice layout",
+  "saveInvoicePaletteError": "Could not save invoice palette.",
+  "saveInvoiceLayoutError": "Could not save invoice layout.",
+  "reportStyleTitle": "Report style",
+  "reportFreeStyleHint": "Free plan uses one report version (Minimal). Upgrade to Pro to unlock all layouts and palettes.",
+  "reportPaletteLabel": "Report palette",
+  "reportLayoutLabel": "Report layout",
+  "saveReportPaletteError": "Could not save report palette.",
+  "saveReportLayoutError": "Could not save report layout.",
+  "stylePaletteFootnote": "{docType} style: {style} | Palette: {palette}",
+  "@stylePaletteFootnote": {
+    "placeholders": {
+      "docType": {},
+      "style": {},
+      "palette": {}
+    }
+  }
 }

@@ -1452,6 +1452,144 @@ abstract class AppLocalizations {
   /// **'Unsent'**
   String get unsentLabel;
 
+  /// No description provided for @servicePresetsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Service presets'**
+  String get servicePresetsTitle;
+
+  /// No description provided for @servicePresetsScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Presets'**
+  String get servicePresetsScreenTitle;
+
+  /// No description provided for @servicePresetsAddNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Add new preset'**
+  String get servicePresetsAddNew;
+
+  /// No description provided for @servicePresetsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Cleaning, Repair, Consultation...'**
+  String get servicePresetsHint;
+
+  /// No description provided for @servicePresetsAddButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get servicePresetsAddButton;
+
+  /// No description provided for @addServiceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a service'**
+  String get addServiceLabel;
+
+  /// No description provided for @yourPresets.
+  ///
+  /// In en, this message translates to:
+  /// **'Your presets'**
+  String get yourPresets;
+
+  /// No description provided for @noPresetsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No presets yet.'**
+  String get noPresetsYet;
+
+  /// No description provided for @notNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notNow;
+
+  /// No description provided for @openPaywallPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Paywall (connect PaywallScreen here)'**
+  String get openPaywallPlaceholder;
+
+  /// No description provided for @invoiceStyleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice style'**
+  String get invoiceStyleTitle;
+
+  /// No description provided for @invoiceFreeStyleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Free plan uses one invoice version (Minimal). Upgrade to Pro to unlock all layouts and palettes.'**
+  String get invoiceFreeStyleHint;
+
+  /// No description provided for @invoicePaletteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice palette'**
+  String get invoicePaletteLabel;
+
+  /// No description provided for @invoiceLayoutLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice layout'**
+  String get invoiceLayoutLabel;
+
+  /// No description provided for @saveInvoicePaletteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save invoice palette.'**
+  String get saveInvoicePaletteError;
+
+  /// No description provided for @saveInvoiceLayoutError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save invoice layout.'**
+  String get saveInvoiceLayoutError;
+
+  /// No description provided for @reportStyleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report style'**
+  String get reportStyleTitle;
+
+  /// No description provided for @reportFreeStyleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Free plan uses one report version (Minimal). Upgrade to Pro to unlock all layouts and palettes.'**
+  String get reportFreeStyleHint;
+
+  /// No description provided for @reportPaletteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Report palette'**
+  String get reportPaletteLabel;
+
+  /// No description provided for @reportLayoutLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Report layout'**
+  String get reportLayoutLabel;
+
+  /// No description provided for @saveReportPaletteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save report palette.'**
+  String get saveReportPaletteError;
+
+  /// No description provided for @saveReportLayoutError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save report layout.'**
+  String get saveReportLayoutError;
+
+  /// No description provided for @stylePaletteFootnote.
+  ///
+  /// In en, this message translates to:
+  /// **'{docType} style: {style} | Palette: {palette}'**
+  String stylePaletteFootnote(Object docType, Object style, Object palette);
+
   /// No description provided for @deleteAccountTitle.
   ///
   /// In en, this message translates to:

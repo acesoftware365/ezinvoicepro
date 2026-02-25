@@ -232,6 +232,7 @@ class InvoicesScreen extends StatelessWidget {
       final file = await InvoicePdfService.generateAndSavePdf(
         data,
         type: PdfDocType.invoice,
+        context: context,
       );
 
       await Share.shareXFiles(
@@ -261,6 +262,7 @@ class InvoicesScreen extends StatelessWidget {
       final file = await InvoicePdfService.generateAndSavePdf(
         data,
         type: PdfDocType.receipt,
+        context: context,
       );
 
       await Share.shareXFiles(
@@ -551,6 +553,7 @@ class _InvoiceDesignBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final repo = BusinessProfileRepository();
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -578,7 +581,7 @@ class _InvoiceDesignBar extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Invoice style',
+                      t.invoiceStyleTitle,
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
                         color: Colors.black.withOpacity(0.78),
@@ -587,7 +590,7 @@ class _InvoiceDesignBar extends StatelessWidget {
                     const SizedBox(height: 10),
                     if (!isPro) ...[
                       Text(
-                        'Free plan uses one invoice version (Minimal). Upgrade to Pro to unlock all layouts and palettes.',
+                        t.invoiceFreeStyleHint,
                         style: TextStyle(
                           color: Colors.black.withOpacity(0.62),
                           fontWeight: FontWeight.w600,
@@ -608,15 +611,15 @@ class _InvoiceDesignBar extends StatelessWidget {
                           foregroundColor: Colors.white,
                         ),
                         icon: const Icon(Icons.workspace_premium_outlined),
-                        label: const Text('Upgrade to Pro'),
+                        label: Text(t.upgradeToPro),
                       ),
                     ] else ...[
                       DropdownButtonFormField<String>(
                         key: ValueKey('invoice_palette_$paletteId'),
                         initialValue: paletteId,
-                        decoration: const InputDecoration(
-                          labelText: 'Invoice palette',
-                          prefixIcon: Icon(Icons.palette_outlined),
+                        decoration: InputDecoration(
+                          labelText: t.invoicePaletteLabel,
+                          prefixIcon: const Icon(Icons.palette_outlined),
                         ),
                         items: AppThemePresets.palettes
                             .map(
@@ -646,10 +649,8 @@ class _InvoiceDesignBar extends StatelessWidget {
                           } catch (_) {
                             if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Could not save invoice palette.',
-                                ),
+                              SnackBar(
+                                content: Text(t.saveInvoicePaletteError),
                               ),
                             );
                           }
@@ -659,9 +660,9 @@ class _InvoiceDesignBar extends StatelessWidget {
                       DropdownButtonFormField<String>(
                         key: ValueKey('invoice_layout_$layoutId'),
                         initialValue: layoutId,
-                        decoration: const InputDecoration(
-                          labelText: 'Invoice layout',
-                          prefixIcon: Icon(Icons.description_outlined),
+                        decoration: InputDecoration(
+                          labelText: t.invoiceLayoutLabel,
+                          prefixIcon: const Icon(Icons.description_outlined),
                         ),
                         items: AppThemePresets.layouts
                             .map(
@@ -678,9 +679,7 @@ class _InvoiceDesignBar extends StatelessWidget {
                           } catch (_) {
                             if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Could not save invoice layout.'),
-                              ),
+                              SnackBar(content: Text(t.saveInvoiceLayoutError)),
                             );
                           }
                         },

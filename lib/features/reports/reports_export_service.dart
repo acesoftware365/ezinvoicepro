@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:ezinvoice/features/reports/report_summary.dart';
 import 'package:ezinvoice/features/reports/reports_service.dart';
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:ezinvoice/models/invoice.dart';
 import 'package:ezinvoice/repositories/business_profile_repository.dart';
 import 'package:ezinvoice/services/purchases/feature_gate.dart';
@@ -54,6 +55,7 @@ class ReportsExportService {
       year: year,
       month: month,
       isFree: isFree,
+      context: context,
     );
 
     final file = await _writeFile(
@@ -179,6 +181,7 @@ class ReportsExportService {
       year: year,
       month: month,
       isFree: isFree,
+      context: context,
     );
 
     final file = await _writeFile(
@@ -257,6 +260,7 @@ class ReportsExportService {
     required int year,
     int? month,
     required bool isFree,
+    required BuildContext? context,
   }) async {
     final bp = await BusinessProfileRepository().load();
     final isProTemplates = FeatureGate.allowed(ProFeature.premiumTemplates);
@@ -270,6 +274,12 @@ class ReportsExportService {
     final chart = _chartForPalette(paletteId);
     final layoutLabel = AppThemePresets.layoutLabel(reportLayout);
     final paletteLabel = AppThemePresets.paletteLabel(paletteId);
+    final stylePaletteLine = _stylePaletteLine(
+      context: context,
+      docType: 'Report',
+      style: layoutLabel,
+      palette: paletteLabel,
+    );
 
     final doc = pw.Document();
     final now = DateTime.now();
@@ -515,7 +525,7 @@ class ReportsExportService {
 
           pw.SizedBox(height: 14),
           pw.Text(
-            'Report style: $layoutLabel | Palette: $paletteLabel',
+            stylePaletteLine,
             style: pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
           ),
           pw.SizedBox(height: 10),
@@ -538,6 +548,7 @@ class ReportsExportService {
     required int year,
     int? month,
     required bool isFree,
+    required BuildContext? context,
   }) async {
     final bp = await BusinessProfileRepository().load();
     final isProTemplates = FeatureGate.allowed(ProFeature.premiumTemplates);
@@ -551,6 +562,12 @@ class ReportsExportService {
     final chart = _chartForPalette(paletteId);
     final layoutLabel = AppThemePresets.layoutLabel(reportLayout);
     final paletteLabel = AppThemePresets.paletteLabel(paletteId);
+    final stylePaletteLine = _stylePaletteLine(
+      context: context,
+      docType: 'Report',
+      style: layoutLabel,
+      palette: paletteLabel,
+    );
     final doc = pw.Document();
 
     // ✅ Cambiado "•" por "|" para evitar el cuadrito con X
@@ -686,7 +703,7 @@ class ReportsExportService {
           ),
           pw.SizedBox(height: 10),
           pw.Text(
-            'Report style: $layoutLabel | Palette: $paletteLabel',
+            stylePaletteLine,
             style: pw.TextStyle(fontSize: 8, color: chart.sales),
           ),
         ],
@@ -1277,6 +1294,19 @@ class ReportsExportService {
 
     if (inv.isSent) return 'Sent';
     return 'Unsent';
+  }
+
+  static String _stylePaletteLine({
+    required BuildContext? context,
+    required String docType,
+    required String style,
+    required String palette,
+  }) {
+    if (context != null) {
+      final t = AppLocalizations.of(context);
+      return t.stylePaletteFootnote(docType, style, palette);
+    }
+    return '$docType style: $style | Palette: $palette';
   }
 }
 
