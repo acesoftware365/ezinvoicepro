@@ -2,10 +2,15 @@
 
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ezinvoice/features/paywall/paywall_screen.dart';
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:ezinvoice/models/business_profile.dart';
 import 'package:ezinvoice/repositories/business_profile_repository.dart';
+import 'package:ezinvoice/services/purchases/subscription_manager.dart';
+import 'package:ezinvoice/services/style/app_theme_presets.dart';
 import 'package:ezinvoice/utils/logo_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -36,6 +41,10 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
   List<String> _presets = [];
 
   String _currencyCode = 'USD';
+  String _paletteId = AppThemePresets.paletteMinimal;
+  String _invoiceLayoutId = AppThemePresets.layoutMinimal;
+  String _reportLayoutId = AppThemePresets.layoutMinimal;
+  bool _isProUser = false;
 
   @override
   void initState() {
@@ -58,6 +67,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
 
   Future<void> _load() async {
     final p = await _repo.load();
+    _isProUser = await _resolveProStatus();
     _profile = p;
 
     _businessName.text = p.businessName;
@@ -68,12 +78,36 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     _taxRate.text = p.defaultTaxRate.toStringAsFixed(2);
     _currencyCode = p.currencyCode;
     _footer.text = p.footerNote;
+    _paletteId = AppThemePresets.normalizePalette(p.paletteId);
+    _invoiceLayoutId = AppThemePresets.normalizeLayout(p.invoiceLayoutId);
+    _reportLayoutId = AppThemePresets.normalizeLayout(p.reportLayoutId);
 
     // ✅ NEW
     _presets = (p.servicePresets).toList();
 
     if (!mounted) return;
     setState(() => _loading = false);
+  }
+
+  Future<bool> _resolveProStatus() async {
+    final managerIsPro = SubscriptionManager.instance.state.value.isPro;
+    if (managerIsPro) return true;
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return false;
+
+    try {
+      final snap = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      final data = snap.data() ?? {};
+      final plan = (data['plan'] ?? '').toString().toLowerCase().trim();
+      final isPro = data['isPro'] == true || plan == 'pro';
+      return isPro;
+    } catch (_) {
+      return managerIsPro;
+    }
   }
 
   double _parseTax(String v) {
@@ -86,7 +120,10 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
 
   Future<void> _pickLogo() async {
     final picker = ImagePicker();
-    final x = await picker.pickImage(source: ImageSource.gallery, imageQuality: 90);
+    final x = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 90,
+    );
     if (x == null) return;
 
     final savedPath = await LogoStorage.saveLogoFile(File(x.path));
@@ -128,7 +165,9 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
       // rollback simple
       if (!mounted) return;
       setState(() => _presets = _presets.where((e) => e != v).toList());
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.genericError)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.genericError)));
     }
   }
 
@@ -140,7 +179,9 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
 
     final prev = _presets.toList();
     setState(() {
-      _presets = _presets.where((e) => e.trim().toLowerCase() != v.toLowerCase()).toList();
+      _presets = _presets
+          .where((e) => e.trim().toLowerCase() != v.toLowerCase())
+          .toList();
     });
 
     try {
@@ -148,7 +189,9 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     } catch (_) {
       if (!mounted) return;
       setState(() => _presets = prev);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.genericError)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.genericError)));
     }
   }
 
@@ -166,6 +209,9 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
       currencyCode: _currencyCode,
       defaultTaxRate: _parseTax(_taxRate.text),
       footerNote: _footer.text.trim(),
+      paletteId: _paletteId,
+      invoiceLayoutId: _invoiceLayoutId,
+      reportLayoutId: _reportLayoutId,
       // ✅ NEW
       servicePresets: _presets,
     );
@@ -179,9 +225,39 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
       _loading = false;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(t.businessSavedSuccess)),
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(t.businessSavedSuccess)));
+  }
+
+  Future<void> _saveDesignSettingsOnly() async {
+    if (!_isProUser) return;
+
+    final next = _profile.copyWith(
+      paletteId: _paletteId,
+      invoiceLayoutId: _invoiceLayoutId,
+      reportLayoutId: _reportLayoutId,
     );
+
+    try {
+      await _repo.save(next);
+      if (!mounted) return;
+      setState(() => _profile = next);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _paletteId = AppThemePresets.normalizePalette(_profile.paletteId);
+        _invoiceLayoutId = AppThemePresets.normalizeLayout(
+          _profile.invoiceLayoutId,
+        );
+        _reportLayoutId = AppThemePresets.normalizeLayout(
+          _profile.reportLayoutId,
+        );
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not save design settings.')),
+      );
+    }
   }
 
   @override
@@ -194,7 +270,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     const pageBg = Color(0xFFF6F7F9);
 
     final logoPath = _profile.logoFilePath;
-    final hasLogo = logoPath != null && logoPath.isNotEmpty && File(logoPath).existsSync();
+    final hasLogo =
+        logoPath != null && logoPath.isNotEmpty && File(logoPath).existsSync();
 
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
@@ -218,7 +295,10 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
             borderRadius: BorderRadius.circular(14),
             borderSide: const BorderSide(color: brandGreen, width: 1.6),
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 14,
+          ),
         ),
       ),
       child: Scaffold(
@@ -228,7 +308,10 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
           elevation: 0,
           title: Text(
             t.businessProfileTitle,
-            style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
           iconTheme: const IconThemeData(color: Colors.white),
           actions: [
@@ -238,14 +321,20 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                 onPressed: _loading ? null : _save,
                 icon: _loading
                     ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                )
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
                     : const Icon(Icons.save_outlined, color: Colors.white),
                 label: Text(
                   t.save,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -254,190 +343,374 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
         body: _loading
             ? const Center(child: CircularProgressIndicator())
             : SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _card(
-                    child: Row(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _logoAvatar(
-                          hasLogo: hasLogo,
-                          logoPath: logoPath,
-                          brandGreen: brandGreen,
-                          brandGreenSoft: brandGreenSoft,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
+                        _card(
+                          child: Row(
                             children: [
-                              FilledButton.tonalIcon(
-                                onPressed: _pickLogo,
-                                icon: const Icon(Icons.image_outlined),
-                                label: Text(t.uploadLogo),
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: brandGreenSoft,
-                                  foregroundColor: brandGreen,
-                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                  textStyle: const TextStyle(fontWeight: FontWeight.w700),
-                                ),
+                              _logoAvatar(
+                                hasLogo: hasLogo,
+                                logoPath: logoPath,
+                                brandGreen: brandGreen,
+                                brandGreenSoft: brandGreenSoft,
                               ),
-                              OutlinedButton.icon(
-                                onPressed: hasLogo ? _removeLogo : null,
-                                icon: const Icon(Icons.delete_outline),
-                                label: Text(t.remove),
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                  foregroundColor: Colors.redAccent,
-                                  side: BorderSide(color: Colors.redAccent.withOpacity(0.35)),
-                                  textStyle: const TextStyle(fontWeight: FontWeight.w700),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Wrap(
+                                  spacing: 10,
+                                  runSpacing: 10,
+                                  children: [
+                                    FilledButton.tonalIcon(
+                                      onPressed: _pickLogo,
+                                      icon: const Icon(Icons.image_outlined),
+                                      label: Text(t.uploadLogo),
+                                      style: FilledButton.styleFrom(
+                                        backgroundColor: brandGreenSoft,
+                                        foregroundColor: brandGreen,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 14,
+                                          vertical: 12,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                        ),
+                                        textStyle: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                    OutlinedButton.icon(
+                                      onPressed: hasLogo ? _removeLogo : null,
+                                      icon: const Icon(Icons.delete_outline),
+                                      label: Text(t.remove),
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 14,
+                                          vertical: 12,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                        ),
+                                        foregroundColor: Colors.redAccent,
+                                        side: BorderSide(
+                                          color: Colors.redAccent.withOpacity(
+                                            0.35,
+                                          ),
+                                        ),
+                                        textStyle: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 14),
+                        const SizedBox(height: 14),
 
-                  _sectionTitle(t.businessInfoSection),
-                  const SizedBox(height: 10),
+                        _sectionTitle(t.businessInfoSection),
+                        const SizedBox(height: 10),
 
-                  _field(
-                    controller: _businessName,
-                    label: t.businessNameLabel,
-                    icon: Icons.business_outlined,
-                    validator: (v) => (v == null || v.trim().isEmpty) ? t.requiredField : null,
-                  ),
-                  _field(controller: _ownerName, label: t.ownerNameLabel, icon: Icons.person_outline),
-                  _field(
-                    controller: _phone,
-                    label: t.phoneLabel,
-                    icon: Icons.phone_outlined,
-                    keyboardType: TextInputType.phone,
-                  ),
-                  _field(
-                    controller: _email,
-                    label: t.email,
-                    icon: Icons.email_outlined,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  _field(
-                    controller: _address,
-                    label: t.addressLabel,
-                    icon: Icons.location_on_outlined,
-                    maxLines: 2,
-                  ),
-
-                  const SizedBox(height: 14),
-                  _sectionTitle(t.settingsSection),
-                  const SizedBox(height: 10),
-
-                  Row(
-                    children: [
-                      Expanded(child: _currencyDropdown(t, brandGreen)),
-                      const SizedBox(width: 12),
-                      Expanded(child: _taxField(t)),
-                    ],
-                  ),
-
-                  const SizedBox(height: 14),
-                  _sectionTitle(t.footerSection),
-                  const SizedBox(height: 10),
-
-                  _field(
-                    controller: _footer,
-                    label: t.footerNoteLabel,
-                    icon: Icons.notes_outlined,
-                    maxLines: 2,
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  // ✅ NEW: Service Presets
-                  _sectionTitle('Service presets'),
-                  const SizedBox(height: 10),
-                  _card(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Guarda descripciones frecuentes (ej: “Haircut”, “Car Wash”, “Consulting”).',
-                          style: TextStyle(color: Colors.black.withOpacity(0.65), fontWeight: FontWeight.w600),
+                        _field(
+                          controller: _businessName,
+                          label: t.businessNameLabel,
+                          icon: Icons.business_outlined,
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? t.requiredField
+                              : null,
                         ),
-                        const SizedBox(height: 12),
+                        _field(
+                          controller: _ownerName,
+                          label: t.ownerNameLabel,
+                          icon: Icons.person_outline,
+                        ),
+                        _field(
+                          controller: _phone,
+                          label: t.phoneLabel,
+                          icon: Icons.phone_outlined,
+                          keyboardType: TextInputType.phone,
+                        ),
+                        _field(
+                          controller: _email,
+                          label: t.email,
+                          icon: Icons.email_outlined,
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                        _field(
+                          controller: _address,
+                          label: t.addressLabel,
+                          icon: Icons.location_on_outlined,
+                          maxLines: 2,
+                        ),
+
+                        const SizedBox(height: 14),
+                        _sectionTitle(t.settingsSection),
+                        const SizedBox(height: 10),
+
                         Row(
                           children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _presetCtrl,
-                                decoration: const InputDecoration(
-                                  labelText: 'Add a service',
-                                  prefixIcon: Icon(Icons.playlist_add),
-                                ),
-                                onSubmitted: (_) => _addPreset(),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            FilledButton(
-                              onPressed: _addPreset,
-                              style: FilledButton.styleFrom(backgroundColor: brandGreen, foregroundColor: Colors.white),
-                              child: const Text('Add'),
-                            ),
+                            Expanded(child: _currencyDropdown(t, brandGreen)),
+                            const SizedBox(width: 12),
+                            Expanded(child: _taxField(t)),
                           ],
                         ),
-                        const SizedBox(height: 12),
-                        if (_presets.isEmpty)
-                          Text(
-                            'No presets yet.',
-                            style: TextStyle(color: Colors.black.withOpacity(0.55), fontWeight: FontWeight.w600),
-                          )
-                        else
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: _presets.map((p) {
-                              return Chip(
-                                label: Text(p),
-                                onDeleted: () => _removePreset(p),
-                                deleteIcon: const Icon(Icons.close, size: 18),
-                              );
-                            }).toList(),
+
+                        const SizedBox(height: 14),
+                        _sectionTitle(t.footerSection),
+                        const SizedBox(height: 10),
+
+                        _field(
+                          controller: _footer,
+                          label: t.footerNoteLabel,
+                          icon: Icons.notes_outlined,
+                          maxLines: 2,
+                        ),
+
+                        const SizedBox(height: 14),
+                        _sectionTitle('Pro design'),
+                        const SizedBox(height: 10),
+                        _card(
+                          child: _isProUser
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Choose palette and layouts for Invoice + Reports.',
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.65),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    DropdownButtonFormField<String>(
+                                      initialValue: _paletteId,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Palette',
+                                        prefixIcon: Icon(
+                                          Icons.palette_outlined,
+                                        ),
+                                      ),
+                                      items: AppThemePresets.palettes
+                                          .map(
+                                            (p) => DropdownMenuItem(
+                                              value: p.id,
+                                              child: Row(
+                                                children: [
+                                                  _paletteDot(p.primary),
+                                                  const SizedBox(width: 6),
+                                                  _paletteDot(p.accent),
+                                                  const SizedBox(width: 8),
+                                                  Text(p.label),
+                                                ],
+                                              ),
+                                            ),
+                                          )
+                                          .toList(),
+                                      onChanged: (v) async {
+                                        setState(
+                                          () => _paletteId =
+                                              AppThemePresets.normalizePalette(
+                                                v,
+                                              ),
+                                        );
+                                        await _saveDesignSettingsOnly();
+                                      },
+                                    ),
+                                    const SizedBox(height: 12),
+                                    DropdownButtonFormField<String>(
+                                      initialValue: _invoiceLayoutId,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Invoice layout',
+                                        prefixIcon: Icon(
+                                          Icons.description_outlined,
+                                        ),
+                                      ),
+                                      items: AppThemePresets.layouts
+                                          .map(
+                                            (p) => DropdownMenuItem(
+                                              value: p.id,
+                                              child: Text(p.label),
+                                            ),
+                                          )
+                                          .toList(),
+                                      onChanged: (v) async {
+                                        setState(
+                                          () => _invoiceLayoutId =
+                                              AppThemePresets.normalizeLayout(
+                                                v,
+                                              ),
+                                        );
+                                        await _saveDesignSettingsOnly();
+                                      },
+                                    ),
+                                    const SizedBox(height: 12),
+                                    DropdownButtonFormField<String>(
+                                      initialValue: _reportLayoutId,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Report layout',
+                                        prefixIcon: Icon(
+                                          Icons.dashboard_outlined,
+                                        ),
+                                      ),
+                                      items: AppThemePresets.layouts
+                                          .map(
+                                            (p) => DropdownMenuItem(
+                                              value: p.id,
+                                              child: Text(p.label),
+                                            ),
+                                          )
+                                          .toList(),
+                                      onChanged: (v) async {
+                                        setState(
+                                          () => _reportLayoutId =
+                                              AppThemePresets.normalizeLayout(
+                                                v,
+                                              ),
+                                        );
+                                        await _saveDesignSettingsOnly();
+                                      },
+                                    ),
+                                  ],
+                                )
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Palette and layout customization are Pro features.',
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.7),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    FilledButton.icon(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const PaywallScreen(),
+                                          ),
+                                        );
+                                      },
+                                      icon: const Icon(
+                                        Icons.workspace_premium_outlined,
+                                      ),
+                                      label: const Text('Upgrade to Pro'),
+                                    ),
+                                  ],
+                                ),
+                        ),
+
+                        const SizedBox(height: 14),
+
+                        // ✅ NEW: Service Presets
+                        _sectionTitle('Service presets'),
+                        const SizedBox(height: 10),
+                        _card(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Guarda descripciones frecuentes (ej: “Haircut”, “Car Wash”, “Consulting”).',
+                                style: TextStyle(
+                                  color: Colors.black.withOpacity(0.65),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: _presetCtrl,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Add a service',
+                                        prefixIcon: Icon(Icons.playlist_add),
+                                      ),
+                                      onSubmitted: (_) => _addPreset(),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  FilledButton(
+                                    onPressed: _addPreset,
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor: brandGreen,
+                                      foregroundColor: Colors.white,
+                                    ),
+                                    child: const Text('Add'),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              if (_presets.isEmpty)
+                                Text(
+                                  'No presets yet.',
+                                  style: TextStyle(
+                                    color: Colors.black.withOpacity(0.55),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                )
+                              else
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: _presets.map((p) {
+                                    return Chip(
+                                      label: Text(p),
+                                      onDeleted: () => _removePreset(p),
+                                      deleteIcon: const Icon(
+                                        Icons.close,
+                                        size: 18,
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                            ],
                           ),
+                        ),
+
+                        const SizedBox(height: 18),
+
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: _loading ? null : _save,
+                            icon: const Icon(Icons.save_outlined),
+                            label: Text(t.saveChanges),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: brandGreen,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-
-                  const SizedBox(height: 18),
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: _loading ? null : _save,
-                      icon: const Icon(Icons.save_outlined),
-                      label: Text(t.saveChanges),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: brandGreen,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -527,6 +800,17 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     );
   }
 
+  Widget _paletteDot(int colorValue) {
+    return Container(
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        color: Color(colorValue),
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+
   Widget _field({
     required TextEditingController controller,
     required String label,
@@ -542,10 +826,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
         keyboardType: keyboardType,
         validator: validator,
         maxLines: maxLines,
-        decoration: InputDecoration(
-          labelText: label,
-          prefixIcon: Icon(icon),
-        ),
+        decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
       ),
     );
   }

@@ -9,6 +9,7 @@ import 'package:pdf/widgets.dart' as pw;
 
 import '../../models/business_profile.dart';
 import '../../repositories/business_profile_repository.dart';
+import '../style/app_theme_presets.dart';
 
 // ✅ Pro vs Free (branding)
 import '../purchases/feature_gate.dart';
@@ -101,6 +102,10 @@ class InvoicePdfService {
     PdfDocType type = PdfDocType.invoice,
   }) async {
     final BusinessProfile business = await BusinessProfileRepository().load();
+    final style = _styleForPalette(business.paletteId);
+    final layoutId = AppThemePresets.normalizeLayout(business.invoiceLayoutId);
+    final layoutLabel = AppThemePresets.layoutLabel(layoutId);
+    final paletteLabel = AppThemePresets.paletteLabel(business.paletteId);
 
     final doc = pw.Document();
     final logoImage = await _loadLogoImage(business.logoFilePath);
@@ -143,6 +148,8 @@ class InvoicePdfService {
             logo: logoImage,
             invoice: invoice,
             isReceipt: isReceipt,
+            style: style,
+            layoutId: layoutId,
           ),
           if (isReceipt) ...[
             pw.SizedBox(height: 12),
@@ -150,12 +157,19 @@ class InvoicePdfService {
               isPaid: invoice.isPaid,
               paidAt: invoice.paidAt,
               paymentMethod: invoice.paymentMethod,
+              style: style,
+              layoutId: layoutId,
             ),
           ],
           pw.SizedBox(height: 16),
-          _buildBillTo(invoice),
+          _buildBillTo(invoice, style: style, layoutId: layoutId),
           pw.SizedBox(height: 16),
-          _buildItemsTable(invoice: invoice, currency: currency),
+          _buildItemsTable(
+            invoice: invoice,
+            currency: currency,
+            style: style,
+            layoutId: layoutId,
+          ),
           pw.SizedBox(height: 16),
           _buildTotals(
             currency: currency,
@@ -167,6 +181,8 @@ class InvoicePdfService {
             tipPercent: invoice.tipPercent,
             discount: discount,
             total: total,
+            style: style,
+            layoutId: layoutId,
           ),
           if (invoice.note.trim().isNotEmpty) ...[
             pw.SizedBox(height: 14),
@@ -189,7 +205,14 @@ class InvoicePdfService {
             pw.Text(invoice.paymentNote.trim()),
           ],
           pw.SizedBox(height: 20),
-          _buildFooter(business: business, showBranding: showBranding),
+          _buildFooter(
+            business: business,
+            showBranding: showBranding,
+            style: style,
+            docTypeLabel: isReceipt ? 'Receipt' : 'Invoice',
+            layoutLabel: layoutLabel,
+            paletteLabel: paletteLabel,
+          ),
         ],
       ),
     );
@@ -231,9 +254,119 @@ class InvoicePdfService {
     required pw.MemoryImage? logo,
     required InvoiceData invoice,
     required bool isReceipt,
+    required _InvoicePdfStyle style,
+    required String layoutId,
   }) {
     final title = isReceipt ? 'RECEIPT' : 'INVOICE';
+    final company = pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(
+          business.businessName.trim().isEmpty
+              ? 'Business'
+              : business.businessName.trim(),
+          style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+        ),
+        if (business.ownerName.trim().isNotEmpty)
+          pw.Text(business.ownerName.trim()),
+        if (business.phone.trim().isNotEmpty)
+          pw.Text('Tel: ${business.phone.trim()}'),
+        if (business.email.trim().isNotEmpty)
+          pw.Text('Email: ${business.email.trim()}'),
+        if (business.address.trim().isNotEmpty)
+          pw.Text(business.address.trim()),
+      ],
+    );
 
+    final invoiceMeta = pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.end,
+      children: [
+        pw.Text(
+          title,
+          style: pw.TextStyle(
+            fontSize: 14,
+            fontWeight: pw.FontWeight.bold,
+            color: style.primary,
+          ),
+        ),
+        pw.SizedBox(height: 6),
+        pw.Text('No: ${invoice.invoiceNumber}'),
+        pw.Text('Date: ${_fmtDate(invoice.createdAt)}'),
+        if (!isReceipt && invoice.dueDate != null)
+          pw.Text('Due: ${_fmtDate(invoice.dueDate!)}'),
+        if (isReceipt && invoice.isPaid && invoice.paidAt != null)
+          pw.Text('Paid: ${_fmtDate(invoice.paidAt!)}'),
+      ],
+    );
+
+    if (layoutId == AppThemePresets.layoutProfessional) {
+      return pw.Column(
+        children: [
+          pw.Container(height: 4, color: style.primary),
+          pw.SizedBox(height: 10),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Row(
+                children: [
+                  if (logo != null)
+                    pw.Container(
+                      width: 50,
+                      height: 50,
+                      child: pw.Image(logo, fit: pw.BoxFit.cover),
+                    ),
+                  if (logo != null) pw.SizedBox(width: 10),
+                  company,
+                ],
+              ),
+              invoiceMeta,
+            ],
+          ),
+        ],
+      );
+    }
+
+    if (layoutId == AppThemePresets.layoutCorporate) {
+      return pw.Container(
+        padding: const pw.EdgeInsets.all(12),
+        decoration: pw.BoxDecoration(
+          color: style.soft,
+          border: pw.Border.all(color: style.primary, width: 1.2),
+        ),
+        child: pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [company, invoiceMeta],
+        ),
+      );
+    }
+
+    if (layoutId == AppThemePresets.layoutModern) {
+      return pw.Row(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Expanded(
+            child: pw.Container(
+              padding: const pw.EdgeInsets.all(12),
+              color: style.soft,
+              child: company,
+            ),
+          ),
+          pw.SizedBox(width: 10),
+          pw.Container(
+            padding: const pw.EdgeInsets.all(10),
+            decoration: pw.BoxDecoration(
+              borderRadius: pw.BorderRadius.circular(12),
+              border: pw.Border.all(color: style.primary, width: 1.2),
+            ),
+            child: invoiceMeta,
+          ),
+        ],
+      );
+    }
+
+    // minimal
     return pw.Row(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -251,55 +384,17 @@ class InvoicePdfService {
                 child: pw.Image(logo, fit: pw.BoxFit.cover),
               ),
             if (logo != null) pw.SizedBox(width: 12),
-            pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.Text(
-                  business.businessName.trim().isEmpty
-                      ? 'Business'
-                      : business.businessName.trim(),
-                  style: pw.TextStyle(
-                    fontSize: 16,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                ),
-                if (business.ownerName.trim().isNotEmpty)
-                  pw.Text(business.ownerName.trim()),
-                if (business.phone.trim().isNotEmpty)
-                  pw.Text('Tel: ${business.phone.trim()}'),
-                if (business.email.trim().isNotEmpty)
-                  pw.Text('Email: ${business.email.trim()}'),
-                if (business.address.trim().isNotEmpty)
-                  pw.Text(business.address.trim()),
-              ],
-            ),
+            company,
           ],
         ),
         pw.Container(
           padding: const pw.EdgeInsets.all(10),
           decoration: pw.BoxDecoration(
-            border: pw.Border.all(width: 1, color: PdfColors.grey700),
+            border: pw.Border.all(width: 1, color: style.primary),
             borderRadius: pw.BorderRadius.circular(10),
+            color: style.soft,
           ),
-          child: pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.end,
-            children: [
-              pw.Text(
-                title,
-                style: pw.TextStyle(
-                  fontSize: 14,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              pw.SizedBox(height: 6),
-              pw.Text('No: ${invoice.invoiceNumber}'),
-              pw.Text('Date: ${_fmtDate(invoice.createdAt)}'),
-              if (!isReceipt && invoice.dueDate != null)
-                pw.Text('Due: ${_fmtDate(invoice.dueDate!)}'),
-              if (isReceipt && invoice.isPaid && invoice.paidAt != null)
-                pw.Text('Paid: ${_fmtDate(invoice.paidAt!)}'),
-            ],
-          ),
+          child: invoiceMeta,
         ),
       ],
     );
@@ -309,6 +404,8 @@ class InvoicePdfService {
     required bool isPaid,
     required DateTime? paidAt,
     required String paymentMethod,
+    required _InvoicePdfStyle style,
+    required String layoutId,
   }) {
     if (!isPaid) return pw.Container();
 
@@ -328,13 +425,21 @@ class InvoicePdfService {
     }
 
     final paidDate = paidAt != null ? _fmtDate(paidAt) : '';
+    final borderColor = layoutId == AppThemePresets.layoutModern
+        ? style.accent
+        : style.primary;
 
     return pw.Container(
       padding: const pw.EdgeInsets.all(12),
       decoration: pw.BoxDecoration(
-        borderRadius: pw.BorderRadius.circular(12),
-        border: pw.Border.all(color: PdfColors.green700, width: 1.2),
-        color: PdfColors.green50,
+        borderRadius: pw.BorderRadius.circular(
+          layoutId == AppThemePresets.layoutProfessional ? 6 : 12,
+        ),
+        border: pw.Border.all(
+          color: borderColor,
+          width: layoutId == AppThemePresets.layoutCorporate ? 1.5 : 1.2,
+        ),
+        color: style.soft,
       ),
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -343,14 +448,14 @@ class InvoicePdfService {
             padding: const pw.EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: pw.BoxDecoration(
               borderRadius: pw.BorderRadius.circular(10),
-              border: pw.Border.all(color: PdfColors.green700, width: 2),
+              border: pw.Border.all(color: borderColor, width: 2),
             ),
             child: pw.Text(
               'PAID',
               style: pw.TextStyle(
                 fontSize: 18,
                 fontWeight: pw.FontWeight.bold,
-                color: PdfColors.green800,
+                color: borderColor,
                 letterSpacing: 1.5,
               ),
             ),
@@ -378,12 +483,24 @@ class InvoicePdfService {
     );
   }
 
-  static pw.Widget _buildBillTo(InvoiceData invoice) {
+  static pw.Widget _buildBillTo(
+    InvoiceData invoice, {
+    required _InvoicePdfStyle style,
+    required String layoutId,
+  }) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(12),
       decoration: pw.BoxDecoration(
-        borderRadius: pw.BorderRadius.circular(10),
-        border: pw.Border.all(width: 1, color: PdfColors.grey400),
+        color: layoutId == AppThemePresets.layoutCorporate
+            ? style.soft
+            : PdfColors.white,
+        borderRadius: pw.BorderRadius.circular(
+          layoutId == AppThemePresets.layoutProfessional ? 4 : 10,
+        ),
+        border: pw.Border.all(
+          width: layoutId == AppThemePresets.layoutCorporate ? 1.3 : 1,
+          color: style.border,
+        ),
       ),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -406,6 +523,8 @@ class InvoicePdfService {
   static pw.Widget _buildItemsTable({
     required InvoiceData invoice,
     required String currency,
+    required _InvoicePdfStyle style,
+    required String layoutId,
   }) {
     final headers = <String>[
       '#',
@@ -431,28 +550,51 @@ class InvoicePdfService {
       ]);
     }
 
-    return pw.TableHelper.fromTextArray(
-      headers: headers,
-      data: data,
-      headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10),
-      cellStyle: const pw.TextStyle(fontSize: 9),
-      headerDecoration: const pw.BoxDecoration(color: PdfColors.grey300),
-      cellAlignment: pw.Alignment.centerLeft,
-      columnWidths: {
-        0: const pw.FlexColumnWidth(0.4),
-        1: const pw.FlexColumnWidth(2.6),
-        2: const pw.FlexColumnWidth(1.1),
-        3: const pw.FlexColumnWidth(0.7),
-        4: const pw.FlexColumnWidth(1.0),
-        5: const pw.FlexColumnWidth(1.0),
-      },
-      cellAlignments: {
-        0: pw.Alignment.center,
-        3: pw.Alignment.centerRight,
-        4: pw.Alignment.centerRight,
-        5: pw.Alignment.centerRight,
-      },
-      border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.6),
+    final headerColor = layoutId == AppThemePresets.layoutModern
+        ? style.accent
+        : style.primary;
+    final borderWidth = layoutId == AppThemePresets.layoutProfessional
+        ? 1.0
+        : 0.6;
+
+    return pw.Container(
+      padding: const pw.EdgeInsets.all(8),
+      decoration: pw.BoxDecoration(
+        color: layoutId == AppThemePresets.layoutCorporate
+            ? style.soft
+            : PdfColors.white,
+        border: pw.Border.all(color: style.border, width: borderWidth),
+        borderRadius: pw.BorderRadius.circular(
+          layoutId == AppThemePresets.layoutProfessional ? 4 : 10,
+        ),
+      ),
+      child: pw.TableHelper.fromTextArray(
+        headers: headers,
+        data: data,
+        headerStyle: pw.TextStyle(
+          fontWeight: pw.FontWeight.bold,
+          fontSize: 10,
+          color: PdfColors.white,
+        ),
+        cellStyle: const pw.TextStyle(fontSize: 9),
+        headerDecoration: pw.BoxDecoration(color: headerColor),
+        cellAlignment: pw.Alignment.centerLeft,
+        columnWidths: {
+          0: const pw.FlexColumnWidth(0.4),
+          1: const pw.FlexColumnWidth(2.6),
+          2: const pw.FlexColumnWidth(1.1),
+          3: const pw.FlexColumnWidth(0.7),
+          4: const pw.FlexColumnWidth(1.0),
+          5: const pw.FlexColumnWidth(1.0),
+        },
+        cellAlignments: {
+          0: pw.Alignment.center,
+          3: pw.Alignment.centerRight,
+          4: pw.Alignment.centerRight,
+          5: pw.Alignment.centerRight,
+        },
+        border: pw.TableBorder.all(color: style.border, width: borderWidth),
+      ),
     );
   }
 
@@ -466,6 +608,8 @@ class InvoicePdfService {
     required double? tipPercent,
     required double discount,
     required double total,
+    required _InvoicePdfStyle style,
+    required String layoutId,
   }) {
     pw.Row line(String label, String value, {bool bold = false}) {
       return pw.Row(
@@ -498,8 +642,16 @@ class InvoicePdfService {
         width: 260,
         padding: const pw.EdgeInsets.all(12),
         decoration: pw.BoxDecoration(
-          borderRadius: pw.BorderRadius.circular(10),
-          border: pw.Border.all(width: 1, color: PdfColors.grey400),
+          color: layoutId == AppThemePresets.layoutModern
+              ? style.soft
+              : PdfColors.white,
+          borderRadius: pw.BorderRadius.circular(
+            layoutId == AppThemePresets.layoutProfessional ? 4 : 10,
+          ),
+          border: pw.Border.all(
+            width: layoutId == AppThemePresets.layoutCorporate ? 1.4 : 1,
+            color: style.primary,
+          ),
         ),
         child: pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.stretch,
@@ -527,6 +679,10 @@ class InvoicePdfService {
   static pw.Widget _buildFooter({
     required BusinessProfile business,
     required bool showBranding,
+    required _InvoicePdfStyle style,
+    required String docTypeLabel,
+    required String layoutLabel,
+    required String paletteLabel,
   }) {
     final footerText = business.footerNote.trim().isEmpty
         ? 'Gracias por su preferencia.'
@@ -538,11 +694,16 @@ class InvoicePdfService {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Text(footerText, style: const pw.TextStyle(fontSize: 10)),
+          pw.SizedBox(height: 6),
+          pw.Text(
+            '$docTypeLabel style: $layoutLabel | Palette: $paletteLabel',
+            style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey600),
+          ),
           if (showBranding) ...[
             pw.SizedBox(height: 8),
             pw.Text(
               'Powered by EzInvoice',
-              style: pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
+              style: pw.TextStyle(fontSize: 9, color: style.primary),
             ),
           ],
         ],
@@ -571,6 +732,47 @@ class InvoicePdfService {
         ),
       ),
     );
+  }
+
+  static _InvoicePdfStyle _styleForPalette(String paletteId) {
+    switch (AppThemePresets.normalizePalette(paletteId)) {
+      case AppThemePresets.paletteProfessional:
+        return const _InvoicePdfStyle(
+          primary: PdfColor.fromInt(0xFF1E3A5F),
+          soft: PdfColor.fromInt(0xFFEAF1F8),
+          border: PdfColor.fromInt(0xFF99B2CB),
+          accent: PdfColor.fromInt(0xFF2B5D92),
+        );
+      case AppThemePresets.paletteCorporate:
+        return const _InvoicePdfStyle(
+          primary: PdfColor.fromInt(0xFF0D4A3A),
+          soft: PdfColor.fromInt(0xFFE8F4EF),
+          border: PdfColor.fromInt(0xFF8CB3A4),
+          accent: PdfColor.fromInt(0xFF1D7A5F),
+        );
+      case AppThemePresets.paletteModern:
+        return const _InvoicePdfStyle(
+          primary: PdfColor.fromInt(0xFF0F766E),
+          soft: PdfColor.fromInt(0xFFE6F6F4),
+          border: PdfColor.fromInt(0xFF8BCDC8),
+          accent: PdfColor.fromInt(0xFFF59E0B),
+        );
+      case AppThemePresets.paletteSlate:
+        return const _InvoicePdfStyle(
+          primary: PdfColor.fromInt(0xFF334155),
+          soft: PdfColor.fromInt(0xFFF3F4F6),
+          border: PdfColor.fromInt(0xFF94A3B8),
+          accent: PdfColor.fromInt(0xFF0F172A),
+        );
+      case AppThemePresets.paletteMinimal:
+      default:
+        return const _InvoicePdfStyle(
+          primary: PdfColor.fromInt(0xFF4B5563),
+          soft: PdfColor.fromInt(0xFFF9FAFB),
+          border: PdfColor.fromInt(0xFFD1D5DB),
+          accent: PdfColor.fromInt(0xFF1F2937),
+        );
+    }
   }
 
   static Future<pw.MemoryImage?> _loadLogoImage(String? path) async {
@@ -610,4 +812,18 @@ class InvoicePdfService {
     if (n % 1 == 0) return n.toInt().toString();
     return n.toStringAsFixed(2);
   }
+}
+
+class _InvoicePdfStyle {
+  final PdfColor primary;
+  final PdfColor soft;
+  final PdfColor border;
+  final PdfColor accent;
+
+  const _InvoicePdfStyle({
+    required this.primary,
+    required this.soft,
+    required this.border,
+    required this.accent,
+  });
 }

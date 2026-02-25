@@ -10,6 +10,9 @@ class BusinessProfile {
   final String currencyCode; // USD, DOP, EUR
   final double defaultTaxRate; // 0-100
   final String footerNote;
+  final String paletteId;
+  final String invoiceLayoutId;
+  final String reportLayoutId;
 
   final String? logoFilePath;
   factory BusinessProfile.empty() => const BusinessProfile(
@@ -31,6 +34,9 @@ class BusinessProfile {
     this.currencyCode = 'USD',
     this.defaultTaxRate = 0.0,
     this.footerNote = '',
+    this.paletteId = 'minimal',
+    this.invoiceLayoutId = 'minimal',
+    this.reportLayoutId = 'minimal',
     this.logoFilePath,
     this.servicePresets = const [],
   });
@@ -44,6 +50,9 @@ class BusinessProfile {
     String? currencyCode,
     double? defaultTaxRate,
     String? footerNote,
+    String? paletteId,
+    String? invoiceLayoutId,
+    String? reportLayoutId,
     String? logoFilePath,
     List<String>? servicePresets,
   }) {
@@ -56,6 +65,9 @@ class BusinessProfile {
       currencyCode: currencyCode ?? this.currencyCode,
       defaultTaxRate: defaultTaxRate ?? this.defaultTaxRate,
       footerNote: footerNote ?? this.footerNote,
+      paletteId: paletteId ?? this.paletteId,
+      invoiceLayoutId: invoiceLayoutId ?? this.invoiceLayoutId,
+      reportLayoutId: reportLayoutId ?? this.reportLayoutId,
       logoFilePath: logoFilePath ?? this.logoFilePath,
       servicePresets: servicePresets ?? this.servicePresets,
     );
@@ -71,6 +83,9 @@ class BusinessProfile {
       'currencyCode': currencyCode,
       'defaultTaxRate': defaultTaxRate,
       'footerNote': footerNote,
+      'paletteId': paletteId,
+      'invoiceLayoutId': invoiceLayoutId,
+      'reportLayoutId': reportLayoutId,
       'logoFilePath': logoFilePath,
       // ✅ NEW
       'servicePresets': servicePresets,
@@ -90,7 +105,10 @@ class BusinessProfile {
     List<String> toStringList(dynamic v) {
       if (v == null) return const [];
       if (v is List) {
-        return v.map((e) => (e ?? '').toString()).where((s) => s.trim().isNotEmpty).toList();
+        return v
+            .map((e) => (e ?? '').toString())
+            .where((s) => s.trim().isNotEmpty)
+            .toList();
       }
       return const [];
     }
@@ -104,6 +122,9 @@ class BusinessProfile {
       currencyCode: (m['currencyCode'] ?? 'USD').toString(),
       defaultTaxRate: toDouble(m['defaultTaxRate']),
       footerNote: (m['footerNote'] ?? '').toString(),
+      paletteId: (m['paletteId'] ?? 'minimal').toString(),
+      invoiceLayoutId: (m['invoiceLayoutId'] ?? 'minimal').toString(),
+      reportLayoutId: (m['reportLayoutId'] ?? 'minimal').toString(),
       logoFilePath: (m['logoFilePath'] as String?),
       // ✅ NEW
       servicePresets: toStringList(m['servicePresets']),

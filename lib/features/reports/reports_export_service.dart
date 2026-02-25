@@ -9,6 +9,7 @@ import 'package:ezinvoice/features/reports/reports_service.dart';
 import 'package:ezinvoice/models/invoice.dart';
 import 'package:ezinvoice/repositories/business_profile_repository.dart';
 import 'package:ezinvoice/services/purchases/feature_gate.dart';
+import 'package:ezinvoice/services/style/app_theme_presets.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -258,6 +259,11 @@ class ReportsExportService {
     required bool isFree,
   }) async {
     final bp = await BusinessProfileRepository().load();
+    final style = _styleForPalette(bp.paletteId);
+    final chart = _chartForPalette(bp.paletteId);
+    final reportLayout = AppThemePresets.normalizeLayout(bp.reportLayoutId);
+    final layoutLabel = AppThemePresets.layoutLabel(reportLayout);
+    final paletteLabel = AppThemePresets.paletteLabel(bp.paletteId);
 
     final doc = pw.Document();
     final now = DateTime.now();
@@ -276,6 +282,9 @@ class ReportsExportService {
       tax: report.totalTax,
       tip: report.totalTip,
       size: 140,
+      salesHex: chart.salesHex,
+      taxHex: chart.taxHex,
+      tipHex: chart.tipHex,
     );
 
     doc.addPage(
@@ -286,56 +295,12 @@ class ReportsExportService {
           buildBackground: isFree ? (_) => _freeWatermark() : null,
         ),
         build: (context) => [
-          pw.Row(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-            children: [
-              pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Text(
-                    (bp.businessName.trim().isEmpty
-                        ? 'Business'
-                        : bp.businessName.trim()),
-                    style: pw.TextStyle(
-                      fontSize: 16,
-                      fontWeight: pw.FontWeight.bold,
-                    ),
-                  ),
-                  pw.SizedBox(height: 4),
-                  pw.Text(
-                    'Reports',
-                    style: pw.TextStyle(
-                      fontSize: 12,
-                      fontWeight: pw.FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              pw.Container(
-                padding: const pw.EdgeInsets.all(10),
-                decoration: pw.BoxDecoration(
-                  border: pw.Border.all(color: PdfColors.grey600, width: 1),
-                  borderRadius: pw.BorderRadius.circular(8),
-                ),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.end,
-                  children: [
-                    pw.Text(
-                      headerTitle,
-                      style: pw.TextStyle(
-                        fontSize: 11,
-                        fontWeight: pw.FontWeight.bold,
-                      ),
-                    ),
-                    pw.Text(
-                      'Date: $dateStr',
-                      style: const pw.TextStyle(fontSize: 9),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          _buildReportHeader(
+            businessName: bp.businessName,
+            headerTitle: headerTitle,
+            dateStr: dateStr,
+            style: style,
+            layoutId: reportLayout,
           ),
 
           pw.SizedBox(height: 16),
@@ -346,6 +311,8 @@ class ReportsExportService {
               pw.Expanded(
                 flex: 5,
                 child: _card(
+                  style: style,
+                  layoutId: reportLayout,
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
@@ -371,24 +338,24 @@ class ReportsExportService {
                               crossAxisAlignment: pw.CrossAxisAlignment.start,
                               children: [
                                 _legendRow(
-                                  color: PdfColors.blueGrey700,
+                                  color: chart.sales,
                                   label: 'Total Sales',
                                   value: report.totalSales,
                                 ),
                                 _legendRow(
-                                  color: PdfColors.orange700,
+                                  color: chart.tax,
                                   label: 'Total Tax',
                                   value: report.totalTax,
                                 ),
                                 _legendRow(
-                                  color: PdfColors.green700,
+                                  color: chart.tip,
                                   label: 'Total Tip',
                                   value: report.totalTip,
                                 ),
                                 pw.SizedBox(height: 8),
-                                pw.Divider(color: PdfColors.grey300),
+                                pw.Divider(color: style.border),
                                 _legendRow(
-                                  color: PdfColors.black,
+                                  color: style.primary,
                                   label: 'Net',
                                   value: report.net,
                                   bold: true,
@@ -406,6 +373,8 @@ class ReportsExportService {
               pw.Expanded(
                 flex: 4,
                 child: _card(
+                  style: style,
+                  layoutId: reportLayout,
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
@@ -432,6 +401,8 @@ class ReportsExportService {
           pw.SizedBox(height: 14),
 
           _card(
+            style: style,
+            layoutId: reportLayout,
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
@@ -445,19 +416,38 @@ class ReportsExportService {
                 pw.SizedBox(height: 8),
                 pw.Table(
                   border: pw.TableBorder.all(
-                    color: PdfColors.grey300,
-                    width: 0.7,
+                    color: style.border,
+                    width: reportLayout == AppThemePresets.layoutProfessional
+                        ? 1
+                        : 0.7,
                   ),
                   columnWidths: {
                     0: const pw.FlexColumnWidth(3),
                     1: const pw.FlexColumnWidth(2),
                   },
                   children: [
-                    _tableHeader(['Description', 'Total']),
-                    _tableRow(['Total Sales', _money(report.totalSales)]),
-                    _tableRow(['Total Tax', _money(report.totalTax)]),
-                    _tableRow(['Total Tip', _money(report.totalTip)]),
-                    _tableRow(['Net', _money(report.net)], bold: true),
+                    _tableHeader(
+                      ['Description', 'Total'],
+                      style: style,
+                      layoutId: reportLayout,
+                    ),
+                    _tableRow([
+                      'Total Sales',
+                      _money(report.totalSales),
+                    ], layoutId: reportLayout),
+                    _tableRow([
+                      'Total Tax',
+                      _money(report.totalTax),
+                    ], layoutId: reportLayout),
+                    _tableRow([
+                      'Total Tip',
+                      _money(report.totalTip),
+                    ], layoutId: reportLayout),
+                    _tableRow(
+                      ['Net', _money(report.net)],
+                      bold: true,
+                      layoutId: reportLayout,
+                    ),
                   ],
                 ),
               ],
@@ -467,6 +457,8 @@ class ReportsExportService {
           pw.SizedBox(height: 14),
 
           _card(
+            style: style,
+            layoutId: reportLayout,
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
@@ -480,8 +472,10 @@ class ReportsExportService {
                 pw.SizedBox(height: 8),
                 pw.Table(
                   border: pw.TableBorder.all(
-                    color: PdfColors.grey300,
-                    width: 0.7,
+                    color: style.border,
+                    width: reportLayout == AppThemePresets.layoutProfessional
+                        ? 1
+                        : 0.7,
                   ),
                   columnWidths: {
                     0: const pw.FlexColumnWidth(4),
@@ -490,7 +484,11 @@ class ReportsExportService {
                     3: const pw.FlexColumnWidth(2),
                   },
                   children: [
-                    _tableHeader(['Description', 'Date', 'Status', 'Total']),
+                    _tableHeader(
+                      ['Description', 'Date', 'Status', 'Total'],
+                      style: style,
+                      layoutId: reportLayout,
+                    ),
                     ...sortedInvoices.map((inv) {
                       // ✅ Cambiado "•" por "|"
                       final desc = inv.clientName.trim().isEmpty
@@ -501,7 +499,7 @@ class ReportsExportService {
                         _fmtDateMs(inv.createdAtMs),
                         _statusLabel(inv),
                         _money(inv.total),
-                      ]);
+                      ], layoutId: reportLayout);
                     }).toList(),
                   ],
                 ),
@@ -511,7 +509,7 @@ class ReportsExportService {
 
           pw.SizedBox(height: 14),
           pw.Text(
-            'Calculated from your invoices in Firestore.',
+            'Report style: $layoutLabel | Palette: $paletteLabel',
             style: pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
           ),
           pw.SizedBox(height: 10),
@@ -535,6 +533,12 @@ class ReportsExportService {
     int? month,
     required bool isFree,
   }) async {
+    final bp = await BusinessProfileRepository().load();
+    final style = _styleForPalette(bp.paletteId);
+    final chart = _chartForPalette(bp.paletteId);
+    final reportLayout = AppThemePresets.normalizeLayout(bp.reportLayoutId);
+    final layoutLabel = AppThemePresets.layoutLabel(reportLayout);
+    final paletteLabel = AppThemePresets.paletteLabel(bp.paletteId);
     final doc = pw.Document();
 
     // ✅ Cambiado "•" por "|" para evitar el cuadrito con X
@@ -553,13 +557,18 @@ class ReportsExportService {
           buildBackground: isFree ? (_) => _freeWatermark() : null,
         ),
         build: (_) => [
-          pw.Text(
-            headerTitle,
-            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+          _buildReportHeader(
+            businessName: bp.businessName,
+            headerTitle: headerTitle,
+            dateStr: _fmtDate(DateTime.now()),
+            style: style,
+            layoutId: reportLayout,
           ),
           pw.SizedBox(height: 12),
 
           _card(
+            style: style,
+            layoutId: reportLayout,
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
@@ -573,19 +582,38 @@ class ReportsExportService {
                 pw.SizedBox(height: 8),
                 pw.Table(
                   border: pw.TableBorder.all(
-                    color: PdfColors.grey300,
-                    width: 0.7,
+                    color: style.border,
+                    width: reportLayout == AppThemePresets.layoutProfessional
+                        ? 1
+                        : 0.7,
                   ),
                   columnWidths: {
                     0: const pw.FlexColumnWidth(3),
                     1: const pw.FlexColumnWidth(2),
                   },
                   children: [
-                    _tableHeader(['Description', 'Total']),
-                    _tableRow(['Total Sales', _money(report.totalSales)]),
-                    _tableRow(['Total Tax', _money(report.totalTax)]),
-                    _tableRow(['Total Tip', _money(report.totalTip)]),
-                    _tableRow(['Net', _money(report.net)], bold: true),
+                    _tableHeader(
+                      ['Description', 'Total'],
+                      style: style,
+                      layoutId: reportLayout,
+                    ),
+                    _tableRow([
+                      'Total Sales',
+                      _money(report.totalSales),
+                    ], layoutId: reportLayout),
+                    _tableRow([
+                      'Total Tax',
+                      _money(report.totalTax),
+                    ], layoutId: reportLayout),
+                    _tableRow([
+                      'Total Tip',
+                      _money(report.totalTip),
+                    ], layoutId: reportLayout),
+                    _tableRow(
+                      ['Net', _money(report.net)],
+                      bold: true,
+                      layoutId: reportLayout,
+                    ),
                   ],
                 ),
               ],
@@ -595,6 +623,8 @@ class ReportsExportService {
           pw.SizedBox(height: 14),
 
           _card(
+            style: style,
+            layoutId: reportLayout,
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
@@ -608,8 +638,10 @@ class ReportsExportService {
                 pw.SizedBox(height: 8),
                 pw.Table(
                   border: pw.TableBorder.all(
-                    color: PdfColors.grey300,
-                    width: 0.7,
+                    color: style.border,
+                    width: reportLayout == AppThemePresets.layoutProfessional
+                        ? 1
+                        : 0.7,
                   ),
                   columnWidths: {
                     0: const pw.FlexColumnWidth(4),
@@ -618,7 +650,11 @@ class ReportsExportService {
                     3: const pw.FlexColumnWidth(2),
                   },
                   children: [
-                    _tableHeader(['Description', 'Date', 'Status', 'Total']),
+                    _tableHeader(
+                      ['Description', 'Date', 'Status', 'Total'],
+                      style: style,
+                      layoutId: reportLayout,
+                    ),
                     ...sortedInvoices.map((inv) {
                       // ✅ Cambiado "•" por "|"
                       final desc = inv.clientName.trim().isEmpty
@@ -629,12 +665,17 @@ class ReportsExportService {
                         _fmtDateMs(inv.createdAtMs),
                         _statusLabel(inv),
                         _money(inv.total),
-                      ]);
+                      ], layoutId: reportLayout);
                     }).toList(),
                   ],
                 ),
               ],
             ),
+          ),
+          pw.SizedBox(height: 10),
+          pw.Text(
+            'Report style: $layoutLabel | Palette: $paletteLabel',
+            style: pw.TextStyle(fontSize: 8, color: chart.sales),
           ),
         ],
       ),
@@ -760,13 +801,16 @@ class ReportsExportService {
     required double tax,
     required double tip,
     required double size,
+    required String salesHex,
+    required String taxHex,
+    required String tipHex,
   }) {
     final total = max(0.0001, sales + tax + tip);
 
     final parts = <_SvgPart>[
-      _SvgPart(value: sales, color: '#455A64'),
-      _SvgPart(value: tax, color: '#EF6C00'),
-      _SvgPart(value: tip, color: '#2E7D32'),
+      _SvgPart(value: sales, color: salesHex),
+      _SvgPart(value: tax, color: taxHex),
+      _SvgPart(value: tip, color: tipHex),
     ];
 
     final cx = size / 2;
@@ -816,12 +860,23 @@ class ReportsExportService {
   // PDF UI HELPERS
   // =========================
 
-  static pw.Widget _card({required pw.Widget child}) {
+  static pw.Widget _card({
+    required pw.Widget child,
+    required _ReportPdfStyle style,
+    required String layoutId,
+  }) {
+    final isProfessional = layoutId == AppThemePresets.layoutProfessional;
+    final isCorporate = layoutId == AppThemePresets.layoutCorporate;
+    final isModern = layoutId == AppThemePresets.layoutModern;
     return pw.Container(
       padding: const pw.EdgeInsets.all(12),
       decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: PdfColors.grey300, width: 1),
-        borderRadius: pw.BorderRadius.circular(10),
+        border: pw.Border.all(
+          color: style.border,
+          width: isCorporate ? 1.3 : 1,
+        ),
+        color: isModern || isCorporate ? style.soft : PdfColors.white,
+        borderRadius: pw.BorderRadius.circular(isProfessional ? 4 : 10),
       ),
       child: child,
     );
@@ -846,9 +901,16 @@ class ReportsExportService {
     );
   }
 
-  static pw.TableRow _tableHeader(List<String> cells) {
+  static pw.TableRow _tableHeader(
+    List<String> cells, {
+    required _ReportPdfStyle style,
+    required String layoutId,
+  }) {
+    final headerColor = layoutId == AppThemePresets.layoutModern
+        ? style.accent
+        : style.primary;
     return pw.TableRow(
-      decoration: const pw.BoxDecoration(color: PdfColors.grey300),
+      decoration: pw.BoxDecoration(color: headerColor),
       children: cells
           .map(
             (t) => pw.Padding(
@@ -861,6 +923,7 @@ class ReportsExportService {
                 style: pw.TextStyle(
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.white,
                 ),
               ),
             ),
@@ -869,14 +932,218 @@ class ReportsExportService {
     );
   }
 
-  static pw.TableRow _tableRow(List<String> cells, {bool bold = false}) {
+  static _ReportPdfStyle _styleForPalette(String paletteId) {
+    switch (AppThemePresets.normalizePalette(paletteId)) {
+      case AppThemePresets.paletteProfessional:
+        return const _ReportPdfStyle(
+          primary: PdfColor.fromInt(0xFF1E3A5F),
+          soft: PdfColor.fromInt(0xFFEAF1F8),
+          border: PdfColor.fromInt(0xFF99B2CB),
+          accent: PdfColor.fromInt(0xFF2B5D92),
+        );
+      case AppThemePresets.paletteCorporate:
+        return const _ReportPdfStyle(
+          primary: PdfColor.fromInt(0xFF0D4A3A),
+          soft: PdfColor.fromInt(0xFFE8F4EF),
+          border: PdfColor.fromInt(0xFF8CB3A4),
+          accent: PdfColor.fromInt(0xFF1D7A5F),
+        );
+      case AppThemePresets.paletteModern:
+        return const _ReportPdfStyle(
+          primary: PdfColor.fromInt(0xFF0F766E),
+          soft: PdfColor.fromInt(0xFFE6F6F4),
+          border: PdfColor.fromInt(0xFF8BCDC8),
+          accent: PdfColor.fromInt(0xFFF59E0B),
+        );
+      case AppThemePresets.paletteSlate:
+        return const _ReportPdfStyle(
+          primary: PdfColor.fromInt(0xFF334155),
+          soft: PdfColor.fromInt(0xFFF3F4F6),
+          border: PdfColor.fromInt(0xFF94A3B8),
+          accent: PdfColor.fromInt(0xFF0F172A),
+        );
+      case AppThemePresets.paletteMinimal:
+      default:
+        return const _ReportPdfStyle(
+          primary: PdfColor.fromInt(0xFF4B5563),
+          soft: PdfColor.fromInt(0xFFF9FAFB),
+          border: PdfColor.fromInt(0xFFD1D5DB),
+          accent: PdfColor.fromInt(0xFF1F2937),
+        );
+    }
+  }
+
+  static _ChartStyle _chartForPalette(String paletteId) {
+    switch (AppThemePresets.normalizePalette(paletteId)) {
+      case AppThemePresets.paletteProfessional:
+        return const _ChartStyle(
+          sales: PdfColor.fromInt(0xFF1E3A5F),
+          tax: PdfColor.fromInt(0xFF2B5D92),
+          tip: PdfColor.fromInt(0xFF6B8FB8),
+          salesHex: '#1E3A5F',
+          taxHex: '#2B5D92',
+          tipHex: '#6B8FB8',
+        );
+      case AppThemePresets.paletteCorporate:
+        return const _ChartStyle(
+          sales: PdfColor.fromInt(0xFF0D4A3A),
+          tax: PdfColor.fromInt(0xFF1D7A5F),
+          tip: PdfColor.fromInt(0xFF4FA68A),
+          salesHex: '#0D4A3A',
+          taxHex: '#1D7A5F',
+          tipHex: '#4FA68A',
+        );
+      case AppThemePresets.paletteModern:
+        return const _ChartStyle(
+          sales: PdfColor.fromInt(0xFF0F766E),
+          tax: PdfColor.fromInt(0xFFF59E0B),
+          tip: PdfColor.fromInt(0xFF14B8A6),
+          salesHex: '#0F766E',
+          taxHex: '#F59E0B',
+          tipHex: '#14B8A6',
+        );
+      case AppThemePresets.paletteSlate:
+        return const _ChartStyle(
+          sales: PdfColor.fromInt(0xFF334155),
+          tax: PdfColor.fromInt(0xFF0F172A),
+          tip: PdfColor.fromInt(0xFF64748B),
+          salesHex: '#334155',
+          taxHex: '#0F172A',
+          tipHex: '#64748B',
+        );
+      case AppThemePresets.paletteMinimal:
+      default:
+        return const _ChartStyle(
+          sales: PdfColor.fromInt(0xFF4B5563),
+          tax: PdfColor.fromInt(0xFF1F2937),
+          tip: PdfColor.fromInt(0xFF6B7280),
+          salesHex: '#4B5563',
+          taxHex: '#1F2937',
+          tipHex: '#6B7280',
+        );
+    }
+  }
+
+  static pw.Widget _buildReportHeader({
+    required String businessName,
+    required String headerTitle,
+    required String dateStr,
+    required _ReportPdfStyle style,
+    required String layoutId,
+  }) {
+    final name = businessName.trim().isEmpty ? 'Business' : businessName.trim();
+    final left = pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(
+          name,
+          style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+        ),
+        pw.SizedBox(height: 4),
+        pw.Text(
+          'Reports',
+          style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+        ),
+      ],
+    );
+    final right = pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.end,
+      children: [
+        pw.Text(
+          headerTitle,
+          style: pw.TextStyle(
+            fontSize: 11,
+            fontWeight: pw.FontWeight.bold,
+            color: style.primary,
+          ),
+        ),
+        pw.Text('Date: $dateStr', style: const pw.TextStyle(fontSize: 9)),
+      ],
+    );
+
+    if (layoutId == AppThemePresets.layoutProfessional) {
+      return pw.Column(
+        children: [
+          pw.Container(height: 4, color: style.primary),
+          pw.SizedBox(height: 8),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [left, right],
+          ),
+        ],
+      );
+    }
+
+    if (layoutId == AppThemePresets.layoutCorporate) {
+      return pw.Container(
+        padding: const pw.EdgeInsets.all(10),
+        decoration: pw.BoxDecoration(
+          color: style.soft,
+          border: pw.Border.all(color: style.primary, width: 1.2),
+        ),
+        child: pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [left, right],
+        ),
+      );
+    }
+
+    if (layoutId == AppThemePresets.layoutModern) {
+      return pw.Row(
+        children: [
+          pw.Expanded(
+            child: pw.Container(
+              padding: const pw.EdgeInsets.all(10),
+              color: style.soft,
+              child: left,
+            ),
+          ),
+          pw.SizedBox(width: 10),
+          pw.Container(
+            padding: const pw.EdgeInsets.all(10),
+            decoration: pw.BoxDecoration(
+              border: pw.Border.all(color: style.primary, width: 1.2),
+              borderRadius: pw.BorderRadius.circular(10),
+            ),
+            child: right,
+          ),
+        ],
+      );
+    }
+
+    // minimal
+    return pw.Row(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+      children: [
+        left,
+        pw.Container(
+          padding: const pw.EdgeInsets.all(10),
+          decoration: pw.BoxDecoration(
+            border: pw.Border.all(color: style.border, width: 1),
+            borderRadius: pw.BorderRadius.circular(8),
+          ),
+          child: right,
+        ),
+      ],
+    );
+  }
+
+  static pw.TableRow _tableRow(
+    List<String> cells, {
+    bool bold = false,
+    required String layoutId,
+  }) {
+    final isProfessional = layoutId == AppThemePresets.layoutProfessional;
     return pw.TableRow(
       children: cells
           .map(
             (t) => pw.Padding(
-              padding: const pw.EdgeInsets.symmetric(
+              padding: pw.EdgeInsets.symmetric(
                 horizontal: 8,
-                vertical: 6,
+                vertical: isProfessional ? 5 : 6,
               ),
               child: pw.Text(
                 t,
@@ -1005,4 +1272,36 @@ class _SvgPart {
   final double value;
   final String color;
   _SvgPart({required this.value, required this.color});
+}
+
+class _ReportPdfStyle {
+  final PdfColor primary;
+  final PdfColor soft;
+  final PdfColor border;
+  final PdfColor accent;
+
+  const _ReportPdfStyle({
+    required this.primary,
+    required this.soft,
+    required this.border,
+    required this.accent,
+  });
+}
+
+class _ChartStyle {
+  final PdfColor sales;
+  final PdfColor tax;
+  final PdfColor tip;
+  final String salesHex;
+  final String taxHex;
+  final String tipHex;
+
+  const _ChartStyle({
+    required this.sales,
+    required this.tax,
+    required this.tip,
+    required this.salesHex,
+    required this.taxHex,
+    required this.tipHex,
+  });
 }
