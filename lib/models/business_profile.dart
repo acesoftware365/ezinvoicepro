@@ -11,6 +11,8 @@ class BusinessProfile {
   final double defaultTaxRate; // 0-100
   final String footerNote;
   final String paletteId;
+  final String invoicePaletteId;
+  final String reportPaletteId;
   final String invoiceLayoutId;
   final String reportLayoutId;
 
@@ -35,6 +37,8 @@ class BusinessProfile {
     this.defaultTaxRate = 0.0,
     this.footerNote = '',
     this.paletteId = 'minimal',
+    this.invoicePaletteId = 'minimal',
+    this.reportPaletteId = 'minimal',
     this.invoiceLayoutId = 'minimal',
     this.reportLayoutId = 'minimal',
     this.logoFilePath,
@@ -51,6 +55,8 @@ class BusinessProfile {
     double? defaultTaxRate,
     String? footerNote,
     String? paletteId,
+    String? invoicePaletteId,
+    String? reportPaletteId,
     String? invoiceLayoutId,
     String? reportLayoutId,
     String? logoFilePath,
@@ -66,6 +72,8 @@ class BusinessProfile {
       defaultTaxRate: defaultTaxRate ?? this.defaultTaxRate,
       footerNote: footerNote ?? this.footerNote,
       paletteId: paletteId ?? this.paletteId,
+      invoicePaletteId: invoicePaletteId ?? this.invoicePaletteId,
+      reportPaletteId: reportPaletteId ?? this.reportPaletteId,
       invoiceLayoutId: invoiceLayoutId ?? this.invoiceLayoutId,
       reportLayoutId: reportLayoutId ?? this.reportLayoutId,
       logoFilePath: logoFilePath ?? this.logoFilePath,
@@ -84,6 +92,8 @@ class BusinessProfile {
       'defaultTaxRate': defaultTaxRate,
       'footerNote': footerNote,
       'paletteId': paletteId,
+      'invoicePaletteId': invoicePaletteId,
+      'reportPaletteId': reportPaletteId,
       'invoiceLayoutId': invoiceLayoutId,
       'reportLayoutId': reportLayoutId,
       'logoFilePath': logoFilePath,
@@ -123,6 +133,10 @@ class BusinessProfile {
       defaultTaxRate: toDouble(m['defaultTaxRate']),
       footerNote: (m['footerNote'] ?? '').toString(),
       paletteId: (m['paletteId'] ?? 'minimal').toString(),
+      invoicePaletteId: (m['invoicePaletteId'] ?? m['paletteId'] ?? 'minimal')
+          .toString(),
+      reportPaletteId: (m['reportPaletteId'] ?? m['paletteId'] ?? 'minimal')
+          .toString(),
       invoiceLayoutId: (m['invoiceLayoutId'] ?? 'minimal').toString(),
       reportLayoutId: (m['reportLayoutId'] ?? 'minimal').toString(),
       logoFilePath: (m['logoFilePath'] as String?),

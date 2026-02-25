@@ -2,15 +2,10 @@
 
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ezinvoice/features/paywall/paywall_screen.dart';
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:ezinvoice/models/business_profile.dart';
 import 'package:ezinvoice/repositories/business_profile_repository.dart';
-import 'package:ezinvoice/services/purchases/subscription_manager.dart';
-import 'package:ezinvoice/services/style/app_theme_presets.dart';
 import 'package:ezinvoice/utils/logo_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -41,10 +36,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
   List<String> _presets = [];
 
   String _currencyCode = 'USD';
-  String _paletteId = AppThemePresets.paletteMinimal;
-  String _invoiceLayoutId = AppThemePresets.layoutMinimal;
-  String _reportLayoutId = AppThemePresets.layoutMinimal;
-  bool _isProUser = false;
 
   @override
   void initState() {
@@ -67,7 +58,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
 
   Future<void> _load() async {
     final p = await _repo.load();
-    _isProUser = await _resolveProStatus();
     _profile = p;
 
     _businessName.text = p.businessName;
@@ -78,36 +68,12 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     _taxRate.text = p.defaultTaxRate.toStringAsFixed(2);
     _currencyCode = p.currencyCode;
     _footer.text = p.footerNote;
-    _paletteId = AppThemePresets.normalizePalette(p.paletteId);
-    _invoiceLayoutId = AppThemePresets.normalizeLayout(p.invoiceLayoutId);
-    _reportLayoutId = AppThemePresets.normalizeLayout(p.reportLayoutId);
 
     // ✅ NEW
     _presets = (p.servicePresets).toList();
 
     if (!mounted) return;
     setState(() => _loading = false);
-  }
-
-  Future<bool> _resolveProStatus() async {
-    final managerIsPro = SubscriptionManager.instance.state.value.isPro;
-    if (managerIsPro) return true;
-
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return false;
-
-    try {
-      final snap = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-      final data = snap.data() ?? {};
-      final plan = (data['plan'] ?? '').toString().toLowerCase().trim();
-      final isPro = data['isPro'] == true || plan == 'pro';
-      return isPro;
-    } catch (_) {
-      return managerIsPro;
-    }
   }
 
   double _parseTax(String v) {
@@ -209,9 +175,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
       currencyCode: _currencyCode,
       defaultTaxRate: _parseTax(_taxRate.text),
       footerNote: _footer.text.trim(),
-      paletteId: _paletteId,
-      invoiceLayoutId: _invoiceLayoutId,
-      reportLayoutId: _reportLayoutId,
       // ✅ NEW
       servicePresets: _presets,
     );
@@ -228,36 +191,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(t.businessSavedSuccess)));
-  }
-
-  Future<void> _saveDesignSettingsOnly() async {
-    if (!_isProUser) return;
-
-    final next = _profile.copyWith(
-      paletteId: _paletteId,
-      invoiceLayoutId: _invoiceLayoutId,
-      reportLayoutId: _reportLayoutId,
-    );
-
-    try {
-      await _repo.save(next);
-      if (!mounted) return;
-      setState(() => _profile = next);
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _paletteId = AppThemePresets.normalizePalette(_profile.paletteId);
-        _invoiceLayoutId = AppThemePresets.normalizeLayout(
-          _profile.invoiceLayoutId,
-        );
-        _reportLayoutId = AppThemePresets.normalizeLayout(
-          _profile.reportLayoutId,
-        );
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not save design settings.')),
-      );
-    }
   }
 
   @override
@@ -478,142 +411,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                         ),
 
                         const SizedBox(height: 14),
-                        _sectionTitle('Pro design'),
-                        const SizedBox(height: 10),
-                        _card(
-                          child: _isProUser
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Choose palette and layouts for Invoice + Reports.',
-                                      style: TextStyle(
-                                        color: Colors.black.withOpacity(0.65),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    DropdownButtonFormField<String>(
-                                      initialValue: _paletteId,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Palette',
-                                        prefixIcon: Icon(
-                                          Icons.palette_outlined,
-                                        ),
-                                      ),
-                                      items: AppThemePresets.palettes
-                                          .map(
-                                            (p) => DropdownMenuItem(
-                                              value: p.id,
-                                              child: Row(
-                                                children: [
-                                                  _paletteDot(p.primary),
-                                                  const SizedBox(width: 6),
-                                                  _paletteDot(p.accent),
-                                                  const SizedBox(width: 8),
-                                                  Text(p.label),
-                                                ],
-                                              ),
-                                            ),
-                                          )
-                                          .toList(),
-                                      onChanged: (v) async {
-                                        setState(
-                                          () => _paletteId =
-                                              AppThemePresets.normalizePalette(
-                                                v,
-                                              ),
-                                        );
-                                        await _saveDesignSettingsOnly();
-                                      },
-                                    ),
-                                    const SizedBox(height: 12),
-                                    DropdownButtonFormField<String>(
-                                      initialValue: _invoiceLayoutId,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Invoice layout',
-                                        prefixIcon: Icon(
-                                          Icons.description_outlined,
-                                        ),
-                                      ),
-                                      items: AppThemePresets.layouts
-                                          .map(
-                                            (p) => DropdownMenuItem(
-                                              value: p.id,
-                                              child: Text(p.label),
-                                            ),
-                                          )
-                                          .toList(),
-                                      onChanged: (v) async {
-                                        setState(
-                                          () => _invoiceLayoutId =
-                                              AppThemePresets.normalizeLayout(
-                                                v,
-                                              ),
-                                        );
-                                        await _saveDesignSettingsOnly();
-                                      },
-                                    ),
-                                    const SizedBox(height: 12),
-                                    DropdownButtonFormField<String>(
-                                      initialValue: _reportLayoutId,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Report layout',
-                                        prefixIcon: Icon(
-                                          Icons.dashboard_outlined,
-                                        ),
-                                      ),
-                                      items: AppThemePresets.layouts
-                                          .map(
-                                            (p) => DropdownMenuItem(
-                                              value: p.id,
-                                              child: Text(p.label),
-                                            ),
-                                          )
-                                          .toList(),
-                                      onChanged: (v) async {
-                                        setState(
-                                          () => _reportLayoutId =
-                                              AppThemePresets.normalizeLayout(
-                                                v,
-                                              ),
-                                        );
-                                        await _saveDesignSettingsOnly();
-                                      },
-                                    ),
-                                  ],
-                                )
-                              : Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Palette and layout customization are Pro features.',
-                                      style: TextStyle(
-                                        color: Colors.black.withOpacity(0.7),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    FilledButton.icon(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) =>
-                                                const PaywallScreen(),
-                                          ),
-                                        );
-                                      },
-                                      icon: const Icon(
-                                        Icons.workspace_premium_outlined,
-                                      ),
-                                      label: const Text('Upgrade to Pro'),
-                                    ),
-                                  ],
-                                ),
-                        ),
-
-                        const SizedBox(height: 14),
 
                         // ✅ NEW: Service Presets
                         _sectionTitle('Service presets'),
@@ -797,17 +594,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
         if (n < 0 || n > 100) return t.range0to100;
         return null;
       },
-    );
-  }
-
-  Widget _paletteDot(int colorValue) {
-    return Container(
-      width: 10,
-      height: 10,
-      decoration: BoxDecoration(
-        color: Color(colorValue),
-        shape: BoxShape.circle,
-      ),
     );
   }
 

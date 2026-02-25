@@ -1,14 +1,17 @@
-import 'dart:io';
-
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
+import 'package:ezinvoice/models/business_profile.dart';
 import 'package:ezinvoice/models/invoice.dart';
+import 'package:ezinvoice/repositories/business_profile_repository.dart';
 import 'package:ezinvoice/services/invoices/invoices_service.dart';
 import 'package:ezinvoice/services/pdf/invoice_pdf_service.dart'
     show InvoicePdfService, PdfDocType, InvoiceData, InvoiceItemData;
+import 'package:ezinvoice/services/purchases/subscription_manager.dart';
+import 'package:ezinvoice/services/style/app_theme_presets.dart';
 
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../paywall/paywall_screen.dart';
 import '../reports/reports_screen.dart';
 import 'invoice_form_screen.dart';
 
@@ -66,8 +69,9 @@ class InvoicesScreen extends StatelessWidget {
         content: Text('${t.delete} ${inv.invoiceNumber}?'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(t.cancel)),
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(t.cancel),
+          ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             child: Text(t.delete),
@@ -81,15 +85,15 @@ class InvoicesScreen extends StatelessWidget {
     try {
       await InvoicesService.delete(inv.id);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${t.delete} ✅')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${t.delete} ✅')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Delete error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Delete error: $e')));
       }
     }
   }
@@ -98,15 +102,15 @@ class InvoicesScreen extends StatelessWidget {
     try {
       await InvoicesService.markAsSent(id: inv.id);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Marked as sent ✅')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Marked as sent ✅')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Mark sent error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Mark sent error: $e')));
       }
     }
   }
@@ -115,15 +119,15 @@ class InvoicesScreen extends StatelessWidget {
     try {
       await InvoicesService.markAsUnsent(id: inv.id);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Marked as unsent ✅')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Marked as unsent ✅')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Unsend error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Unsend error: $e')));
       }
     }
   }
@@ -145,15 +149,15 @@ class InvoicesScreen extends StatelessWidget {
         paymentNote: res.note,
       );
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Marked as paid ✅')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Marked as paid ✅')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Mark paid error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Mark paid error: $e')));
       }
     }
   }
@@ -162,15 +166,15 @@ class InvoicesScreen extends StatelessWidget {
     try {
       await InvoicesService.markAsUnpaid(id: inv.id);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Marked as unpaid ✅')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Marked as unpaid ✅')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Mark unpaid error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Mark unpaid error: $e')));
       }
     }
   }
@@ -189,14 +193,14 @@ class InvoicesScreen extends StatelessWidget {
       items: inv.items
           .map(
             (it) => InvoiceItemData(
-          description: it.description,
-          qty: it.qty,
-          unitPrice: it.price,
-          itemDate: it.dateMs == null
-              ? null
-              : DateTime.fromMillisecondsSinceEpoch(it.dateMs!),
-        ),
-      )
+              description: it.description,
+              qty: it.qty,
+              unitPrice: it.price,
+              itemDate: it.dateMs == null
+                  ? null
+                  : DateTime.fromMillisecondsSinceEpoch(it.dateMs!),
+            ),
+          )
           .toList(),
       taxRatePercent: inv.taxRate,
       tipAmount: inv.tip,
@@ -225,8 +229,10 @@ class InvoicesScreen extends StatelessWidget {
   Future<void> _shareInvoicePdf(BuildContext context, Invoice inv) async {
     try {
       final data = _toInvoiceData(inv);
-      final file =
-      await InvoicePdfService.generateAndSavePdf(data, type: PdfDocType.invoice);
+      final file = await InvoicePdfService.generateAndSavePdf(
+        data,
+        type: PdfDocType.invoice,
+      );
 
       await Share.shareXFiles(
         [XFile(file.path, mimeType: 'application/pdf')],
@@ -235,9 +241,9 @@ class InvoicesScreen extends StatelessWidget {
       );
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invoice PDF error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Invoice PDF error: $e')));
       }
     }
   }
@@ -252,8 +258,10 @@ class InvoicesScreen extends StatelessWidget {
 
     try {
       final data = _toInvoiceData(inv);
-      final file =
-      await InvoicePdfService.generateAndSavePdf(data, type: PdfDocType.receipt);
+      final file = await InvoicePdfService.generateAndSavePdf(
+        data,
+        type: PdfDocType.receipt,
+      );
 
       await Share.shareXFiles(
         [XFile(file.path, mimeType: 'application/pdf')],
@@ -262,9 +270,9 @@ class InvoicesScreen extends StatelessWidget {
       );
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Receipt PDF error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Receipt PDF error: $e')));
       }
     }
   }
@@ -315,175 +323,203 @@ class InvoicesScreen extends StatelessWidget {
           onPressed: () => _openForm(context),
           child: const Icon(Icons.add),
         ),
-        body: StreamBuilder<List<Invoice>>(
-          stream: InvoicesService.streamInvoices(),
-          builder: (context, snap) {
-            if (snap.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+        body: Column(
+          children: [
+            const _InvoiceDesignBar(),
+            Expanded(
+              child: StreamBuilder<List<Invoice>>(
+                stream: InvoicesService.streamInvoices(),
+                builder: (context, snap) {
+                  if (snap.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-            final list = snap.data ?? [];
+                  final list = snap.data ?? [];
 
-            if (list.isEmpty) {
-              return Center(
-                child: Text(
-                  t.noInvoicesYet,
-                  style: TextStyle(
-                      color: Colors.black.withOpacity(0.55),
-                      fontWeight: FontWeight.w700),
-                ),
-              );
-            }
+                  if (list.isEmpty) {
+                    return Center(
+                      child: Text(
+                        t.noInvoicesYet,
+                        style: TextStyle(
+                          color: Colors.black.withOpacity(0.55),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    );
+                  }
 
-            return ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 18),
-              itemCount: list.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
-              itemBuilder: (_, i) {
-                final inv = list[i];
+                  return ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 18),
+                    itemCount: list.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    itemBuilder: (_, i) {
+                      final inv = list[i];
 
-                final statusColor = _statusColor(inv);
-                final statusText = _statusLabel(t, inv);
+                      final statusColor = _statusColor(inv);
+                      final statusText = _statusLabel(t, inv);
 
-                final date = _fmtDateMs(inv.createdAtMs);
+                      final date = _fmtDateMs(inv.createdAtMs);
 
-                final amount = _fmtMoney(inv.total);
-                final subtitle = [
-                  if (inv.clientName.trim().isNotEmpty) inv.clientName.trim(),
-                  date,
-                  if (inv.dueAtMs != null) 'Due: ${_fmtDateMs(inv.dueAtMs!)}',
-                ].join(' • ');
+                      final amount = _fmtMoney(inv.total);
+                      final subtitle = [
+                        if (inv.clientName.trim().isNotEmpty)
+                          inv.clientName.trim(),
+                        date,
+                        if (inv.dueAtMs != null)
+                          'Due: ${_fmtDateMs(inv.dueAtMs!)}',
+                      ].join(' • ');
 
-                return _card(
-                  child: InkWell(
-                    onTap: () => _openForm(context, invoice: inv),
-                    borderRadius: BorderRadius.circular(18),
-                    child: Padding(
-                      padding: const EdgeInsets.all(14),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: statusColor.withOpacity(0.12),
-                                  borderRadius: BorderRadius.circular(999),
-                                  border: Border.all(
-                                      color: statusColor.withOpacity(0.35)),
+                      return _card(
+                        child: InkWell(
+                          onTap: () => _openForm(context, invoice: inv),
+                          borderRadius: BorderRadius.circular(18),
+                          child: Padding(
+                            padding: const EdgeInsets.all(14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: statusColor.withOpacity(0.12),
+                                        borderRadius: BorderRadius.circular(
+                                          999,
+                                        ),
+                                        border: Border.all(
+                                          color: statusColor.withOpacity(0.35),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        statusText,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 12,
+                                          color: statusColor,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        inv.invoiceNumber,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 16,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    Text(
+                                      amount,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                child: Text(
-                                  statusText,
+                                const SizedBox(height: 6),
+                                Text(
+                                  subtitle,
                                   style: TextStyle(
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 12,
-                                    color: statusColor,
+                                    color: Colors.black.withOpacity(0.55),
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  inv.invoiceNumber,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 16),
-                                  maxLines: 1,
+                                  maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                              ),
-                              Text(
-                                amount,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w900, fontSize: 16),
-                              ),
-                            ],
+                                const SizedBox(height: 12),
+                                Wrap(
+                                  spacing: 10,
+                                  runSpacing: 10,
+                                  children: [
+                                    Builder(
+                                      builder: (btnCtx) => OutlinedButton.icon(
+                                        onPressed: () =>
+                                            _shareInvoicePdf(btnCtx, inv),
+                                        icon: const Icon(Icons.picture_as_pdf),
+                                        label: const Text('Invoice PDF'),
+                                      ),
+                                    ),
+                                    Builder(
+                                      builder: (btnCtx) => OutlinedButton.icon(
+                                        onPressed: inv.isPaid
+                                            ? () =>
+                                                  _shareReceiptPdf(btnCtx, inv)
+                                            : null,
+                                        icon: const Icon(Icons.receipt_long),
+                                        label: const Text('Receipt PDF'),
+                                      ),
+                                    ),
+                                    if (!inv.isSent)
+                                      FilledButton.icon(
+                                        onPressed: () =>
+                                            _markSent(context, inv),
+                                        icon: const Icon(Icons.send),
+                                        label: const Text('Send'),
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor: brandGreen,
+                                        ),
+                                      )
+                                    else
+                                      OutlinedButton.icon(
+                                        onPressed: () =>
+                                            _markUnsent(context, inv),
+                                        icon: const Icon(Icons.undo),
+                                        label: const Text('Unsend'),
+                                      ),
+                                    if (!inv.isPaid)
+                                      FilledButton.tonalIcon(
+                                        onPressed: () =>
+                                            _markPaid(context, inv),
+                                        icon: const Icon(
+                                          Icons.check_circle_outline,
+                                        ),
+                                        label: const Text('Mark Paid'),
+                                      )
+                                    else
+                                      OutlinedButton.icon(
+                                        onPressed: () =>
+                                            _markUnpaid(context, inv),
+                                        icon: const Icon(Icons.undo),
+                                        label: const Text('Mark Unpaid'),
+                                      ),
+                                    OutlinedButton.icon(
+                                      onPressed: () =>
+                                          _confirmDelete(context, inv),
+                                      icon: const Icon(
+                                        Icons.delete_outline,
+                                        color: Colors.redAccent,
+                                      ),
+                                      label: const Text('Delete'),
+                                      style: OutlinedButton.styleFrom(
+                                        foregroundColor: Colors.redAccent,
+                                        side: BorderSide(
+                                          color: Colors.redAccent.withOpacity(
+                                            0.35,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            subtitle,
-                            style: TextStyle(
-                                color: Colors.black.withOpacity(0.55),
-                                fontWeight: FontWeight.w600),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
-                            children: [
-                              // ✅ Builder para obtener el contexto correcto del botón (iPad necesita origin)
-                              Builder(
-                                builder: (btnCtx) => OutlinedButton.icon(
-                                  onPressed: () => _shareInvoicePdf(btnCtx, inv),
-                                  icon: const Icon(Icons.picture_as_pdf),
-                                  label: const Text('Invoice PDF'),
-                                ),
-                              ),
-
-                              Builder(
-                                builder: (btnCtx) => OutlinedButton.icon(
-                                  onPressed: inv.isPaid
-                                      ? () => _shareReceiptPdf(btnCtx, inv)
-                                      : null,
-                                  icon: const Icon(Icons.receipt_long),
-                                  label: const Text('Receipt PDF'),
-                                ),
-                              ),
-
-                              if (!inv.isSent)
-                                FilledButton.icon(
-                                  onPressed: () => _markSent(context, inv),
-                                  icon: const Icon(Icons.send),
-                                  label: const Text('Send'),
-                                  style: FilledButton.styleFrom(
-                                      backgroundColor: brandGreen),
-                                )
-                              else
-                                OutlinedButton.icon(
-                                  onPressed: () => _markUnsent(context, inv),
-                                  icon: const Icon(Icons.undo),
-                                  label: const Text('Unsend'),
-                                ),
-
-                              if (!inv.isPaid)
-                                FilledButton.tonalIcon(
-                                  onPressed: () => _markPaid(context, inv),
-                                  icon:
-                                  const Icon(Icons.check_circle_outline),
-                                  label: const Text('Mark Paid'),
-                                )
-                              else
-                                OutlinedButton.icon(
-                                  onPressed: () => _markUnpaid(context, inv),
-                                  icon: const Icon(Icons.undo),
-                                  label: const Text('Mark Unpaid'),
-                                ),
-
-                              OutlinedButton.icon(
-                                onPressed: () => _confirmDelete(context, inv),
-                                icon: const Icon(Icons.delete_outline,
-                                    color: Colors.redAccent),
-                                label: const Text('Delete'),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: Colors.redAccent,
-                                  side: BorderSide(
-                                      color: Colors.redAccent.withOpacity(0.35)),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            );
-          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -504,6 +540,151 @@ class InvoicesScreen extends StatelessWidget {
         ],
       ),
       child: child,
+    );
+  }
+}
+
+class _InvoiceDesignBar extends StatelessWidget {
+  const _InvoiceDesignBar();
+
+  static const brandGreen = Color(0xFF1F6E5C);
+
+  @override
+  Widget build(BuildContext context) {
+    final repo = BusinessProfileRepository();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      child: StreamBuilder<BusinessProfile>(
+        stream: repo.stream(),
+        builder: (context, snap) {
+          final p = snap.data ?? const BusinessProfile();
+          final paletteId = AppThemePresets.normalizePalette(
+            p.invoicePaletteId,
+          );
+          final layoutId = AppThemePresets.normalizeLayout(p.invoiceLayoutId);
+
+          return ValueListenableBuilder<SubscriptionState>(
+            valueListenable: SubscriptionManager.instance.state,
+            builder: (context, sub, _) {
+              final isPro = sub.isPro;
+              return Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.black.withOpacity(0.06)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Invoice style',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black.withOpacity(0.78),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    if (!isPro) ...[
+                      Text(
+                        'Free plan uses one invoice version (Minimal). Upgrade to Pro to unlock all layouts and palettes.',
+                        style: TextStyle(
+                          color: Colors.black.withOpacity(0.62),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      FilledButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const PaywallScreen(),
+                            ),
+                          );
+                        },
+                        style: FilledButton.styleFrom(
+                          backgroundColor: brandGreen,
+                          foregroundColor: Colors.white,
+                        ),
+                        icon: const Icon(Icons.workspace_premium_outlined),
+                        label: const Text('Upgrade to Pro'),
+                      ),
+                    ] else ...[
+                      DropdownButtonFormField<String>(
+                        key: ValueKey('invoice_palette_$paletteId'),
+                        initialValue: paletteId,
+                        decoration: const InputDecoration(
+                          labelText: 'Invoice palette',
+                          prefixIcon: Icon(Icons.palette_outlined),
+                        ),
+                        items: AppThemePresets.palettes
+                            .map(
+                              (x) => DropdownMenuItem(
+                                value: x.id,
+                                child: Text(x.label),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (v) async {
+                          final next = AppThemePresets.normalizePalette(v);
+                          try {
+                            await repo.save(
+                              p.copyWith(
+                                invoicePaletteId: next,
+                                paletteId: next,
+                              ),
+                            );
+                          } catch (_) {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Could not save invoice palette.',
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField<String>(
+                        key: ValueKey('invoice_layout_$layoutId'),
+                        initialValue: layoutId,
+                        decoration: const InputDecoration(
+                          labelText: 'Invoice layout',
+                          prefixIcon: Icon(Icons.description_outlined),
+                        ),
+                        items: AppThemePresets.layouts
+                            .map(
+                              (x) => DropdownMenuItem(
+                                value: x.id,
+                                child: Text(x.label),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (v) async {
+                          final next = AppThemePresets.normalizeLayout(v);
+                          try {
+                            await repo.save(p.copyWith(invoiceLayoutId: next));
+                          } catch (_) {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Could not save invoice layout.'),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
@@ -563,12 +744,22 @@ class _MarkPaidDialogState extends State<_MarkPaidDialog> {
             ),
             items: const [
               DropdownMenuItem(value: PaymentMethod.cash, child: Text('Cash')),
-              DropdownMenuItem(value: PaymentMethod.zelle, child: Text('Zelle')),
+              DropdownMenuItem(
+                value: PaymentMethod.zelle,
+                child: Text('Zelle'),
+              ),
               DropdownMenuItem(value: PaymentMethod.card, child: Text('Card')),
-              DropdownMenuItem(value: PaymentMethod.check, child: Text('Check')),
-              DropdownMenuItem(value: PaymentMethod.other, child: Text('Other')),
+              DropdownMenuItem(
+                value: PaymentMethod.check,
+                child: Text('Check'),
+              ),
+              DropdownMenuItem(
+                value: PaymentMethod.other,
+                child: Text('Other'),
+              ),
             ],
-            onChanged: (v) => setState(() => _method = v ?? PaymentMethod.other),
+            onChanged: (v) =>
+                setState(() => _method = v ?? PaymentMethod.other),
           ),
           const SizedBox(height: 10),
           TextField(
@@ -583,12 +774,15 @@ class _MarkPaidDialogState extends State<_MarkPaidDialog> {
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel')),
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
         FilledButton(
           onPressed: () {
             Navigator.pop(
-                context, _PayResult(method: _method, note: _note.text.trim()));
+              context,
+              _PayResult(method: _method, note: _note.text.trim()),
+            );
           },
           child: const Text('Confirm'),
         ),

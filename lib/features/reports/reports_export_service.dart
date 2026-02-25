@@ -259,11 +259,17 @@ class ReportsExportService {
     required bool isFree,
   }) async {
     final bp = await BusinessProfileRepository().load();
-    final style = _styleForPalette(bp.paletteId);
-    final chart = _chartForPalette(bp.paletteId);
-    final reportLayout = AppThemePresets.normalizeLayout(bp.reportLayoutId);
+    final isProTemplates = FeatureGate.allowed(ProFeature.premiumTemplates);
+    final paletteId = isProTemplates
+        ? AppThemePresets.normalizePalette(bp.reportPaletteId)
+        : AppThemePresets.paletteMinimal;
+    final reportLayout = isProTemplates
+        ? AppThemePresets.normalizeLayout(bp.reportLayoutId)
+        : AppThemePresets.layoutMinimal;
+    final style = _styleForPalette(paletteId);
+    final chart = _chartForPalette(paletteId);
     final layoutLabel = AppThemePresets.layoutLabel(reportLayout);
-    final paletteLabel = AppThemePresets.paletteLabel(bp.paletteId);
+    final paletteLabel = AppThemePresets.paletteLabel(paletteId);
 
     final doc = pw.Document();
     final now = DateTime.now();
@@ -534,11 +540,17 @@ class ReportsExportService {
     required bool isFree,
   }) async {
     final bp = await BusinessProfileRepository().load();
-    final style = _styleForPalette(bp.paletteId);
-    final chart = _chartForPalette(bp.paletteId);
-    final reportLayout = AppThemePresets.normalizeLayout(bp.reportLayoutId);
+    final isProTemplates = FeatureGate.allowed(ProFeature.premiumTemplates);
+    final paletteId = isProTemplates
+        ? AppThemePresets.normalizePalette(bp.reportPaletteId)
+        : AppThemePresets.paletteMinimal;
+    final reportLayout = isProTemplates
+        ? AppThemePresets.normalizeLayout(bp.reportLayoutId)
+        : AppThemePresets.layoutMinimal;
+    final style = _styleForPalette(paletteId);
+    final chart = _chartForPalette(paletteId);
     final layoutLabel = AppThemePresets.layoutLabel(reportLayout);
-    final paletteLabel = AppThemePresets.paletteLabel(bp.paletteId);
+    final paletteLabel = AppThemePresets.paletteLabel(paletteId);
     final doc = pw.Document();
 
     // ✅ Cambiado "•" por "|" para evitar el cuadrito con X

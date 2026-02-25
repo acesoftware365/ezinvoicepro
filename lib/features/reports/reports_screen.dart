@@ -2,11 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
+import 'package:ezinvoice/models/business_profile.dart';
+import 'package:ezinvoice/repositories/business_profile_repository.dart';
+import 'package:ezinvoice/services/purchases/subscription_manager.dart';
+import 'package:ezinvoice/services/style/app_theme_presets.dart';
 
 import 'package:ezinvoice/features/reports/report_summary.dart';
 import 'package:ezinvoice/features/reports/reports_service.dart';
 import 'package:ezinvoice/features/reports/reports_export_service.dart';
 
+import '../paywall/paywall_screen.dart';
 import '../paywall/paywall_guard.dart';
 
 // ✅ Paywall guard
@@ -34,7 +39,20 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   String _monthName(int m) {
-    const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const names = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return names[m - 1];
   }
 
@@ -94,15 +112,19 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 ListTile(
                   leading: const Icon(Icons.insert_drive_file_outlined),
                   title: const Text('Share CSV file'),
-                  subtitle: const Text('Share the .csv attachment (email/drive/etc)'),
+                  subtitle: const Text(
+                    'Share the .csv attachment (email/drive/etc)',
+                  ),
                   onTap: () async {
                     Navigator.pop(ctx);
-                    await _runExport(() => ReportsExportService.shareCsvFile(
-                      context: context, // ✅ FIX iOS sharePositionOrigin
-                      byMonth: _tab == 0,
-                      year: _year,
-                      month: _tab == 0 ? _month : null,
-                    ));
+                    await _runExport(
+                      () => ReportsExportService.shareCsvFile(
+                        context: context, // ✅ FIX iOS sharePositionOrigin
+                        byMonth: _tab == 0,
+                        year: _year,
+                        month: _tab == 0 ? _month : null,
+                      ),
+                    );
                   },
                 ),
                 ListTile(
@@ -111,12 +133,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   subtitle: const Text('Sends a report summary as text'),
                   onTap: () async {
                     Navigator.pop(ctx);
-                    await _runExport(() => ReportsExportService.shareCsvAsText(
-                      // Share.share (texto) no necesita origin
-                      byMonth: _tab == 0,
-                      year: _year,
-                      month: _tab == 0 ? _month : null,
-                    ));
+                    await _runExport(
+                      () => ReportsExportService.shareCsvAsText(
+                        // Share.share (texto) no necesita origin
+                        byMonth: _tab == 0,
+                        year: _year,
+                        month: _tab == 0 ? _month : null,
+                      ),
+                    );
                   },
                 ),
                 ListTile(
@@ -125,12 +149,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   subtitle: const Text('Print as a table (PDF print)'),
                   onTap: () async {
                     Navigator.pop(ctx);
-                    await _runExport(() => ReportsExportService.printCsv(
-                      context: context, // ✅ FIX iOS sharePositionOrigin
-                      byMonth: _tab == 0,
-                      year: _year,
-                      month: _tab == 0 ? _month : null,
-                    ));
+                    await _runExport(
+                      () => ReportsExportService.printCsv(
+                        context: context, // ✅ FIX iOS sharePositionOrigin
+                        byMonth: _tab == 0,
+                        year: _year,
+                        month: _tab == 0 ? _month : null,
+                      ),
+                    );
                   },
                 ),
               ],
@@ -167,12 +193,17 @@ class _ReportsScreenState extends State<ReportsScreen> {
         backgroundColor: brandGreen,
         foregroundColor: Colors.white,
         elevation: 0,
-        title: Text(t.reports, style: const TextStyle(fontWeight: FontWeight.w900)),
+        title: Text(
+          t.reports,
+          style: const TextStyle(fontWeight: FontWeight.w900),
+        ),
       ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 18),
           children: [
+            const _ReportDesignBar(),
+            const SizedBox(height: 12),
             _segmented(t),
             const SizedBox(height: 12),
             _filtersCard(t),
@@ -306,7 +337,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
               labelText: t.yearLabel,
               prefixIcon: const Icon(Icons.event),
             ),
-            items: _years.map((y) => DropdownMenuItem(value: y, child: Text('$y'))).toList(),
+            items: _years
+                .map((y) => DropdownMenuItem(value: y, child: Text('$y')))
+                .toList(),
             onChanged: (v) => setState(() => _year = v ?? _year),
           ),
         ],
@@ -332,7 +365,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+          ),
           const SizedBox(height: 10),
 
           _row('${t.invoicesLabel}:', r.invoicesCount.toString()),
@@ -351,7 +387,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
           const SizedBox(height: 10),
           Text(
             t.reportCalculatedHint,
-            style: TextStyle(color: Colors.black.withOpacity(0.45), fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: Colors.black.withOpacity(0.45),
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -363,7 +402,12 @@ class _ReportsScreenState extends State<ReportsScreen> {
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
         children: [
-          Expanded(child: Text(label, style: TextStyle(color: Colors.black.withOpacity(0.70)))),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(color: Colors.black.withOpacity(0.70)),
+            ),
+          ),
           Text(value, style: const TextStyle(fontWeight: FontWeight.w900)),
         ],
       ),
@@ -384,7 +428,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
             child: OutlinedButton.icon(
               onPressed: _exporting ? null : _exportPdf,
               icon: _exporting
-                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : const Icon(Icons.picture_as_pdf),
               label: Text(t.exportPdf),
             ),
@@ -394,13 +442,152 @@ class _ReportsScreenState extends State<ReportsScreen> {
             child: OutlinedButton.icon(
               onPressed: _exporting ? null : _exportCsvMenu,
               icon: _exporting
-                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : const Icon(Icons.table_chart),
               label: Text(t.exportCsv),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ReportDesignBar extends StatelessWidget {
+  const _ReportDesignBar();
+
+  static const brandGreen = Color(0xFF1F6E5C);
+
+  @override
+  Widget build(BuildContext context) {
+    final repo = BusinessProfileRepository();
+    return StreamBuilder<BusinessProfile>(
+      stream: repo.stream(),
+      builder: (context, snap) {
+        final p = snap.data ?? const BusinessProfile();
+        final paletteId = AppThemePresets.normalizePalette(p.reportPaletteId);
+        final layoutId = AppThemePresets.normalizeLayout(p.reportLayoutId);
+
+        return ValueListenableBuilder<SubscriptionState>(
+          valueListenable: SubscriptionManager.instance.state,
+          builder: (context, sub, _) {
+            final isPro = sub.isPro;
+            return Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.black.withOpacity(0.06)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Report style',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black.withOpacity(0.78),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  if (!isPro) ...[
+                    Text(
+                      'Free plan uses one report version (Minimal). Upgrade to Pro to unlock all layouts and palettes.',
+                      style: TextStyle(
+                        color: Colors.black.withOpacity(0.62),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    FilledButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const PaywallScreen(),
+                          ),
+                        );
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: brandGreen,
+                        foregroundColor: Colors.white,
+                      ),
+                      icon: const Icon(Icons.workspace_premium_outlined),
+                      label: const Text('Upgrade to Pro'),
+                    ),
+                  ] else ...[
+                    DropdownButtonFormField<String>(
+                      key: ValueKey('report_palette_$paletteId'),
+                      initialValue: paletteId,
+                      decoration: const InputDecoration(
+                        labelText: 'Report palette',
+                        prefixIcon: Icon(Icons.palette_outlined),
+                      ),
+                      items: AppThemePresets.palettes
+                          .map(
+                            (x) => DropdownMenuItem(
+                              value: x.id,
+                              child: Text(x.label),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (v) async {
+                        final next = AppThemePresets.normalizePalette(v);
+                        try {
+                          await repo.save(
+                            p.copyWith(reportPaletteId: next, paletteId: next),
+                          );
+                        } catch (_) {
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Could not save report palette.'),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<String>(
+                      key: ValueKey('report_layout_$layoutId'),
+                      initialValue: layoutId,
+                      decoration: const InputDecoration(
+                        labelText: 'Report layout',
+                        prefixIcon: Icon(Icons.dashboard_outlined),
+                      ),
+                      items: AppThemePresets.layouts
+                          .map(
+                            (x) => DropdownMenuItem(
+                              value: x.id,
+                              child: Text(x.label),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (v) async {
+                        final next = AppThemePresets.normalizeLayout(v);
+                        try {
+                          await repo.save(p.copyWith(reportLayoutId: next));
+                        } catch (_) {
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Could not save report layout.'),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

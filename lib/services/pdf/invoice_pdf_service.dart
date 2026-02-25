@@ -102,10 +102,16 @@ class InvoicePdfService {
     PdfDocType type = PdfDocType.invoice,
   }) async {
     final BusinessProfile business = await BusinessProfileRepository().load();
-    final style = _styleForPalette(business.paletteId);
-    final layoutId = AppThemePresets.normalizeLayout(business.invoiceLayoutId);
+    final isProTemplates = FeatureGate.allowed(ProFeature.premiumTemplates);
+    final paletteId = isProTemplates
+        ? AppThemePresets.normalizePalette(business.invoicePaletteId)
+        : AppThemePresets.paletteMinimal;
+    final layoutId = isProTemplates
+        ? AppThemePresets.normalizeLayout(business.invoiceLayoutId)
+        : AppThemePresets.layoutMinimal;
+    final style = _styleForPalette(paletteId);
     final layoutLabel = AppThemePresets.layoutLabel(layoutId);
-    final paletteLabel = AppThemePresets.paletteLabel(business.paletteId);
+    final paletteLabel = AppThemePresets.paletteLabel(paletteId);
 
     final doc = pw.Document();
     final logoImage = await _loadLogoImage(business.logoFilePath);
