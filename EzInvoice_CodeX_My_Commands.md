@@ -351,3 +351,17 @@ Nota:
   - El autocomplete existente se mantiene para escribir rapido, pero ya no es la unica forma de seleccionar presets.
 - Verificacion:
   - `dart analyze lib/features/invoices/invoice_form_screen.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos del cambio; quedan avisos informativos existentes de `withOpacity`/lint UI en esos archivos.
+
+## 2026-06-08 - Rewarded Ad Para Ver Reportes Free
+
+- Pedido: no cambiar nada mas; solo agregar rewarded ad en Reports para que usuario Free pueda ver o enviar/exportar reporte una sola vez por anuncio.
+- Version subida por cambio de repo: `1.0.21+45` -> `1.0.22+46`.
+- Login y Home ahora muestran `Version 1.0.22`.
+- Cambio implementado:
+  - `ReportsScreen` ahora bloquea la vista del reporte para cuentas Free con una tarjeta `Watch ad / Ver anuncio`.
+  - Si el usuario ve el rewarded completo, se desbloquea la vista del reporte actual una vez.
+  - Si cambia mes, ano, o cambia entre mensual/anual, se vuelve a pedir rewarded para ver el nuevo reporte.
+  - Exportar/enviar PDF o CSV mantiene el rewarded existente: cada accion de exportacion requiere su propio anuncio completo en Free.
+  - Pro sigue viendo y exportando reportes sin anuncios.
+- Verificacion:
+  - `dart analyze lib/features/reports/reports_screen.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos del cambio; quedan avisos informativos existentes de `withOpacity`/lint UI en esos archivos.

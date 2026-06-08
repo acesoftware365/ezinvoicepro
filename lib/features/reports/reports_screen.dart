@@ -30,6 +30,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
   int _year = DateTime.now().year;
 
   bool _exporting = false;
+  bool _reportViewUnlocked = false;
 
   List<int> get _years {
     final now = DateTime.now().year;
@@ -63,23 +64,58 @@ class _ReportsScreenState extends State<ReportsScreen> {
     return Localizations.localeOf(context).languageCode.toLowerCase() == 'es';
   }
 
-  Future<bool> _ensureProOrRewardedReportExport() async {
-    if (SubscriptionManager.instance.state.value.isPro) return true;
+  bool get _isPro => SubscriptionManager.instance.state.value.isPro;
+
+  void _resetReportViewAccess() {
+    if (_reportViewUnlocked) {
+      _reportViewUnlocked = false;
+    }
+  }
+
+  Future<bool> _showReportRewardedAd({
+    required RewardType rewardType,
+    required String spanishMessage,
+    required String englishMessage,
+  }) async {
+    if (_isPro) return true;
+
+    await AdsManager.instance.init();
+    AdsManager.instance.loadRewarded();
 
     var rewarded = false;
     final shown = await AdsManager.instance.showRewarded(
-      rewardType: RewardType.exportReportOnce,
+      rewardType: rewardType,
       onReward: () => rewarded = true,
     );
 
     if (shown && rewarded) return true;
 
-    _snack(
-      _isSpanish
-          ? 'Mira el anuncio completo para exportar este reporte. Actualiza a Pro para exportar sin anuncios.'
-          : 'Watch the full ad to export this report. Upgrade to Pro to export without ads.',
-    );
+    _snack(_isSpanish ? spanishMessage : englishMessage);
     return false;
+  }
+
+  Future<bool> _ensureProOrRewardedReportExport() async {
+    if (SubscriptionManager.instance.state.value.isPro) return true;
+
+    return _showReportRewardedAd(
+      rewardType: RewardType.exportReportOnce,
+      spanishMessage:
+          'Mira el anuncio completo para exportar este reporte. Actualiza a Pro para exportar sin anuncios.',
+      englishMessage:
+          'Watch the full ad to export this report. Upgrade to Pro to export without ads.',
+    );
+  }
+
+  Future<void> _unlockReportViewWithRewardedAd() async {
+    final ok = await _showReportRewardedAd(
+      rewardType: RewardType.viewMonthlyTaxReportDetailedOnce,
+      spanishMessage:
+          'Mira el anuncio completo para ver este reporte. Actualiza a Pro para ver reportes sin anuncios.',
+      englishMessage:
+          'Watch the full ad to view this report. Upgrade to Pro to view reports without ads.',
+    );
+    if (!ok || !mounted) return;
+    setState(() => _reportViewUnlocked = true);
   }
 
   Future<void> _exportPdf() async {
@@ -197,6 +233,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final canViewReport = _isPro || _reportViewUnlocked;
 
     final Stream<ReportResult> reportStream = _tab == 0
         ? ReportsService.streamMonthlyReport(year: _year, month: _month)
@@ -224,27 +261,30 @@ class _ReportsScreenState extends State<ReportsScreen> {
             _filtersCard(t),
             const SizedBox(height: 12),
 
-            StreamBuilder<ReportResult>(
-              stream: reportStream,
-              builder: (context, snap) {
-                if (snap.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(18),
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
+            if (canViewReport)
+              StreamBuilder<ReportResult>(
+                stream: reportStream,
+                builder: (context, snap) {
+                  if (snap.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(18),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
 
-                final r = snap.data ?? ReportResult.empty;
+                  final r = snap.data ?? ReportResult.empty;
 
-                final title = _tab == 0
-                    ? '${t.report} • ${_monthName(_month)} $_year'
-                    : '${t.report} • $_year';
+                  final title = _tab == 0
+                      ? '${t.report} • ${_monthName(_month)} $_year'
+                      : '${t.report} • $_year';
 
-                return _reportCard(t, title, r);
-              },
-            ),
+                  return _reportCard(t, title, r);
+                },
+              )
+            else
+              _rewardedReportGateCard(),
 
             const SizedBox(height: 12),
             _exportRow(t),
@@ -260,7 +300,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
       ),
       child: Row(
         children: [
@@ -268,14 +308,20 @@ class _ReportsScreenState extends State<ReportsScreen> {
             child: _segBtn(
               text: t.byMonth,
               selected: _tab == 0,
-              onTap: () => setState(() => _tab = 0),
+              onTap: () => setState(() {
+                _tab = 0;
+                _resetReportViewAccess();
+              }),
             ),
           ),
           Expanded(
             child: _segBtn(
               text: t.byYear,
               selected: _tab == 1,
-              onTap: () => setState(() => _tab = 1),
+              onTap: () => setState(() {
+                _tab = 1;
+                _resetReportViewAccess();
+              }),
             ),
           ),
         ],
@@ -320,12 +366,12 @@ class _ReportsScreenState extends State<ReportsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
         boxShadow: [
           BoxShadow(
             blurRadius: 18,
             offset: const Offset(0, 8),
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
           ),
         ],
       ),
@@ -342,7 +388,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 final m = i + 1;
                 return DropdownMenuItem(value: m, child: Text(_monthName(m)));
               }),
-              onChanged: (v) => setState(() => _month = v ?? _month),
+              onChanged: (v) => setState(() {
+                _month = v ?? _month;
+                _resetReportViewAccess();
+              }),
             ),
             const SizedBox(height: 10),
           ],
@@ -355,7 +404,84 @@ class _ReportsScreenState extends State<ReportsScreen> {
             items: _years
                 .map((y) => DropdownMenuItem(value: y, child: Text('$y')))
                 .toList(),
-            onChanged: (v) => setState(() => _year = v ?? _year),
+            onChanged: (v) => setState(() {
+              _year = v ?? _year;
+              _resetReportViewAccess();
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _rewardedReportGateCard() {
+    final title = _isSpanish ? 'Ver reporte' : 'View report';
+    final body = _isSpanish
+        ? 'Mira un anuncio para ver este reporte una vez. Pro no tiene anuncios.'
+        : 'Watch an ad to view this report once. Pro has no ads.';
+    final button = _isSpanish ? 'Ver anuncio' : 'Watch ad';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+            color: Colors.black.withValues(alpha: 0.05),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: brandGreen.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(Icons.play_circle_outline, color: brandGreen),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            body,
+            style: TextStyle(
+              color: Colors.black.withValues(alpha: 0.62),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: _unlockReportViewWithRewardedAd,
+              style: FilledButton.styleFrom(
+                backgroundColor: brandGreen,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 13),
+              ),
+              icon: const Icon(Icons.ondemand_video_outlined),
+              label: Text(button),
+            ),
           ),
         ],
       ),
