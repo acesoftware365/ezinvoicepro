@@ -1,8 +1,14 @@
+import 'dart:async';
+
 import 'package:ezinvoice/services/ads/ads_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-
+/// Anchored adaptive banner ready to drop into existing screens.
+///
+/// The widget asks AdMob for the best height for the current screen width and
+/// only takes space in the UI after the ad has loaded successfully.
 class BannerAdWidget extends StatefulWidget {
   const BannerAdWidget({super.key});
 
@@ -11,51 +17,128 @@ class BannerAdWidget extends StatefulWidget {
 }
 
 class _BannerAdWidgetState extends State<BannerAdWidget> {
-  bool _startedTick = false;
+  BannerAd? _bannerAd;
+  AdSize? _adSize;
+  Timer? _retryTimer;
+  int? _loadedForWidth;
+  bool _isLoading = false;
+  bool _isLoaded = false;
 
   @override
-  void initState() {
-    super.initState();
-
-    // Asegura init + load banner (solo Free)
-    _safeInitAndLoad();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadForCurrentWidth();
   }
 
-  Future<void> _safeInitAndLoad() async {
+  Future<void> _loadForCurrentWidth() async {
+    if (!AdsManager.instance.adsEnabled || _isLoading) return;
+
+    final width = MediaQuery.sizeOf(context).width.truncate();
+    if (width <= 0 || (_loadedForWidth == width && _bannerAd != null)) return;
+
+    _isLoading = true;
+    _retryTimer?.cancel();
+    _disposeCurrentBanner();
+
     await AdsManager.instance.init();
-    AdsManager.instance.loadBanner();
-    _tickUntilReady();
-  }
-
-  void _tickUntilReady() async {
-    if (_startedTick) return;
-    _startedTick = true;
-
-    // Espera hasta que el banner esté listo o se apaguen ads
-    while (mounted &&
-        AdsManager.instance.adsEnabled &&
-        !AdsManager.instance.bannerReady) {
-      await Future.delayed(const Duration(milliseconds: 250));
+    if (!mounted || !AdsManager.instance.adsEnabled) {
+      _isLoading = false;
+      return;
     }
 
-    if (!mounted) return;
-    setState(() {});
+    final adaptiveSize =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width);
+    if (!mounted) {
+      _isLoading = false;
+      return;
+    }
+
+    if (adaptiveSize == null) {
+      _isLoading = false;
+      _scheduleRetry();
+      return;
+    }
+
+    final banner = BannerAd(
+      adUnitId: AdsManager.instance.bannerAdUnitId,
+      size: adaptiveSize,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          if (!mounted) {
+            ad.dispose();
+            return;
+          }
+
+          setState(() {
+            _bannerAd = ad as BannerAd;
+            _adSize = adaptiveSize;
+            _loadedForWidth = width;
+            _isLoaded = true;
+            _isLoading = false;
+          });
+
+          if (kDebugMode) {
+            debugPrint(
+              'Adaptive banner loaded: ${adaptiveSize.width}x${adaptiveSize.height}',
+            );
+          }
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+
+          if (mounted) {
+            setState(() {
+              _bannerAd = null;
+              _adSize = null;
+              _isLoaded = false;
+              _isLoading = false;
+            });
+            _scheduleRetry();
+          }
+
+          if (kDebugMode) {
+            debugPrint('Adaptive banner failed to load: $error');
+          }
+        },
+      ),
+    );
+
+    await banner.load();
+  }
+
+  void _scheduleRetry() {
+    _retryTimer?.cancel();
+    _retryTimer = Timer(const Duration(seconds: 30), () {
+      if (mounted) _loadForCurrentWidth();
+    });
+  }
+
+  void _disposeCurrentBanner() {
+    _bannerAd?.dispose();
+    _bannerAd = null;
+    _adSize = null;
+    _isLoaded = false;
+    _loadedForWidth = null;
   }
 
   @override
   Widget build(BuildContext context) {
-    final ads = AdsManager.instance;
+    final banner = _bannerAd;
+    final size = _adSize;
 
-    if (!ads.adsEnabled) return const SizedBox.shrink();
-
-    final BannerAd? banner = ads.bannerAd;
-    if (!ads.bannerReady || banner == null) return const SizedBox.shrink();
+    if (!AdsManager.instance.adsEnabled ||
+        !_isLoaded ||
+        banner == null ||
+        size == null) {
+      return const SizedBox.shrink();
+    }
 
     return SafeArea(
       top: false,
       child: SizedBox(
-        width: banner.size.width.toDouble(),
-        height: banner.size.height.toDouble(),
+        width: size.width.toDouble(),
+        height: size.height.toDouble(),
         child: AdWidget(ad: banner),
       ),
     );
@@ -63,7 +146,8 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
 
   @override
   void dispose() {
-    // NO hacemos dispose del banner aquí porque es GLOBAL (lo maneja AdsManager)
+    _retryTimer?.cancel();
+    _disposeCurrentBanner();
     super.dispose();
   }
 }
