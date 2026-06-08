@@ -34,6 +34,7 @@ Nota:
 - Guardar en este archivo los cambios importantes, decisiones y comandos utiles.
 - Mantener los cambios versionados y subirlos a GitHub cuando el trabajo quede verificado.
 - Subir version/build de la app en cada cambio (`pubspec.yaml`) y sincronizar cualquier texto visible de version.
+- Texto visible de version debe usar formato `Version x.x.x`, sin `v` y sin build entre parentesis.
 
 ## 2026-06-08
 
@@ -86,3 +87,10 @@ Nota:
   - Home actualizado a `v1.0.3 (27)`.
   - `pubspec.yaml` actualizado a `1.0.3+27`.
 - Nota frecuente: cuando se suba version, revisar todos los textos `_forcedVersionText` con `rg "_forcedVersionText|v1\\." lib pubspec.yaml`.
+
+## 2026-06-08 - Formato Version Visible
+
+- Pedido: mostrar `Version 1...` y no usar parentesis.
+- Version subida por cambio de repo: `1.0.3+27` -> `1.0.4+28`.
+- Login y Home ahora muestran `Version 1.0.4`.
+- Regla agregada: texto visible de version debe ser `Version x.x.x`, sin `v` y sin build entre parentesis.
