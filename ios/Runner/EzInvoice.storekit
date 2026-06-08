@@ -62,16 +62,7 @@
           "winbackOffers" : [
 
           ]
-        }
-      ]
-    },
-    {
-      "id" : "1563485D",
-      "localizations" : [
-
-      ],
-      "name" : "Yearly",
-      "subscriptions" : [
+        },
         {
           "adHocOffers" : [
 
@@ -94,7 +85,7 @@
           "productID" : "com.ezinvoice.pro.yearly",
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Yearly Pro",
-          "subscriptionGroupID" : "1563485D",
+          "subscriptionGroupID" : "9A3796E4",
           "type" : "RecurringSubscription",
           "winbackOffers" : [
 

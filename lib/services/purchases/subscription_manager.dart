@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
@@ -86,9 +88,6 @@ class SubscriptionManager {
 
     // Cargar productos
     await loadProducts();
-
-    // Restaurar / re-chequear (recomendado al iniciar)
-    await restorePurchases();
 
     if (kDebugMode) {
       debugPrint('✅ SubscriptionManager listo para $_currentUserEmail');
@@ -203,6 +202,14 @@ class SubscriptionManager {
     _setPro(isPro: isPro, plan: plan);
   }
 
+  /// Clears the runtime entitlement when Firebase switches to a free account.
+  /// Purchases are restored only when the user explicitly taps Restore Purchases,
+  /// because store-level restored purchases can belong to a different app account
+  /// on the same device.
+  void clearEntitlement() {
+    _setPro(isPro: false, plan: ProPlan.none);
+  }
+
   void _setPro({required bool isPro, required ProPlan plan}) {
     final newState = state.value.copyWith(isPro: isPro, plan: plan);
     if (state.value.isPro == newState.isPro &&
@@ -212,6 +219,32 @@ class SubscriptionManager {
 
     state.value = newState;
     if (kDebugMode) debugPrint('✅ Pro: $isPro | Plan: $plan');
+
+    if (isPro) {
+      unawaited(_syncPurchaseToFirestore(plan));
+    }
+  }
+
+  Future<void> _syncPurchaseToFirestore(ProPlan plan) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final planKind = switch (plan) {
+      ProPlan.yearly => 'yearly',
+      ProPlan.monthly => 'monthly',
+      ProPlan.none => 'none',
+    };
+
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'plan': 'pro',
+        'isPro': true,
+        'proPlan': planKind,
+        'planUpdatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (e) {
+      if (kDebugMode) debugPrint('❌ Firestore purchase sync error: $e');
+    }
   }
 
   /// Sincroniza estado Pro desde backend (Firestore) para casos como cuenta demo de App Review.

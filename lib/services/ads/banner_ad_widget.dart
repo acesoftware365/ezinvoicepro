@@ -16,13 +16,24 @@ class BannerAdWidget extends StatefulWidget {
   State<BannerAdWidget> createState() => _BannerAdWidgetState();
 }
 
-class _BannerAdWidgetState extends State<BannerAdWidget> {
+class _BannerAdWidgetState extends State<BannerAdWidget>
+    with WidgetsBindingObserver {
   BannerAd? _bannerAd;
   AdSize? _adSize;
   Timer? _retryTimer;
   int? _loadedForWidth;
+  int _retryAttempt = 0;
   bool _isLoading = false;
   bool _isLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _loadForCurrentWidth();
+    });
+  }
 
   @override
   void didChangeDependencies() {
@@ -30,11 +41,26 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
     _loadForCurrentWidth();
   }
 
-  Future<void> _loadForCurrentWidth() async {
+  @override
+  void didChangeMetrics() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _loadForCurrentWidth(force: true);
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && !_isLoaded) {
+      _loadForCurrentWidth(force: true);
+    }
+  }
+
+  Future<void> _loadForCurrentWidth({bool force = false}) async {
     if (!AdsManager.instance.adsEnabled || _isLoading) return;
 
     final width = MediaQuery.sizeOf(context).width.truncate();
-    if (width <= 0 || (_loadedForWidth == width && _bannerAd != null)) return;
+    if (width <= 0) return;
+    if (!force && _loadedForWidth == width && _bannerAd != null) return;
 
     _isLoading = true;
     _retryTimer?.cancel();
@@ -76,6 +102,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
             _loadedForWidth = width;
             _isLoaded = true;
             _isLoading = false;
+            _retryAttempt = 0;
           });
 
           if (kDebugMode) {
@@ -109,8 +136,22 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
 
   void _scheduleRetry() {
     _retryTimer?.cancel();
-    _retryTimer = Timer(const Duration(seconds: 30), () {
-      if (mounted) _loadForCurrentWidth();
+    _retryAttempt += 1;
+    final delay = switch (_retryAttempt) {
+      1 => const Duration(seconds: 5),
+      2 => const Duration(seconds: 15),
+      3 => const Duration(seconds: 30),
+      _ => const Duration(seconds: 60),
+    };
+
+    if (kDebugMode) {
+      debugPrint(
+        'Adaptive banner retry #$_retryAttempt in ${delay.inSeconds}s',
+      );
+    }
+
+    _retryTimer = Timer(delay, () {
+      if (mounted) _loadForCurrentWidth(force: true);
     });
   }
 
@@ -146,6 +187,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _retryTimer?.cancel();
     _disposeCurrentBanner();
     super.dispose();

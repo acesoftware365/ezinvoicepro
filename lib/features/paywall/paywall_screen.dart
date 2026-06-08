@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 import '../../services/purchases/subscription_manager.dart';
 
 class PaywallScreen extends StatefulWidget {
-  const PaywallScreen({
-    super.key,
-    this.onClose,
-  });
+  const PaywallScreen({super.key, this.onClose});
 
   final VoidCallback? onClose;
 
@@ -71,7 +68,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
       await fn();
     } catch (_) {
       if (mounted) {
-        final t = AppLocalizations.of(context)!;
+        final t = AppLocalizations.of(context);
         _showSnack(t.authError); // fallback simple
       }
     } finally {
@@ -80,9 +77,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
   }
 
   void _showSnack(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg)),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
   String _platformStoreName() {
@@ -100,7 +95,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
@@ -124,7 +119,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
           style: OutlinedButton.styleFrom(
             foregroundColor: brandGreen,
             side: const BorderSide(color: cardBorder),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
             padding: const EdgeInsets.symmetric(vertical: 12),
           ),
         ),
@@ -132,7 +129,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
           style: ElevatedButton.styleFrom(
             backgroundColor: brandGreen,
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
             padding: const EdgeInsets.symmetric(vertical: 14),
           ),
         ),
@@ -144,8 +143,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
             return _AlreadyProView(onClose: widget.onClose);
           }
 
-          final monthlyPrice = state.priceMonthly ?? '...';
-          final yearlyPrice = state.priceYearly ?? '...';
+          final monthlyPrice = state.priceMonthly ?? r'$3.99';
+          final yearlyPrice = state.priceYearly ?? r'$39.99';
 
           return Scaffold(
             appBar: AppBar(
@@ -153,7 +152,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
               centerTitle: false,
               leading: IconButton(
                 icon: const Icon(Icons.close),
-                onPressed: _busy ? null : (widget.onClose ?? () => Navigator.pop(context)),
+                onPressed: _busy
+                    ? null
+                    : (widget.onClose ?? () => Navigator.pop(context)),
                 tooltip: t.close,
               ),
             ),
@@ -186,7 +187,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
                               const SizedBox(
                                 width: 18,
                                 height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               ),
                               const SizedBox(width: 10),
                               Text(t.processing),
@@ -230,9 +233,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       onPressed: _busy
                           ? null
                           : () => _runBusy(() async {
-                        await _sub.restorePurchases();
-                        _showSnack(t.restoringPurchases);
-                      }),
+                              await _sub.restorePurchases();
+                              _showSnack(t.restoringPurchases);
+                            }),
                       icon: const Icon(Icons.restore),
                       label: Text(t.restorePurchases),
                     ),
@@ -241,7 +244,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
                     // Seguir gratis
                     TextButton(
-                      onPressed: _busy ? null : (widget.onClose ?? () => Navigator.pop(context)),
+                      onPressed: _busy
+                          ? null
+                          : (widget.onClose ?? () => Navigator.pop(context)),
                       child: Text(
                         t.continueFreeWithAds,
                         style: const TextStyle(
@@ -275,7 +280,7 @@ class _AlreadyProView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
@@ -297,7 +302,9 @@ class _AlreadyProView extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: brandGreen,
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
           ),
         ),
@@ -322,13 +329,13 @@ class _AlreadyProView extends StatelessWidget {
                   const SizedBox(height: 10),
                   Text(
                     t.alreadyProTitle,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    t.alreadyProBody,
-                    textAlign: TextAlign.center,
-                  ),
+                  Text(t.alreadyProBody, textAlign: TextAlign.center),
                   const SizedBox(height: 14),
                   ElevatedButton(
                     onPressed: onClose ?? () => Navigator.pop(context),
@@ -370,7 +377,7 @@ class _HeaderCard extends StatelessWidget {
           BoxShadow(
             blurRadius: 14,
             offset: const Offset(0, 8),
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
           ),
         ],
       ),
@@ -427,7 +434,7 @@ class _BenefitsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
 
     final items = <_BenefitItem>[
       _BenefitItem(icon: Icons.do_not_disturb_on, text: t.benefitNoAds),
@@ -455,7 +462,7 @@ class _BenefitsList extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           ...items.map(
-                (e) => Padding(
+            (e) => Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -508,7 +515,7 @@ class _PlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
 
     final borderColor = emphasized ? brandGreen : cardBorder;
     final bg = emphasized ? const Color(0xFFE6F3EF) : Colors.white;
@@ -528,11 +535,17 @@ class _PlanCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: emphasized ? brandGreen : const Color(0xFFEFF2F6),
                   borderRadius: BorderRadius.circular(999),
@@ -545,7 +558,7 @@ class _PlanCard extends StatelessWidget {
                     fontSize: 12,
                   ),
                 ),
-              )
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -564,7 +577,9 @@ class _PlanCard extends StatelessWidget {
                 backgroundColor: brandGreen,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               child: Text(t.continueWithPlan(title)),
             ),
@@ -582,7 +597,7 @@ class _FinePrint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
 
     return Text(
       t.paywallFinePrint(storeName),

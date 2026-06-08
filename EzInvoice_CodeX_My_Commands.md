@@ -257,3 +257,20 @@ Nota:
 - Cambio implementado:
   - Tablet Business Profile ya no usa `crossAxisAlignment: stretch` dentro del scroll.
   - Corrige el error `BoxConstraints forces an infinite height` en la fila de logo + business information.
+
+## 2026-06-08 - Paywall/Ads Entitlement Fix
+
+- Pedido: paywall no funciona correctamente y una cuenta gratis no muestra anuncios.
+- Evidencia de log: productos IAP encontrados, pero el runtime marcaba `Pro: true | Plan: ProPlan.monthly` aunque la cuenta Firebase era gratis.
+- Causa: `SubscriptionManager.init()` hacia `restorePurchases()` automaticamente. En Android/Google Play, un restore puede devolver compras asociadas a la cuenta Play del dispositivo, no necesariamente al usuario Firebase actual. Eso podia poner `SubscriptionManager.state.isPro=true` y apagar anuncios para cuentas gratis.
+- Version subida por cambio de repo: `1.0.14+38` -> `1.0.15+39`.
+- Login y Home ahora muestran `Version 1.0.15`.
+- Cambio implementado:
+  - `SubscriptionManager.init()` ya no ejecuta restore automatico.
+  - `Restore Purchases` queda solo como accion explicita desde el paywall.
+  - `AuthGate` ahora escucha `users/{uid}` y sincroniza `plan/isPro/proPlan` desde Firestore hacia `SubscriptionManager` y `AdsManager`.
+  - Cuenta `free` en Firestore fuerza `Pro=false` y `AdsManager.setAdsEnabled(true)`.
+  - Compra/restore explicito que resulte Pro sincroniza Firestore con `plan: pro`, `isPro: true`, `proPlan`.
+  - Banner adaptive mantiene reintentos progresivos y recarga al volver a la app.
+- Verificacion:
+  - `dart analyze lib/services/purchases/subscription_manager.dart lib/ui/auth_gate.dart`: OK.
