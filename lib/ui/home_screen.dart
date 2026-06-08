@@ -3,7 +3,6 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ezinvoice/features/account/change_password_screen.dart';
 import 'package:ezinvoice/features/privacy/delete_account_screen.dart';
 import 'package:ezinvoice/features/paywall/paywall_screen.dart';
 import 'package:ezinvoice/features/privacy/privacy_screen.dart';
@@ -39,7 +38,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const String _forcedVersionText = 'Version 1.0.5';
+  static const String _forcedVersionText = 'Version 1.0.6';
   // ---- Brand tokens ----
   static const Color brandGreen = Color(0xFF1F6E5C);
   static const Color pageBg = Color(0xFFF6F7F9);
@@ -502,64 +501,27 @@ $_storeUrl
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          visualDensity: VisualDensity.compact,
-                          minimumSize: const Size.fromHeight(36),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                        ),
-                        icon: const Icon(Icons.lock_reset, size: 16),
-                        label: Text(
-                          Localizations.localeOf(context).languageCode == 'es'
-                              ? 'Contrasena'
-                              : 'Password',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const ChangePasswordScreen(),
-                            ),
-                          );
-                        },
-                      ),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    minimumSize: const Size.fromHeight(36),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          visualDensity: VisualDensity.compact,
-                          minimumSize: const Size.fromHeight(36),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                        ),
-                        icon: const Icon(Icons.privacy_tip, size: 16),
-                        label: Text(
-                          t.privacyPolicy,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const PrivacyScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                  ),
+                  icon: const Icon(Icons.privacy_tip, size: 16),
+                  label: Text(
+                    t.privacyPolicy,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const PrivacyScreen()),
+                    );
+                  },
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton.icon(

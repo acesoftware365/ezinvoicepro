@@ -110,3 +110,16 @@ Nota:
 - Verificacion:
   - `dart format lib/ui/login_screen.dart lib/ui/home_screen.dart`: OK.
   - `dart analyze lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos; solo infos preexistentes de `withOpacity` en Home.
+
+## 2026-06-08 - Remover Boton Password Home
+
+- Pedido: remover el boton `Password` que aparecia en el footer del Home.
+- Version subida por cambio de repo: `1.0.5+29` -> `1.0.6+30`.
+- Login y Home ahora muestran `Version 1.0.6`.
+- Cambio implementado:
+  - Se removio el boton inferior `Password/Contrasena` del Home.
+  - Se mantuvo `Forgot password?` en Login para recuperar password olvidado.
+  - Se mantuvo el archivo `change_password_screen.dart` sin acceso visible desde Home, por si se reutiliza mas adelante.
+- Verificacion:
+  - `dart format lib/ui/home_screen.dart lib/ui/login_screen.dart`: OK.
+  - `dart analyze lib/ui/home_screen.dart lib/ui/login_screen.dart`: sin errores nuevos; solo infos preexistentes de `withOpacity` en Home.
