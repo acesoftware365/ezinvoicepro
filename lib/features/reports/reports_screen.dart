@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:ezinvoice/models/business_profile.dart';
 import 'package:ezinvoice/repositories/business_profile_repository.dart';
+import 'package:ezinvoice/services/ads/ads_manager.dart';
 import 'package:ezinvoice/services/purchases/subscription_manager.dart';
 import 'package:ezinvoice/services/style/app_theme_presets.dart';
 
@@ -12,9 +13,6 @@ import 'package:ezinvoice/features/reports/reports_service.dart';
 import 'package:ezinvoice/features/reports/reports_export_service.dart';
 
 import '../paywall/paywall_screen.dart';
-import '../paywall/paywall_guard.dart';
-
-// ✅ Paywall guard
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
@@ -61,20 +59,38 @@ class _ReportsScreenState extends State<ReportsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
-  Future<bool> _ensureProOrPaywall() async {
-    final ok = await PaywallGuard.requirePro(context);
-    return ok;
+  bool get _isSpanish {
+    return Localizations.localeOf(context).languageCode.toLowerCase() == 'es';
+  }
+
+  Future<bool> _ensureProOrRewardedReportExport() async {
+    if (SubscriptionManager.instance.state.value.isPro) return true;
+
+    var rewarded = false;
+    final shown = await AdsManager.instance.showRewarded(
+      rewardType: RewardType.exportReportOnce,
+      onReward: () => rewarded = true,
+    );
+
+    if (shown && rewarded) return true;
+
+    _snack(
+      _isSpanish
+          ? 'Mira el anuncio completo para exportar este reporte. Actualiza a Pro para exportar sin anuncios.'
+          : 'Watch the full ad to export this report. Upgrade to Pro to export without ads.',
+    );
+    return false;
   }
 
   Future<void> _exportPdf() async {
     if (_exporting) return;
 
-    // ✅ FREE => Paywall, PRO => continue
-    final ok = await _ensureProOrPaywall();
-    if (!ok) return;
-
     setState(() => _exporting = true);
     try {
+      final ok = await _ensureProOrRewardedReportExport();
+      if (!ok) return;
+      if (!mounted) return;
+
       await ReportsExportService.exportPdfAndShare(
         context: context, // ✅ FIX iOS sharePositionOrigin
         byMonth: _tab == 0,
@@ -90,10 +106,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   Future<void> _exportCsvMenu() async {
     if (_exporting) return;
-
-    // ✅ FREE => Paywall, PRO => continue
-    final ok = await _ensureProOrPaywall();
-    if (!ok) return;
 
     await showModalBottomSheet(
       context: context,
@@ -171,6 +183,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
     if (_exporting) return;
     setState(() => _exporting = true);
     try {
+      final ok = await _ensureProOrRewardedReportExport();
+      if (!ok) return;
+
       await action();
     } catch (e) {
       _snack('Export error: $e');

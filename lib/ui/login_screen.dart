@@ -14,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  static const String _forcedVersionText = 'Version 1.0.7';
+  static const String _forcedVersionText = 'Version 1.0.8';
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -68,8 +68,8 @@ class _LoginScreenState extends State<LoginScreen> {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       _showMessage(
         isEs
-            ? 'Te enviamos un email para restablecer tu contrasena.'
-            : 'We sent you an email to reset your password.',
+            ? 'Te enviamos un email para restablecer tu contrasena. Revisa Spam o Correo no deseado.'
+            : 'We sent you an email to reset your password. Check Spam or Junk.',
       );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

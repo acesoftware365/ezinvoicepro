@@ -14,6 +14,7 @@ enum InterstitialReason {
 enum RewardType {
   removePdfBrandingOnce,
   unlockPremiumTemplateOnce,
+  exportReportOnce,
   exportCsvOnce,
   viewMonthlyTaxReportDetailedOnce,
   proMessageTemplateOnce,
@@ -27,7 +28,8 @@ class AdUnitIds {
   // -----------------
   // Android test
   static const _androidBannerTest = 'ca-app-pub-3940256099942544/6300978111';
-  static const _androidInterstitialTest = 'ca-app-pub-3940256099942544/1033173712';
+  static const _androidInterstitialTest =
+      'ca-app-pub-3940256099942544/1033173712';
   static const _androidRewardedTest = 'ca-app-pub-3940256099942544/5224354917';
 
   // iOS test
@@ -40,7 +42,8 @@ class AdUnitIds {
   // -----------------
   // ✅ ANDROID PROD (reales)
   static const _androidBannerProd = 'ca-app-pub-8588489900323524/6208483338';
-  static const _androidInterstitialProd = 'ca-app-pub-8588489900323524/8144381530';
+  static const _androidInterstitialProd =
+      'ca-app-pub-8588489900323524/8144381530';
   static const _androidRewardedProd = 'ca-app-pub-8588489900323524/2016605814';
 
   // ✅ iOS PROD (reales)  ✅✅✅ (CAMBIADOS)
@@ -64,10 +67,12 @@ class AdUnitIds {
       : (Platform.isIOS ? _iosRewardedProd : _androidRewardedProd);
 
   // (Opcional) si todavía quieres tener acceso explícito a test:
-  static String get bannerTest => Platform.isIOS ? _iosBannerTest : _androidBannerTest;
+  static String get bannerTest =>
+      Platform.isIOS ? _iosBannerTest : _androidBannerTest;
   static String get interstitialTest =>
       Platform.isIOS ? _iosInterstitialTest : _androidInterstitialTest;
-  static String get rewardedTest => Platform.isIOS ? _iosRewardedTest : _androidRewardedTest;
+  static String get rewardedTest =>
+      Platform.isIOS ? _iosRewardedTest : _androidRewardedTest;
 }
 
 /// Configuración central de Ads.
@@ -133,7 +138,9 @@ class AdsManager {
 
   /// Ajusta a tu gusto
   Duration interstitialCooldown = const Duration(seconds: 120); // 2 min
-  Duration interstitialMinAttemptGap = const Duration(seconds: 20); // evita spam attempts
+  Duration interstitialMinAttemptGap = const Duration(
+    seconds: 20,
+  ); // evita spam attempts
 
   /// Frecuencia por “razón”: ej. mostrar 1 de cada 3 envíos
   final Map<InterstitialReason, int> _reasonCounters = {
@@ -252,12 +259,14 @@ class AdsManager {
 
   bool _cooldownOk() {
     if (_lastInterstitialShownAt == null) return true;
-    return DateTime.now().difference(_lastInterstitialShownAt!) >= interstitialCooldown;
+    return DateTime.now().difference(_lastInterstitialShownAt!) >=
+        interstitialCooldown;
   }
 
   bool _attemptGapOk() {
     if (_lastInterstitialAttemptAt == null) return true;
-    return DateTime.now().difference(_lastInterstitialAttemptAt!) >= interstitialMinAttemptGap;
+    return DateTime.now().difference(_lastInterstitialAttemptAt!) >=
+        interstitialMinAttemptGap;
   }
 
   bool _frequencyOk(InterstitialReason reason) {
@@ -350,9 +359,29 @@ class AdsManager {
     final ad = _rewardedAd!;
     _rewardedAd = null;
     _rewardedReady = false;
+    var rewardEarned = false;
+    final completed = Completer<bool>();
+
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) {
+        if (kDebugMode) debugPrint('✅ Rewarded cerrado');
+        ad.dispose();
+        _disposeRewarded();
+        Future.delayed(const Duration(seconds: 2), loadRewarded);
+        if (!completed.isCompleted) completed.complete(rewardEarned);
+      },
+      onAdFailedToShowFullScreenContent: (ad, err) {
+        if (kDebugMode) debugPrint('❌ Rewarded no mostró: $err');
+        ad.dispose();
+        _disposeRewarded();
+        Future.delayed(const Duration(seconds: 10), loadRewarded);
+        if (!completed.isCompleted) completed.complete(false);
+      },
+    );
 
     await ad.show(
       onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
+        rewardEarned = true;
         if (kDebugMode) {
           debugPrint(
             '🎁 Reward ganado: ${rewardType.name} | ${rewardItem.amount} ${rewardItem.type}',
@@ -362,6 +391,6 @@ class AdsManager {
       },
     );
 
-    return true;
+    return completed.future;
   }
 }

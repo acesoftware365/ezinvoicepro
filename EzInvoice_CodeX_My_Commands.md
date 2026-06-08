@@ -151,3 +151,22 @@ Nota:
 - Verificacion:
   - `dart format lib/services/app_update/force_update_gate.dart lib/main.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: OK.
   - `dart analyze lib/services/app_update/force_update_gate.dart lib/main.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos; solo infos preexistentes de `withOpacity` en Home.
+
+## 2026-06-08 - Rewarded Ads En Report Exports
+
+- Opinion/decision: buena estrategia para empujar membresia Pro sin quitar completamente el valor al plan Free.
+- Pedido: usuario Free debe ver rewarded ad cada vez que quiera exportar reporte PDF o CSV; cada anuncio permite solo una exportacion.
+- Version subida por cambio de repo: `1.0.7+31` -> `1.0.8+32`.
+- Login y Home ahora muestran `Version 1.0.8`.
+- Cambio implementado:
+  - `ReportsScreen` ya no manda FREE directo al paywall para exportar.
+  - Si el usuario es Pro, exporta PDF/CSV directo sin anuncio.
+  - Si el usuario es Free, cada export PDF o accion CSV llama `AdsManager.showRewarded`.
+  - La exportacion solo corre si el rewarded ad entrega recompensa completa.
+  - Si el anuncio no esta listo o no se completa, no exporta y muestra mensaje recomendando completar el anuncio o pasar a Pro.
+  - `AdsManager.showRewarded` ahora devuelve `true` solo si el reward fue ganado, no solo si el anuncio se abrio.
+- Reset password:
+  - Mensaje actualizado para indicar en el idioma seleccionado que revise Spam/Junk.
+- Verificacion:
+  - `dart format lib/services/ads/ads_manager.dart lib/features/reports/reports_screen.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: OK.
+  - `dart analyze lib/services/ads/ads_manager.dart lib/features/reports/reports_screen.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos; solo infos preexistentes de `withOpacity`/`value`.
