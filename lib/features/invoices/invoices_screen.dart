@@ -1,25 +1,38 @@
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
-import 'package:ezinvoice/models/business_profile.dart';
 import 'package:ezinvoice/models/invoice.dart';
-import 'package:ezinvoice/repositories/business_profile_repository.dart';
 import 'package:ezinvoice/services/invoices/invoices_service.dart';
 import 'package:ezinvoice/services/pdf/invoice_pdf_service.dart'
     show InvoicePdfService, PdfDocType, InvoiceData, InvoiceItemData;
-import 'package:ezinvoice/services/purchases/subscription_manager.dart';
-import 'package:ezinvoice/services/style/app_theme_presets.dart';
 
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../paywall/paywall_screen.dart';
-import '../reports/reports_screen.dart';
 import 'invoice_form_screen.dart';
 
-class InvoicesScreen extends StatelessWidget {
+class InvoicesScreen extends StatefulWidget {
   const InvoicesScreen({super.key});
 
+  @override
+  State<InvoicesScreen> createState() => _InvoicesScreenState();
+}
+
+class _InvoicesScreenState extends State<InvoicesScreen> {
   static const brandGreen = Color(0xFF1F6E5C);
   static const pageBg = Color(0xFFF6F7F9);
+  static const ink = Color(0xFF202124);
+  static const muted = Color(0xFF74787D);
+
+  final _search = TextEditingController();
+  final _searchFocus = FocusNode();
+  String _query = '';
+  _InvoiceFilter _filter = _InvoiceFilter.all;
+
+  @override
+  void dispose() {
+    _search.dispose();
+    _searchFocus.dispose();
+    super.dispose();
+  }
 
   String _fmtMoney(double n) => n.toStringAsFixed(2);
 
@@ -41,7 +54,7 @@ class InvoicesScreen extends StatelessWidget {
   Color _statusColor(Invoice inv) {
     if (inv.isPaid) return Colors.green.shade700;
     if (_isOverdue(inv)) return Colors.redAccent;
-    if (inv.isSent) return Colors.blueGrey;
+    if (inv.isSent) return Colors.blue.shade700;
     return Colors.orange.shade800; // unsent/unpaid
   }
 
@@ -50,6 +63,30 @@ class InvoicesScreen extends StatelessWidget {
     if (_isOverdue(inv)) return t.overdueLabel;
     if (inv.isSent) return t.sentLabel;
     return t.unsentLabel;
+  }
+
+  bool _matchesFilter(Invoice inv) {
+    return switch (_filter) {
+      _InvoiceFilter.all => true,
+      _InvoiceFilter.unsent => !inv.isPaid && !inv.isSent,
+      _InvoiceFilter.sent => inv.isSent && !inv.isPaid && !_isOverdue(inv),
+      _InvoiceFilter.paid => inv.isPaid,
+      _InvoiceFilter.overdue => _isOverdue(inv),
+    };
+  }
+
+  bool _matchesSearch(Invoice inv) {
+    final q = _query.trim().toLowerCase();
+    if (q.isEmpty) return true;
+    final hay = [
+      inv.invoiceNumber,
+      inv.clientName,
+      inv.clientEmail,
+      inv.clientPhoneE164,
+      _fmtDateMs(inv.createdAtMs),
+      _fmtMoney(inv.total),
+    ].join(' ').toLowerCase();
+    return hay.contains(q);
   }
 
   Future<void> _openForm(BuildContext context, {Invoice? invoice}) async {
@@ -228,6 +265,7 @@ class InvoicesScreen extends StatelessWidget {
 
   Future<void> _shareInvoicePdf(BuildContext context, Invoice inv) async {
     try {
+      final origin = _shareOriginFrom(context);
       final data = _toInvoiceData(inv);
       final file = await InvoicePdfService.generateAndSavePdf(
         data,
@@ -238,7 +276,7 @@ class InvoicesScreen extends StatelessWidget {
       await Share.shareXFiles(
         [XFile(file.path, mimeType: 'application/pdf')],
         text: 'Invoice ${inv.invoiceNumber}',
-        sharePositionOrigin: _shareOriginFrom(context), // ✅ FIX iPad/iOS
+        sharePositionOrigin: origin, // ✅ FIX iPad/iOS
       );
     } catch (e) {
       if (context.mounted) {
@@ -258,6 +296,7 @@ class InvoicesScreen extends StatelessWidget {
     }
 
     try {
+      final origin = _shareOriginFrom(context);
       final data = _toInvoiceData(inv);
       final file = await InvoicePdfService.generateAndSavePdf(
         data,
@@ -268,7 +307,7 @@ class InvoicesScreen extends StatelessWidget {
       await Share.shareXFiles(
         [XFile(file.path, mimeType: 'application/pdf')],
         text: 'Receipt ${inv.invoiceNumber}',
-        sharePositionOrigin: _shareOriginFrom(context), // ✅ FIX iPad/iOS
+        sharePositionOrigin: origin, // ✅ FIX iPad/iOS
       );
     } catch (e) {
       if (context.mounted) {
@@ -291,418 +330,502 @@ class InvoicesScreen extends StatelessWidget {
         scaffoldBackgroundColor: pageBg,
         colorScheme: cs.copyWith(primary: brandGreen, secondary: brandGreen),
         appBarTheme: const AppBarTheme(
-          backgroundColor: brandGreen,
-          foregroundColor: Colors.white,
+          backgroundColor: pageBg,
+          foregroundColor: ink,
           elevation: 0,
-          iconTheme: IconThemeData(color: Colors.white),
+          surfaceTintColor: Colors.transparent,
+          iconTheme: IconThemeData(color: ink),
           titleTextStyle: TextStyle(
-            color: Colors.white,
+            color: ink,
             fontWeight: FontWeight.w900,
-            fontSize: 18,
+            fontSize: 28,
           ),
         ),
       ),
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(t.invoicesTitle),
-          actions: [
-            IconButton(
-              tooltip: t.reports,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ReportsScreen()),
-                );
-              },
-              icon: const Icon(Icons.bar_chart_rounded),
-            ),
-            const SizedBox(width: 6),
-          ],
-        ),
         floatingActionButton: FloatingActionButton(
+          elevation: 10,
           backgroundColor: brandGreen,
           foregroundColor: Colors.white,
+          shape: const CircleBorder(),
           onPressed: () => _openForm(context),
           child: const Icon(Icons.add),
         ),
-        body: Column(
-          children: [
-            const _InvoiceDesignBar(),
-            Expanded(
-              child: StreamBuilder<List<Invoice>>(
-                stream: InvoicesService.streamInvoices(),
-                builder: (context, snap) {
-                  if (snap.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+        body: SafeArea(
+          child: StreamBuilder<List<Invoice>>(
+            stream: InvoicesService.streamInvoices(),
+            builder: (context, snap) {
+              if (snap.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                  final list = snap.data ?? [];
+              final all = snap.data ?? const <Invoice>[];
+              final list = all
+                  .where(_matchesSearch)
+                  .where(_matchesFilter)
+                  .toList();
 
-                  if (list.isEmpty) {
-                    return Center(
-                      child: Text(
-                        t.noInvoicesYet,
-                        style: TextStyle(
-                          color: Colors.black.withOpacity(0.55),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    );
-                  }
-
-                  return ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 18),
-                    itemCount: list.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
-                    itemBuilder: (_, i) {
-                      final inv = list[i];
-
-                      final statusColor = _statusColor(inv);
-                      final statusText = _statusLabel(t, inv);
-
-                      final date = _fmtDateMs(inv.createdAtMs);
-
-                      final amount = _fmtMoney(inv.total);
-                      final subtitle = [
-                        if (inv.clientName.trim().isNotEmpty)
-                          inv.clientName.trim(),
-                        date,
-                        if (inv.dueAtMs != null)
-                          'Due: ${_fmtDateMs(inv.dueAtMs!)}',
-                      ].join(' • ');
-
-                      return _card(
-                        child: InkWell(
-                          onTap: () => _openForm(context, invoice: inv),
-                          borderRadius: BorderRadius.circular(18),
-                          child: Padding(
-                            padding: const EdgeInsets.all(14),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: statusColor.withOpacity(0.12),
-                                        borderRadius: BorderRadius.circular(
-                                          999,
-                                        ),
-                                        border: Border.all(
-                                          color: statusColor.withOpacity(0.35),
-                                        ),
-                                      ),
-                                      child: Text(
-                                        statusText,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 12,
-                                          color: statusColor,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        inv.invoiceNumber,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 16,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    Text(
-                                      amount,
-                                      style: const TextStyle(
+              return CustomScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  t.invoicesTitle,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium
+                                      ?.copyWith(
+                                        color: ink,
                                         fontWeight: FontWeight.w900,
-                                        fontSize: 16,
+                                        letterSpacing: 0,
                                       ),
-                                    ),
-                                  ],
                                 ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  subtitle,
-                                  style: TextStyle(
-                                    color: Colors.black.withOpacity(0.55),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                              ),
+                              IconButton.filledTonal(
+                                tooltip: 'Search',
+                                onPressed: () => _searchFocus.requestFocus(),
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: brandGreen,
                                 ),
-                                const SizedBox(height: 12),
-                                Wrap(
-                                  spacing: 10,
-                                  runSpacing: 10,
-                                  children: [
-                                    Builder(
-                                      builder: (btnCtx) => OutlinedButton.icon(
-                                        onPressed: () =>
-                                            _shareInvoicePdf(btnCtx, inv),
-                                        icon: const Icon(Icons.picture_as_pdf),
-                                        label: const Text('Invoice PDF'),
-                                      ),
+                                icon: const Icon(Icons.search),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
+                          TextField(
+                            controller: _search,
+                            focusNode: _searchFocus,
+                            onChanged: (value) =>
+                                setState(() => _query = value),
+                            textInputAction: TextInputAction.search,
+                            decoration: InputDecoration(
+                              hintText: 'Search invoices',
+                              prefixIcon: const Icon(
+                                Icons.search,
+                                color: brandGreen,
+                              ),
+                              suffixIcon: _query.trim().isEmpty
+                                  ? null
+                                  : IconButton(
+                                      tooltip: t.clear,
+                                      onPressed: () {
+                                        _search.clear();
+                                        setState(() => _query = '');
+                                      },
+                                      icon: const Icon(Icons.close),
                                     ),
-                                    Builder(
-                                      builder: (btnCtx) => OutlinedButton.icon(
-                                        onPressed: inv.isPaid
-                                            ? () =>
-                                                  _shareReceiptPdf(btnCtx, inv)
-                                            : null,
-                                        icon: const Icon(Icons.receipt_long),
-                                        label: const Text('Receipt PDF'),
-                                      ),
-                                    ),
-                                    if (!inv.isSent)
-                                      FilledButton.icon(
-                                        onPressed: () =>
-                                            _markSent(context, inv),
-                                        icon: const Icon(Icons.send),
-                                        label: const Text('Send'),
-                                        style: FilledButton.styleFrom(
-                                          backgroundColor: brandGreen,
-                                        ),
-                                      )
-                                    else
-                                      OutlinedButton.icon(
-                                        onPressed: () =>
-                                            _markUnsent(context, inv),
-                                        icon: const Icon(Icons.undo),
-                                        label: const Text('Unsend'),
-                                      ),
-                                    if (!inv.isPaid)
-                                      FilledButton.tonalIcon(
-                                        onPressed: () =>
-                                            _markPaid(context, inv),
-                                        icon: const Icon(
-                                          Icons.check_circle_outline,
-                                        ),
-                                        label: const Text('Mark Paid'),
-                                      )
-                                    else
-                                      OutlinedButton.icon(
-                                        onPressed: () =>
-                                            _markUnpaid(context, inv),
-                                        icon: const Icon(Icons.undo),
-                                        label: const Text('Mark Unpaid'),
-                                      ),
-                                    OutlinedButton.icon(
-                                      onPressed: () =>
-                                          _confirmDelete(context, inv),
-                                      icon: const Icon(
-                                        Icons.delete_outline,
-                                        color: Colors.redAccent,
-                                      ),
-                                      label: const Text('Delete'),
-                                      style: OutlinedButton.styleFrom(
-                                        foregroundColor: Colors.redAccent,
-                                        side: BorderSide(
-                                          color: Colors.redAccent.withOpacity(
-                                            0.35,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          _StatusFilterBar(
+                            selected: _filter,
+                            onChanged: (next) => setState(() => _filter = next),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (list.isEmpty)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Text(
+                            all.isEmpty
+                                ? t.noInvoicesYet
+                                : 'No invoices match your filters.',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: muted,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
+                      ),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
+                      sliver: SliverList.separated(
+                        itemCount: list.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        itemBuilder: (context, i) {
+                          final inv = list[i];
+                          return _InvoiceCompactCard(
+                            invoice: inv,
+                            statusText: _statusLabel(t, inv),
+                            statusColor: _statusColor(inv),
+                            dateText: _fmtDateMs(inv.createdAtMs),
+                            amountText: '\$${_fmtMoney(inv.total)}',
+                            onTap: () => _openForm(context, invoice: inv),
+                            onViewPdf: () => _shareInvoicePdf(context, inv),
+                            onSendInvoice: inv.isSent
+                                ? () => _markUnsent(context, inv)
+                                : () => _markSent(context, inv),
+                            onMarkPaid: inv.isPaid
+                                ? () => _markUnpaid(context, inv)
+                                : () => _markPaid(context, inv),
+                            onReceiptPdf: inv.isPaid
+                                ? () => _shareReceiptPdf(context, inv)
+                                : null,
+                            onEdit: () => _openForm(context, invoice: inv),
+                            onDelete: () => _confirmDelete(context, inv),
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
         ),
       ),
-    );
-  }
-
-  Widget _card({required Widget child}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-            color: Colors.black.withOpacity(0.06),
-          ),
-        ],
-      ),
-      child: child,
     );
   }
 }
 
-class _InvoiceDesignBar extends StatelessWidget {
-  const _InvoiceDesignBar();
+enum _InvoiceFilter { all, unsent, sent, paid, overdue }
 
-  static const brandGreen = Color(0xFF1F6E5C);
+class _StatusFilterBar extends StatelessWidget {
+  const _StatusFilterBar({required this.selected, required this.onChanged});
+
+  final _InvoiceFilter selected;
+  final ValueChanged<_InvoiceFilter> onChanged;
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final repo = BusinessProfileRepository();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: StreamBuilder<BusinessProfile>(
-        stream: repo.stream(),
-        builder: (context, snap) {
-          final p = snap.data ?? const BusinessProfile();
-          final paletteId = AppThemePresets.normalizePalette(
-            p.invoicePaletteId,
-          );
-          final layoutId = AppThemePresets.normalizeLayout(p.invoiceLayoutId);
+    final items = [
+      (_InvoiceFilter.all, 'All'),
+      (_InvoiceFilter.unsent, t.unsentLabel),
+      (_InvoiceFilter.sent, t.sentLabel),
+      (_InvoiceFilter.paid, t.paidLabel),
+      (_InvoiceFilter.overdue, t.overdueLabel),
+    ];
 
-          return ValueListenableBuilder<SubscriptionState>(
-            valueListenable: SubscriptionManager.instance.state,
-            builder: (context, sub, _) {
-              final isPro = sub.isPro;
-              return Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.black.withOpacity(0.06)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      t.invoiceStyleTitle,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        color: Colors.black.withOpacity(0.78),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    if (!isPro) ...[
-                      Text(
-                        t.invoiceFreeStyleHint,
-                        style: TextStyle(
-                          color: Colors.black.withOpacity(0.62),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      FilledButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const PaywallScreen(),
-                            ),
-                          );
-                        },
-                        style: FilledButton.styleFrom(
-                          backgroundColor: brandGreen,
-                          foregroundColor: Colors.white,
-                        ),
-                        icon: const Icon(Icons.workspace_premium_outlined),
-                        label: Text(t.upgradeToPro),
-                      ),
-                    ] else ...[
-                      DropdownButtonFormField<String>(
-                        key: ValueKey('invoice_palette_$paletteId'),
-                        initialValue: paletteId,
-                        decoration: InputDecoration(
-                          labelText: t.invoicePaletteLabel,
-                          prefixIcon: const Icon(Icons.palette_outlined),
-                        ),
-                        items: AppThemePresets.palettes
-                            .map(
-                              (x) => DropdownMenuItem(
-                                value: x.id,
-                                child: Row(
-                                  children: [
-                                    _paletteDot(x.primary),
-                                    const SizedBox(width: 6),
-                                    _paletteDot(x.accent),
-                                    const SizedBox(width: 8),
-                                    Text(x.label),
-                                  ],
-                                ),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (v) async {
-                          final next = AppThemePresets.normalizePalette(v);
-                          try {
-                            await repo.save(
-                              p.copyWith(
-                                invoicePaletteId: next,
-                                paletteId: next,
-                              ),
-                            );
-                          } catch (_) {
-                            if (!context.mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(t.saveInvoicePaletteError),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        key: ValueKey('invoice_layout_$layoutId'),
-                        initialValue: layoutId,
-                        decoration: InputDecoration(
-                          labelText: t.invoiceLayoutLabel,
-                          prefixIcon: const Icon(Icons.description_outlined),
-                        ),
-                        items: AppThemePresets.layouts
-                            .map(
-                              (x) => DropdownMenuItem(
-                                value: x.id,
-                                child: Text(x.label),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (v) async {
-                          final next = AppThemePresets.normalizeLayout(v);
-                          try {
-                            await repo.save(p.copyWith(invoiceLayoutId: next));
-                          } catch (_) {
-                            if (!context.mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(t.saveInvoiceLayoutError)),
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ],
-                ),
-              );
-            },
-          );
-        },
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          for (final item in items) ...[
+            _FilterChipPill(
+              label: item.$2,
+              selected: selected == item.$1,
+              onTap: () => onChanged(item.$1),
+            ),
+            const SizedBox(width: 8),
+          ],
+        ],
       ),
     );
   }
+}
 
-  Widget _paletteDot(int colorValue) {
-    return Container(
-      width: 10,
-      height: 10,
-      decoration: BoxDecoration(
-        color: Color(colorValue),
-        shape: BoxShape.circle,
+class _FilterChipPill extends StatelessWidget {
+  const _FilterChipPill({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
+        decoration: BoxDecoration(
+          color: selected ? _InvoicesScreenState.brandGreen : Colors.white,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: selected
+                ? _InvoicesScreenState.brandGreen
+                : Colors.black.withValues(alpha: 0.07),
+          ),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: selected ? 16 : 10,
+              offset: const Offset(0, 6),
+              color: Colors.black.withValues(alpha: selected ? 0.08 : 0.035),
+            ),
+          ],
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selected ? Colors.white : _InvoicesScreenState.ink,
+            fontSize: 13,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
       ),
+    );
+  }
+}
+
+class _InvoiceCompactCard extends StatelessWidget {
+  const _InvoiceCompactCard({
+    required this.invoice,
+    required this.statusText,
+    required this.statusColor,
+    required this.dateText,
+    required this.amountText,
+    required this.onTap,
+    required this.onViewPdf,
+    required this.onSendInvoice,
+    required this.onMarkPaid,
+    required this.onEdit,
+    required this.onDelete,
+    this.onReceiptPdf,
+  });
+
+  final Invoice invoice;
+  final String statusText;
+  final Color statusColor;
+  final String dateText;
+  final String amountText;
+  final VoidCallback onTap;
+  final VoidCallback onViewPdf;
+  final VoidCallback onSendInvoice;
+  final VoidCallback onMarkPaid;
+  final VoidCallback? onReceiptPdf;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final client = invoice.clientName.trim().isEmpty
+        ? '-'
+        : invoice.clientName.trim();
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+                color: Colors.black.withValues(alpha: 0.045),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 13, 8, 13),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _StatusBadge(label: statusText, color: statusColor),
+                    const Spacer(),
+                    Text(
+                      amountText,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: _InvoicesScreenState.ink,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    PopupMenuButton<String>(
+                      tooltip: 'Actions',
+                      icon: const Icon(
+                        Icons.more_vert,
+                        color: _InvoicesScreenState.ink,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      onSelected: (value) {
+                        if (value == 'view_pdf') onViewPdf();
+                        if (value == 'send') onSendInvoice();
+                        if (value == 'paid') onMarkPaid();
+                        if (value == 'receipt') onReceiptPdf?.call();
+                        if (value == 'edit') onEdit();
+                        if (value == 'delete') onDelete();
+                      },
+                      itemBuilder: (_) => [
+                        const PopupMenuItem(
+                          value: 'view_pdf',
+                          child: _InvoiceMenuRow(
+                            icon: Icons.picture_as_pdf_outlined,
+                            label: 'View PDF',
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'send',
+                          child: _InvoiceMenuRow(
+                            icon: invoice.isSent
+                                ? Icons.undo_outlined
+                                : Icons.send_outlined,
+                            label: invoice.isSent
+                                ? 'Unsend Invoice'
+                                : 'Send Invoice',
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'paid',
+                          child: _InvoiceMenuRow(
+                            icon: invoice.isPaid
+                                ? Icons.undo_outlined
+                                : Icons.check_circle_outline,
+                            label: invoice.isPaid
+                                ? 'Mark as Unpaid'
+                                : 'Mark as Paid',
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'receipt',
+                          enabled: onReceiptPdf != null,
+                          child: const _InvoiceMenuRow(
+                            icon: Icons.receipt_long_outlined,
+                            label: 'Receipt PDF',
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'edit',
+                          child: _InvoiceMenuRow(
+                            icon: Icons.edit_outlined,
+                            label: 'Edit Invoice',
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: _InvoiceMenuRow(
+                            icon: Icons.delete_outline,
+                            label: 'Delete Invoice',
+                            danger: true,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 7),
+                Text(
+                  invoice.invoiceNumber.trim().isEmpty
+                      ? 'Invoice'
+                      : invoice.invoiceNumber.trim(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: _InvoicesScreenState.ink,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        client,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: _InvoicesScreenState.ink,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      dateText,
+                      style: const TextStyle(
+                        color: _InvoicesScreenState.muted,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  const _StatusBadge({required this.label, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.22)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 12,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
+}
+
+class _InvoiceMenuRow extends StatelessWidget {
+  const _InvoiceMenuRow({
+    required this.icon,
+    required this.label,
+    this.danger = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool danger;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = danger ? Colors.red : _InvoicesScreenState.ink;
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: color),
+        const SizedBox(width: 10),
+        Text(
+          label,
+          style: TextStyle(color: color, fontWeight: FontWeight.w800),
+        ),
+      ],
     );
   }
 }

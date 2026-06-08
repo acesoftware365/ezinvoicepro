@@ -209,3 +209,17 @@ Nota:
   - Tablet: layout master-detail con panel izquierdo de busqueda/lista y panel derecho con detalles del cliente.
   - Tablet: acciones Call, Share, Edit y Delete permanecen visibles en el detalle.
   - Se mantiene el flujo existente de add/edit/delete y los launchers existentes de tel/sms/WhatsApp/email.
+
+## 2026-06-08 - Invoices UI/UX Mobile Compact
+
+- Pedido: redisenar pantalla Invoices para iPhone 13 a iPhone 17 Pro Max con estilo Apple/Stripe/QuickBooks, menos scroll y menos ruido visual.
+- Version subida por cambio de repo: `1.0.10+34` -> `1.0.11+35`.
+- Login y Home ahora muestran `Version 1.0.11`.
+- Cambio implementado:
+  - `InvoicesScreen` ahora maneja busqueda y filtros por estado.
+  - Top mobile: titulo `Invoices`, search field y chips `All`, `Unsent`, `Sent`, `Paid`, `Overdue`.
+  - Cards compactas con badge de estado, amount, invoice number, client name, date y menu de tres puntos.
+  - Se removieron los botones visibles dentro de cada invoice card.
+  - Acciones movidas al menu: View PDF, Send Invoice, Mark as Paid/Unpaid, Receipt PDF, Edit Invoice, Delete Invoice.
+  - FAB verde circular mantiene crear nueva factura.
+  - Se conserva la logica existente de PDF, send/unsend, paid/unpaid, edit y delete.
