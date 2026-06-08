@@ -320,19 +320,38 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
         const SizedBox(height: 16),
         _businessInfoCard(t),
         const SizedBox(height: 16),
-        Row(
+        _phoneSettingsLayout(t),
+        const SizedBox(height: 16),
+        _footerCard(t),
+        const SizedBox(height: 16),
+        _presetsCard(t),
+      ],
+    );
+  }
+
+  Widget _phoneSettingsLayout(AppLocalizations t) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final canUseTwoColumns = constraints.maxWidth >= 430;
+        if (!canUseTwoColumns) {
+          return Column(
+            children: [
+              _settingsCard(t, currencyOnly: true),
+              const SizedBox(height: 12),
+              _settingsCard(t, taxOnly: true),
+            ],
+          );
+        }
+
+        return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(child: _settingsCard(t, currencyOnly: true)),
             const SizedBox(width: 12),
             Expanded(child: _settingsCard(t, taxOnly: true)),
           ],
-        ),
-        const SizedBox(height: 16),
-        _footerCard(t),
-        const SizedBox(height: 16),
-        _presetsCard(t),
-      ],
+        );
+      },
     );
   }
 
@@ -619,10 +638,16 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     return DropdownButtonFormField<String>(
       key: ValueKey('currency_$_currencyCode'),
       initialValue: _currencyCode,
+      isExpanded: true,
       decoration: InputDecoration(
         labelText: t.currencyLabel,
         prefixIcon: const Icon(Icons.attach_money, color: brandGreen),
       ),
+      selectedItemBuilder: (_) => const [
+        Text('USD', overflow: TextOverflow.ellipsis),
+        Text('DOP', overflow: TextOverflow.ellipsis),
+        Text('EUR', overflow: TextOverflow.ellipsis),
+      ],
       items: const [
         DropdownMenuItem(value: 'USD', child: Text('USD - \$')),
         DropdownMenuItem(value: 'DOP', child: Text('DOP - RD\$')),

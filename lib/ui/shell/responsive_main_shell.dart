@@ -225,10 +225,32 @@ class _BusinessNavIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final iconWidget = Icon(icon, color: color);
     if (!showBadge) return iconWidget;
-    return Badge(
-      backgroundColor: Colors.orange.shade700,
-      smallSize: 9,
-      child: iconWidget,
+    return ExcludeSemantics(
+      child: SizedBox(
+        width: 28,
+        height: 28,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            iconWidget,
+            Positioned(
+              right: 1,
+              top: 1,
+              child: IgnorePointer(
+                child: Container(
+                  width: 9,
+                  height: 9,
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade700,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -238,3 +238,13 @@ Nota:
   - Se conserva guardado de business profile, logo local, currency, tax, footer note y presets.
   - `ResponsiveMainShell` muestra badge de alerta en Business si faltan campos clave.
   - Snackbar una vez al dia recuerda completar Business Profile y permite abrir Business.
+
+## 2026-06-08 - Business Profile Overflow/Semantics Fix
+
+- Pedido: corregir overflow visible en Business Profile phone y excepcion Flutter semantics.
+- Version subida por cambio de repo: `1.0.12+36` -> `1.0.13+37`.
+- Login y Home ahora muestran `Version 1.0.13`.
+- Cambio implementado:
+  - Currency/Tax settings en phone ahora se apilan cuando el ancho no permite dos columnas sin overflow.
+  - Currency dropdown usa `isExpanded` y selected value corto para evitar overflow horizontal.
+  - Badge del tab Business ya no usa `Badge`; ahora usa `Stack` simple con semantica interna excluida para evitar el assert `!semantics.parentDataDirty`.
