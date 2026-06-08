@@ -125,6 +125,37 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     }
   }
 
+  Future<void> _selectPresetForItem(int index) async {
+    if (_presets.isEmpty) {
+      await _refreshPresets();
+    }
+    if (!mounted) return;
+
+    if (_presets.isEmpty) {
+      _snack('No service presets saved yet.');
+      return;
+    }
+
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _ServicePresetPickerSheet(presets: _presets),
+    );
+    if (selected == null || selected.trim().isEmpty || !mounted) return;
+    if (index < 0 || index >= _items.length) return;
+
+    final current = _items[index];
+    setState(() {
+      _items[index] = InvoiceItem(
+        description: selected.trim(),
+        dateMs: current.dateMs ?? _createdAtMs,
+        qty: current.qty,
+        price: current.price,
+      );
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -718,21 +749,32 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
                               const SizedBox(height: 8),
 
-                              // ✅ Save as preset (si tiene texto)
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: TextButton.icon(
-                                  onPressed: item.description.trim().isEmpty
-                                      ? null
-                                      : () => _savePresetFromText(
-                                          item.description,
-                                        ),
-                                  icon: const Icon(
-                                    Icons.bookmark_add_outlined,
-                                    size: 18,
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: OutlinedButton.icon(
+                                      onPressed: () => _selectPresetForItem(i),
+                                      icon: const Icon(
+                                        Icons.playlist_add_check_outlined,
+                                        size: 18,
+                                      ),
+                                      label: const Text('Select preset'),
+                                    ),
                                   ),
-                                  label: const Text('Save as preset'),
-                                ),
+                                  const SizedBox(width: 10),
+                                  TextButton.icon(
+                                    onPressed: item.description.trim().isEmpty
+                                        ? null
+                                        : () => _savePresetFromText(
+                                            item.description,
+                                          ),
+                                    icon: const Icon(
+                                      Icons.bookmark_add_outlined,
+                                      size: 18,
+                                    ),
+                                    label: const Text('Save preset'),
+                                  ),
+                                ],
                               ),
 
                               const SizedBox(height: 6),
@@ -1245,6 +1287,143 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ServicePresetPickerSheet extends StatefulWidget {
+  const _ServicePresetPickerSheet({required this.presets});
+
+  final List<String> presets;
+
+  @override
+  State<_ServicePresetPickerSheet> createState() =>
+      _ServicePresetPickerSheetState();
+}
+
+class _ServicePresetPickerSheetState extends State<_ServicePresetPickerSheet> {
+  String _query = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final filtered = widget.presets
+        .where(
+          (preset) =>
+              _query.trim().isEmpty ||
+              preset.toLowerCase().contains(_query.trim().toLowerCase()),
+        )
+        .toList();
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.72,
+      minChildSize: 0.45,
+      maxChildSize: 0.92,
+      builder: (context, controller) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 12),
+              child: Column(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.16),
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          color: _InvoiceFormScreenState.brandGreenSoft,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: const Icon(
+                          Icons.playlist_add_check_outlined,
+                          color: _InvoiceFormScreenState.brandGreen,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Text(
+                          'Select service preset',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  TextField(
+                    autofocus: true,
+                    onChanged: (value) => setState(() => _query = value),
+                    decoration: const InputDecoration(
+                      labelText: 'Search presets',
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: filtered.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'No presets found',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                          )
+                        : ListView.separated(
+                            controller: controller,
+                            itemCount: filtered.length,
+                            separatorBuilder: (_, __) => Divider(
+                              height: 0,
+                              color: Colors.black.withOpacity(0.06),
+                            ),
+                            itemBuilder: (_, index) {
+                              final preset = filtered[index];
+                              return ListTile(
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 4,
+                                ),
+                                leading: CircleAvatar(
+                                  backgroundColor:
+                                      _InvoiceFormScreenState.brandGreenSoft,
+                                  foregroundColor:
+                                      _InvoiceFormScreenState.brandGreen,
+                                  child: const Icon(Icons.home_repair_service),
+                                ),
+                                title: Text(
+                                  preset,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () => Navigator.pop(context, preset),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

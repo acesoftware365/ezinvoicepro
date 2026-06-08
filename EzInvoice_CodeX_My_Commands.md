@@ -338,3 +338,16 @@ Nota:
   - Esto mantiene funcionando los contactos importados del telefono y tambien los clientes guardados manualmente/importados en la base de datos.
 - Verificacion:
   - `dart analyze lib/features/invoices/invoice_form_screen.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos del cambio; quedan avisos informativos existentes de `withOpacity`/lint UI en esos archivos.
+
+## 2026-06-08 - Service Preset Picker Button
+
+- Pedido: los service presets pregrabados no se podian seleccionar de forma confiable desde New Invoice.
+- Version subida por cambio de repo: `1.0.20+44` -> `1.0.21+45`.
+- Login y Home ahora muestran `Version 1.0.21`.
+- Cambio implementado:
+  - Cada item del invoice ahora tiene boton `Select preset`.
+  - El boton abre un popup/bottom sheet con buscador y lista de service presets guardados.
+  - Al tocar un preset, se llena inmediatamente la descripcion del servicio del item seleccionado.
+  - El autocomplete existente se mantiene para escribir rapido, pero ya no es la unica forma de seleccionar presets.
+- Verificacion:
+  - `dart analyze lib/features/invoices/invoice_form_screen.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos del cambio; quedan avisos informativos existentes de `withOpacity`/lint UI en esos archivos.
