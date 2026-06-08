@@ -9,6 +9,7 @@ import 'package:ezinvoice/ui/auth_gate.dart';
 import 'package:ezinvoice/ui/shell/app_shell.dart';
 
 import 'services/ads/ads_manager.dart';
+import 'services/app_update/force_update_gate.dart';
 import 'services/purchases/subscription_manager.dart';
 
 import 'settings/locale_controller.dart';
@@ -20,9 +21,7 @@ void main() async {
   await LocaleController.instance.load();
 
   // 1) Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // 2) Ads
   await AdsManager.instance.init();
@@ -60,9 +59,7 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
 
-          home: const AppShell(
-            home: AuthGate(),
-          ),
+          home: const ForceUpdateGate(child: AppShell(home: AuthGate())),
         );
       },
     );

@@ -123,3 +123,31 @@ Nota:
 - Verificacion:
   - `dart format lib/ui/home_screen.dart lib/ui/login_screen.dart`: OK.
   - `dart analyze lib/ui/home_screen.dart lib/ui/login_screen.dart`: sin errores nuevos; solo infos preexistentes de `withOpacity` en Home.
+
+## 2026-06-08 - Force Update App Store / Google Play
+
+- Pedido: forzar update cuando se suba version nueva a App Store y Google Play.
+- Version subida por cambio de repo: `1.0.6+30` -> `1.0.7+31`.
+- Login y Home ahora muestran `Version 1.0.7`.
+- Cambio implementado:
+  - Nuevo `lib/services/app_update/force_update_gate.dart`.
+  - `main.dart` envuelve la app con `ForceUpdateGate` antes de Login/Home.
+  - Lee Firestore: `app_config/force_update`.
+  - Si `enabled == true` y la version/build instalado es menor que el minimo requerido, bloquea la app y muestra boton `Update now` / `Actualizar ahora`.
+  - Abre App Store: `https://apps.apple.com/app/id6757661737`.
+  - Abre Google Play: `https://play.google.com/store/apps/details?id=com.liisgo.ezinvoice`.
+- Campos Firestore esperados:
+  - `enabled`: bool.
+  - `iosMinimumVersion`: string, ejemplo `1.0.7`.
+  - `iosMinimumBuild`: number, ejemplo `31`.
+  - `iosStoreUrl`: string opcional.
+  - `androidMinimumVersion`: string, ejemplo `1.0.7`.
+  - `androidMinimumBuild`: number, ejemplo `31`.
+  - `androidStoreUrl`: string opcional.
+- Para forzar update despues de publicar en tiendas:
+  - Esperar a que App Store / Google Play tengan la version nueva disponible.
+  - Actualizar Firestore `app_config/force_update` con `enabled: true` y el minimum build/version nuevo.
+  - Para apagar el bloqueo, poner `enabled: false`.
+- Verificacion:
+  - `dart format lib/services/app_update/force_update_gate.dart lib/main.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: OK.
+  - `dart analyze lib/services/app_update/force_update_gate.dart lib/main.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos; solo infos preexistentes de `withOpacity` en Home.
