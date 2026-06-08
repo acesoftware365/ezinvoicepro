@@ -172,17 +172,34 @@ class _NewClientScreenState extends State<NewClientScreen> {
   }
 
   void _applyContact(PickedContact contact) {
+    final phone = _formatImportedPhone(contact.phone);
     setState(() {
       if (contact.name.trim().isNotEmpty) _name.text = contact.name.trim();
       if (contact.email.trim().isNotEmpty) _email.text = contact.email.trim();
-      if (contact.phone.trim().isNotEmpty) {
-        _phoneText.text = contact.phone.trim();
-        _phoneDisplay = contact.phone.trim();
-        _phoneE164 = contact.phone.trim().startsWith('+')
-            ? contact.phone.trim()
-            : '';
+      if (phone.isNotEmpty) {
+        _phoneText.text = phone;
+        _phoneDisplay = phone;
+        _phoneE164 = '';
+        _phoneIso = 'US';
       }
     });
+  }
+
+  String _formatImportedPhone(String raw) {
+    var digits = raw.replaceAll(RegExp(r'\D'), '');
+    if (digits.length == 11 && digits.startsWith('1')) {
+      digits = digits.substring(1);
+    }
+
+    if (digits.length == 10) {
+      return '${digits.substring(0, 3)}-${digits.substring(3, 6)}-${digits.substring(6)}';
+    }
+
+    if (digits.length == 9) {
+      return '${digits.substring(0, 3)}-${digits.substring(3, 5)}-${digits.substring(5)}';
+    }
+
+    return digits;
   }
 
   void _showSnack(String message) {

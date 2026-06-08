@@ -2,6 +2,7 @@ import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // ✅ ADD: SubscriptionManager
 import 'package:ezinvoice/services/purchases/subscription_manager.dart';
@@ -14,7 +15,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  static const String _forcedVersionText = 'Version 1.0.15';
+  static const String _forcedVersionText = 'Version 1.0.16';
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -27,11 +28,38 @@ class _LoginScreenState extends State<LoginScreen> {
   static const String _reviewDemoEmail = 'demo.review@liisgo.com';
   static const String _legacyReviewDemoEmail = 'demo@invoiceapp.test';
   static const String _reviewDemoPassword = 'Demo1234!';
+  static const String _rememberLoginKey = 'remember_login';
+  static const String _rememberedEmailKey = 'remembered_login_email';
+  bool _rememberLogin = false;
 
   @override
   void initState() {
     super.initState();
     _versionText = _forcedVersionText;
+    _loadRememberedLogin();
+  }
+
+  Future<void> _loadRememberedLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    final remember = prefs.getBool(_rememberLoginKey) ?? false;
+    final email = prefs.getString(_rememberedEmailKey) ?? '';
+    if (!mounted) return;
+    setState(() {
+      _rememberLogin = remember;
+      if (remember && email.trim().isNotEmpty) {
+        _emailController.text = email.trim();
+      }
+    });
+  }
+
+  Future<void> _saveRememberedLogin(String email) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_rememberLoginKey, _rememberLogin);
+    if (_rememberLogin) {
+      await prefs.setString(_rememberedEmailKey, email.trim());
+    } else {
+      await prefs.remove(_rememberedEmailKey);
+    }
   }
 
   // 🔹 helper YYYY-MM
@@ -167,6 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // ✅ Ensure user doc
       await _ensureUserDoc(cred.user!);
+      await _saveRememberedLogin(emailInput);
 
       // ✅ Vincula usuario actual al manager y prepara IAP/restore.
       SubscriptionManager.instance.setCurrentUserEmail(cred.user?.email);
@@ -320,7 +349,26 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 8),
+
+                  if (_isLogin)
+                    CheckboxListTile(
+                      value: _rememberLogin,
+                      onChanged: _loading
+                          ? null
+                          : (value) =>
+                                setState(() => _rememberLogin = value ?? false),
+                      controlAffinity: ListTileControlAffinity.leading,
+                      contentPadding: EdgeInsets.zero,
+                      visualDensity: VisualDensity.compact,
+                      activeColor: brandGreen,
+                      title: Text(
+                        _isSpanish ? 'Recordar mi email' : 'Remember my email',
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+
+                  const SizedBox(height: 12),
 
                   // 🔹 Button
                   ElevatedButton(

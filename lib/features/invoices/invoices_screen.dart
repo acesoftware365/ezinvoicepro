@@ -26,6 +26,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
   final _searchFocus = FocusNode();
   String _query = '';
   _InvoiceFilter _filter = _InvoiceFilter.all;
+  bool _deletingInvoice = false;
 
   @override
   void dispose() {
@@ -97,20 +98,21 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
   }
 
   Future<void> _confirmDelete(BuildContext context, Invoice inv) async {
+    if (_deletingInvoice) return;
     final t = AppLocalizations.of(context);
 
     final ok = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(t.delete),
         content: Text('${t.delete} ${inv.invoiceNumber}?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.of(dialogContext).pop(false),
             child: Text(t.cancel),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
             child: Text(t.delete),
           ),
         ],
@@ -120,6 +122,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
     if (ok != true) return;
 
     try {
+      if (mounted) setState(() => _deletingInvoice = true);
       await InvoicesService.delete(inv.id);
       if (context.mounted) {
         ScaffoldMessenger.of(
@@ -132,6 +135,8 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
           context,
         ).showSnackBar(SnackBar(content: Text('Delete error: $e')));
       }
+    } finally {
+      if (mounted) setState(() => _deletingInvoice = false);
     }
   }
 

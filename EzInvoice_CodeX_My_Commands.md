@@ -274,3 +274,17 @@ Nota:
   - Banner adaptive mantiene reintentos progresivos y recarga al volver a la app.
 - Verificacion:
   - `dart analyze lib/services/purchases/subscription_manager.dart lib/ui/auth_gate.dart`: OK.
+
+## 2026-06-08 - Invoice Delete / Contact Import / Remember Login Fix
+
+- Pedido: al borrar invoice, Cancel/Delete dejaba la pantalla en blanco; al importar contactos, telefonos con `+1` daban error; en Login agregar opcion para recordar login.
+- Version subida por cambio de repo: `1.0.15+39` -> `1.0.16+40`.
+- Login y Home ahora muestran `Version 1.0.16`.
+- Cambio implementado:
+  - `InvoicesScreen` usa el `dialogContext` del `AlertDialog` para cerrar solo el dialogo, no la ruta/pantalla.
+  - Se agrego bloqueo `_deletingInvoice` para evitar taps duplicados mientras se borra.
+  - Import de contactos limpia caracteres no numericos, remueve prefijo `+1`/`1` cuando aplica y muestra telefono local formateado.
+  - Login agrega checkbox `Remember my email` / `Recordar mi email` usando `SharedPreferences`.
+  - Por seguridad no se guarda password en texto plano; solo email y preferencia.
+- Verificacion:
+  - `dart analyze lib/features/invoices/invoices_screen.dart lib/ui/clients/client_form_screen.dart lib/ui/login_screen.dart`: OK.
