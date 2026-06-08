@@ -326,3 +326,15 @@ Nota:
   - Se elimina el dispose que causaba el assert de Flutter al cerrar con `Save`.
 - Verificacion:
   - `dart analyze lib/ui/business/business_profile_screen.dart`: OK.
+
+## 2026-06-08 - Saved Client Phone Invoice Picker Fix
+
+- Pedido: al seleccionar un cliente ya guardado desde New Invoice, el telefono se veia en la lista pero no se copiaba al formulario.
+- Causa: el picker mostraba `phoneDisplay`, pero al seleccionar enviaba solo `phoneE164`; los clientes creados con el formato local nuevo pueden tener `phoneE164` vacio.
+- Version subida por cambio de repo: `1.0.19+43` -> `1.0.20+44`.
+- Login y Home ahora muestran `Version 1.0.20`.
+- Cambio implementado:
+  - El selector de clientes usa `phoneE164` cuando existe y, si esta vacio, usa `phoneDisplay`.
+  - Esto mantiene funcionando los contactos importados del telefono y tambien los clientes guardados manualmente/importados en la base de datos.
+- Verificacion:
+  - `dart analyze lib/features/invoices/invoice_form_screen.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos del cambio; quedan avisos informativos existentes de `withOpacity`/lint UI en esos archivos.

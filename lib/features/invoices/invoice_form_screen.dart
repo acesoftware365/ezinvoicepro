@@ -8,7 +8,7 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:ezinvoice/models/invoice.dart';
 import 'package:ezinvoice/models/client.dart';
 import 'package:ezinvoice/services/clients/clients_service.dart';
-import 'package:ezinvoice/services/invoices/invoices_service.dart' hide InvoiceItem, Invoice;
+import 'package:ezinvoice/services/invoices/invoices_service.dart';
 
 import 'package:ezinvoice/services/plan/plan_guard.dart';
 
@@ -66,10 +66,12 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   static const brandGreenSoft = Color(0xFFE6F3EF);
   static const pageBg = Color(0xFFF6F7F9);
 
-  double _toDouble(String s) => double.tryParse(s.trim().replaceAll(',', '')) ?? 0;
+  double _toDouble(String s) =>
+      double.tryParse(s.trim().replaceAll(',', '')) ?? 0;
 
   double get _taxRateValue => _toDouble(_taxRate.text);
-  double get _subtotalValue => _items.fold(0.0, (sum, it) => sum + it.lineTotal);
+  double get _subtotalValue =>
+      _items.fold(0.0, (sum, it) => sum + it.lineTotal);
   double get _taxAmount => _subtotalValue * (_taxRateValue / 100.0);
 
   double get _tipPercentValue => _toDouble(_tipPercent.text);
@@ -172,16 +174,18 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
         _items
           ..clear()
-          ..addAll(inv.items.isNotEmpty
-              ? inv.items
-              : [
-            InvoiceItem(
-              description: 'Service',
-              dateMs: _createdAtMs,
-              qty: 1,
-              price: 0,
-            )
-          ]);
+          ..addAll(
+            inv.items.isNotEmpty
+                ? inv.items
+                : [
+                    InvoiceItem(
+                      description: 'Service',
+                      dateMs: _createdAtMs,
+                      qty: 1,
+                      price: 0,
+                    ),
+                  ],
+          );
 
         _tipIsPercent = inv.tipIsPercent;
 
@@ -282,7 +286,11 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     );
     if (picked == null) return;
 
-    final ms = DateTime(picked.year, picked.month, picked.day).millisecondsSinceEpoch;
+    final ms = DateTime(
+      picked.year,
+      picked.month,
+      picked.day,
+    ).millisecondsSinceEpoch;
 
     setState(() {
       _items[index] = InvoiceItem(
@@ -307,19 +315,18 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     );
     if (picked == null) return;
 
-    final ms = DateTime(picked.year, picked.month, picked.day).millisecondsSinceEpoch;
+    final ms = DateTime(
+      picked.year,
+      picked.month,
+      picked.day,
+    ).millisecondsSinceEpoch;
     setState(() => _dueAtMs = ms);
   }
 
   void _addItem() {
     setState(() {
       _items.add(
-        InvoiceItem(
-          description: '',
-          dateMs: _createdAtMs,
-          qty: 1,
-          price: 0,
-        ),
+        InvoiceItem(description: '', dateMs: _createdAtMs, qty: 1, price: 0),
       );
     });
   }
@@ -473,9 +480,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     final t = AppLocalizations.of(context);
 
     if (_loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final theme = Theme.of(context);
@@ -514,7 +519,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
             borderRadius: BorderRadius.circular(14),
             borderSide: const BorderSide(color: brandGreen, width: 1.6),
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 12,
+          ),
         ),
       ),
       child: Scaffold(
@@ -523,10 +531,17 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           actions: [
             TextButton.icon(
               onPressed: _saving ? null : _pickClient,
-              icon: const Icon(Icons.person_search, color: Colors.white, size: 18),
+              icon: const Icon(
+                Icons.person_search,
+                color: Colors.white,
+                size: 18,
+              ),
               label: Text(
                 t.pickClient,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
             const SizedBox(width: 6),
@@ -559,14 +574,19 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                             readOnly: true,
                             decoration: InputDecoration(
                               labelText: t.invoiceAutoNumberLabel,
-                              prefixIcon: const Icon(Icons.receipt_long_outlined),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                              prefixIcon: const Icon(
+                                Icons.receipt_long_outlined,
+                              ),
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
                             ),
                           ),
                           const SizedBox(height: 10),
                           _infoRow(
                             icon: Icons.calendar_month_outlined,
-                            title: t.invoiceDateLabel(_formatDate(_createdAtMs)),
+                            title: t.invoiceDateLabel(
+                              _formatDate(_createdAtMs),
+                            ),
                           ),
                           const SizedBox(height: 10),
 
@@ -574,25 +594,39 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                             onTap: _pickDueDate,
                             borderRadius: BorderRadius.circular(14),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 12,
+                              ),
                               decoration: BoxDecoration(
                                 color: brandGreenSoft,
                                 borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: brandGreen.withOpacity(0.18)),
+                                border: Border.all(
+                                  color: brandGreen.withOpacity(0.18),
+                                ),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.event_available, size: 18, color: brandGreen),
+                                  const Icon(
+                                    Icons.event_available,
+                                    size: 18,
+                                    color: brandGreen,
+                                  ),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
                                       'Due Date: ${_dueAtMs == null ? '-' : _formatDate(_dueAtMs!)}',
-                                      style: const TextStyle(fontWeight: FontWeight.w800),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w800,
+                                      ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                  const Icon(Icons.chevron_right, color: brandGreen),
+                                  const Icon(
+                                    Icons.chevron_right,
+                                    color: brandGreen,
+                                  ),
                                 ],
                               ),
                             ),
@@ -619,7 +653,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                               labelText: t.clientNameLabel,
                               prefixIcon: const Icon(Icons.person_outline),
                             ),
-                            validator: (v) => (v ?? '').trim().isEmpty ? t.clientNameRequired : null,
+                            validator: (v) => (v ?? '').trim().isEmpty
+                                ? t.clientNameRequired
+                                : null,
                           ),
                           const SizedBox(height: 10),
                           TextFormField(
@@ -632,7 +668,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                             validator: (v) {
                               final value = (v ?? '').trim();
                               if (value.isEmpty) return null;
-                              if (!_isValidEmail(value)) return t.invalidEmailFormat;
+                              if (!_isValidEmail(value))
+                                return t.invalidEmailFormat;
                               return null;
                             },
                           ),
@@ -687,8 +724,13 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                                 child: TextButton.icon(
                                   onPressed: item.description.trim().isEmpty
                                       ? null
-                                      : () => _savePresetFromText(item.description),
-                                  icon: const Icon(Icons.bookmark_add_outlined, size: 18),
+                                      : () => _savePresetFromText(
+                                          item.description,
+                                        ),
+                                  icon: const Icon(
+                                    Icons.bookmark_add_outlined,
+                                    size: 18,
+                                  ),
                                   label: const Text('Save as preset'),
                                 ),
                               ),
@@ -699,25 +741,41 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                                 onTap: () => _pickItemDate(i),
                                 borderRadius: BorderRadius.circular(14),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                    horizontal: 12,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: brandGreenSoft,
                                     borderRadius: BorderRadius.circular(14),
-                                    border: Border.all(color: brandGreen.withOpacity(0.18)),
+                                    border: Border.all(
+                                      color: brandGreen.withOpacity(0.18),
+                                    ),
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.event, size: 18, color: brandGreen),
+                                      const Icon(
+                                        Icons.event,
+                                        size: 18,
+                                        color: brandGreen,
+                                      ),
                                       const SizedBox(width: 10),
                                       Expanded(
                                         child: Text(
-                                          t.itemDateLabel(_formatDate(itemDateMs)),
-                                          style: const TextStyle(fontWeight: FontWeight.w800),
+                                          t.itemDateLabel(
+                                            _formatDate(itemDateMs),
+                                          ),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                          ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
-                                      const Icon(Icons.chevron_right, color: brandGreen),
+                                      const Icon(
+                                        Icons.chevron_right,
+                                        color: brandGreen,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -728,9 +786,18 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                               if (twoCols) ...[
                                 Row(
                                   children: [
-                                    Expanded(child: _qtyField(i, item, itemDateMs, t)),
+                                    Expanded(
+                                      child: _qtyField(i, item, itemDateMs, t),
+                                    ),
                                     const SizedBox(width: 12),
-                                    Expanded(child: _priceField(i, item, itemDateMs, t)),
+                                    Expanded(
+                                      child: _priceField(
+                                        i,
+                                        item,
+                                        itemDateMs,
+                                        t,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ] else ...[
@@ -745,15 +812,24 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      t.lineTotalLabel(item.lineTotal.toStringAsFixed(2)),
-                                      style: const TextStyle(fontWeight: FontWeight.w900),
+                                      t.lineTotalLabel(
+                                        item.lineTotal.toStringAsFixed(2),
+                                      ),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w900,
+                                      ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                   IconButton(
-                                    onPressed: _items.length <= 1 ? null : () => _removeItem(i),
-                                    icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                                    onPressed: _items.length <= 1
+                                        ? null
+                                        : () => _removeItem(i),
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.redAccent,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -772,7 +848,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                         children: [
                           TextFormField(
                             controller: _taxRate,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
                             decoration: InputDecoration(
                               labelText: t.taxDefaultOwnerLabel,
                               prefixIcon: const Icon(Icons.percent),
@@ -787,7 +865,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                                 child: ChoiceChip(
                                   label: Text(t.tipPercentChip),
                                   selected: _tipIsPercent,
-                                  onSelected: (_) => setState(() => _tipIsPercent = true),
+                                  onSelected: (_) =>
+                                      setState(() => _tipIsPercent = true),
                                 ),
                               ),
                               const SizedBox(width: 10),
@@ -795,7 +874,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                                 child: ChoiceChip(
                                   label: Text(t.tipAmountChip),
                                   selected: !_tipIsPercent,
-                                  onSelected: (_) => setState(() => _tipIsPercent = false),
+                                  onSelected: (_) =>
+                                      setState(() => _tipIsPercent = false),
                                 ),
                               ),
                             ],
@@ -805,7 +885,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                           if (_tipIsPercent)
                             TextFormField(
                               controller: _tipPercent,
-                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
                               decoration: InputDecoration(
                                 labelText: t.tipPercentLabel,
                                 prefixIcon: const Icon(Icons.percent),
@@ -815,7 +898,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                           else
                             TextFormField(
                               controller: _tipAmount,
-                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
                               decoration: InputDecoration(
                                 labelText: t.tipAmountLabel,
                                 prefixIcon: const Icon(Icons.attach_money),
@@ -864,18 +950,30 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                         onPressed: _saving ? null : _save,
                         icon: _saving
                             ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                        )
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
                             : const Icon(Icons.save_outlined),
-                        label: Text(_saving ? t.saving : (_isEdit ? t.updateInvoice : t.saveInvoice)),
+                        label: Text(
+                          _saving
+                              ? t.saving
+                              : (_isEdit ? t.updateInvoice : t.saveInvoice),
+                        ),
                         style: FilledButton.styleFrom(
                           backgroundColor: brandGreen,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                          textStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          textStyle: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ),
@@ -916,7 +1014,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: badgeColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(999),
@@ -936,7 +1037,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
               Expanded(
                 child: Text(
                   isPaid ? 'Paid date: $paidDate' : 'Not paid yet',
-                  style: TextStyle(fontWeight: FontWeight.w800, color: Colors.black.withOpacity(0.70)),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black.withOpacity(0.70),
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -951,7 +1055,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                 Expanded(
                   child: Text(
                     'Method: ${_paymentMethod.toUpperCase()}',
-                    style: TextStyle(fontWeight: FontWeight.w800, color: Colors.black.withOpacity(0.70)),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: Colors.black.withOpacity(0.70),
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -964,7 +1071,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Note: ${_paymentNoteCtrl.text.trim()}',
-                  style: TextStyle(color: Colors.black.withOpacity(0.60), fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: Colors.black.withOpacity(0.60),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -988,7 +1098,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                   backgroundColor: brandGreen,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   textStyle: const TextStyle(fontWeight: FontWeight.w900),
                 ),
               ),
@@ -999,7 +1111,12 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     );
   }
 
-  Widget _qtyField(int i, InvoiceItem item, int itemDateMs, AppLocalizations t) {
+  Widget _qtyField(
+    int i,
+    InvoiceItem item,
+    int itemDateMs,
+    AppLocalizations t,
+  ) {
     return TextFormField(
       initialValue: item.qty.toString(),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -1020,7 +1137,12 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     );
   }
 
-  Widget _priceField(int i, InvoiceItem item, int itemDateMs, AppLocalizations t) {
+  Widget _priceField(
+    int i,
+    InvoiceItem item,
+    int itemDateMs,
+    AppLocalizations t,
+  ) {
     return TextFormField(
       initialValue: item.price.toStringAsFixed(2),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -1144,7 +1266,8 @@ class _PresetDescriptionField extends StatefulWidget {
   });
 
   @override
-  State<_PresetDescriptionField> createState() => _PresetDescriptionFieldState();
+  State<_PresetDescriptionField> createState() =>
+      _PresetDescriptionFieldState();
 }
 
 class _PresetDescriptionFieldState extends State<_PresetDescriptionField> {
@@ -1162,7 +1285,9 @@ class _PresetDescriptionFieldState extends State<_PresetDescriptionField> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initial != widget.initial && _ctrl.text != widget.initial) {
       _ctrl.text = widget.initial;
-      _ctrl.selection = TextSelection.fromPosition(TextPosition(offset: _ctrl.text.length));
+      _ctrl.selection = TextSelection.fromPosition(
+        TextPosition(offset: _ctrl.text.length),
+      );
     }
   }
 
@@ -1182,7 +1307,9 @@ class _PresetDescriptionFieldState extends State<_PresetDescriptionField> {
       },
       onSelected: (v) {
         _ctrl.text = v;
-        _ctrl.selection = TextSelection.fromPosition(TextPosition(offset: _ctrl.text.length));
+        _ctrl.selection = TextSelection.fromPosition(
+          TextPosition(offset: _ctrl.text.length),
+        );
       },
       fieldViewBuilder: (context, textCtrl, focusNode, onFieldSubmitted) {
         // mantén el controller principal
@@ -1199,7 +1326,8 @@ class _PresetDescriptionFieldState extends State<_PresetDescriptionField> {
             labelText: widget.label,
             prefixIcon: const Icon(Icons.subject_outlined),
           ),
-          validator: (v) => (v ?? '').trim().isEmpty ? widget.validatorMsg : null,
+          validator: (v) =>
+              (v ?? '').trim().isEmpty ? widget.validatorMsg : null,
         );
       },
     );
@@ -1294,7 +1422,10 @@ class _ClientPickerSheetState extends State<_ClientPickerSheet> {
                     Expanded(
                       child: Text(
                         t.pickClient,
-                        style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -1363,82 +1494,126 @@ class _ClientPickerSheetState extends State<_ClientPickerSheet> {
               Expanded(
                 child: _tab == 0
                     ? StreamBuilder<List<Client>>(
-                  stream: ClientsService.streamClients(),
-                  builder: (context, s) {
-                    final items = (s.data ?? [])
-                        .where((c) => _q.trim().isEmpty ? true : c.name.toLowerCase().contains(_q.toLowerCase()))
-                        .toList();
+                        stream: ClientsService.streamClients(),
+                        builder: (context, s) {
+                          final items = (s.data ?? [])
+                              .where(
+                                (c) => _q.trim().isEmpty
+                                    ? true
+                                    : c.name.toLowerCase().contains(
+                                        _q.toLowerCase(),
+                                      ),
+                              )
+                              .toList();
 
-                    if (items.isEmpty) {
-                      return Center(child: Text(t.noSavedClients));
-                    }
+                          if (items.isEmpty) {
+                            return Center(child: Text(t.noSavedClients));
+                          }
 
-                    return ListView.separated(
-                      controller: controller,
-                      itemCount: items.length,
-                      separatorBuilder: (_, __) => Divider(height: 0, color: Colors.black.withOpacity(0.06)),
-                      itemBuilder: (_, i) {
-                        final c = items[i];
-                        final sub = [c.email, c.phoneDisplay].where((e) => e.trim().isNotEmpty).join(' • ');
-
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: brandGreen.withOpacity(0.10),
-                            foregroundColor: brandGreen,
-                            child: const Icon(Icons.person_outline),
-                          ),
-                          title: Text(c.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          subtitle: sub.isEmpty ? null : Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          onTap: () => Navigator.pop(
-                            context,
-                            _PickedClient(
-                              clientId: c.id,
-                              name: c.name,
-                              email: c.email,
-                              phone: c.phoneE164,
+                          return ListView.separated(
+                            controller: controller,
+                            itemCount: items.length,
+                            separatorBuilder: (_, __) => Divider(
+                              height: 0,
+                              color: Colors.black.withOpacity(0.06),
                             ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                )
+                            itemBuilder: (_, i) {
+                              final c = items[i];
+                              final sub = [
+                                c.email,
+                                c.phoneDisplay,
+                              ].where((e) => e.trim().isNotEmpty).join(' • ');
+
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: brandGreen.withOpacity(0.10),
+                                  foregroundColor: brandGreen,
+                                  child: const Icon(Icons.person_outline),
+                                ),
+                                title: Text(
+                                  c.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                subtitle: sub.isEmpty
+                                    ? null
+                                    : Text(
+                                        sub,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                onTap: () => Navigator.pop(
+                                  context,
+                                  _PickedClient(
+                                    clientId: c.id,
+                                    name: c.name,
+                                    email: c.email,
+                                    phone: c.phoneE164.trim().isNotEmpty
+                                        ? c.phoneE164
+                                        : c.phoneDisplay,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      )
                     : _contactsLoading
                     ? const Center(child: CircularProgressIndicator())
                     : ListView.separated(
-                  controller: controller,
-                  itemCount: filteredContacts.length,
-                  separatorBuilder: (_, __) => Divider(height: 0, color: Colors.black.withOpacity(0.06)),
-                  itemBuilder: (_, i) {
-                    final c = filteredContacts[i];
-
-                    final name = c.displayName.trim();
-                    final email = c.emails.isNotEmpty ? c.emails.first.address : '';
-                    final phone = c.phones.isNotEmpty ? c.phones.first.number : '';
-
-                    final title = name.isEmpty ? t.noName : name;
-                    final sub = [email, phone].where((e) => e.trim().isNotEmpty).join(' • ');
-
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: brandGreen.withOpacity(0.10),
-                        foregroundColor: brandGreen,
-                        child: const Icon(Icons.contact_phone_outlined),
-                      ),
-                      title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                      subtitle: sub.isEmpty ? null : Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis),
-                      onTap: () => Navigator.pop(
-                        context,
-                        _PickedClient(
-                          clientId: '',
-                          name: title == t.noName ? '' : title,
-                          email: email,
-                          phone: phone,
+                        controller: controller,
+                        itemCount: filteredContacts.length,
+                        separatorBuilder: (_, __) => Divider(
+                          height: 0,
+                          color: Colors.black.withOpacity(0.06),
                         ),
+                        itemBuilder: (_, i) {
+                          final c = filteredContacts[i];
+
+                          final name = c.displayName.trim();
+                          final email = c.emails.isNotEmpty
+                              ? c.emails.first.address
+                              : '';
+                          final phone = c.phones.isNotEmpty
+                              ? c.phones.first.number
+                              : '';
+
+                          final title = name.isEmpty ? t.noName : name;
+                          final sub = [
+                            email,
+                            phone,
+                          ].where((e) => e.trim().isNotEmpty).join(' • ');
+
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: brandGreen.withOpacity(0.10),
+                              foregroundColor: brandGreen,
+                              child: const Icon(Icons.contact_phone_outlined),
+                            ),
+                            title: Text(
+                              title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: sub.isEmpty
+                                ? null
+                                : Text(
+                                    sub,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                            onTap: () => Navigator.pop(
+                              context,
+                              _PickedClient(
+                                clientId: '',
+                                name: title == t.noName ? '' : title,
+                                email: email,
+                                phone: phone,
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ],
           ),
@@ -1447,7 +1622,11 @@ class _ClientPickerSheetState extends State<_ClientPickerSheet> {
     );
   }
 
-  Widget _tabBtn({required String text, required bool selected, required VoidCallback onTap}) {
+  Widget _tabBtn({
+    required String text,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -1540,12 +1719,22 @@ class _MarkPaidDialogState extends State<_MarkPaidDialog> {
             ),
             items: const [
               DropdownMenuItem(value: PaymentMethod.cash, child: Text('Cash')),
-              DropdownMenuItem(value: PaymentMethod.zelle, child: Text('Zelle')),
+              DropdownMenuItem(
+                value: PaymentMethod.zelle,
+                child: Text('Zelle'),
+              ),
               DropdownMenuItem(value: PaymentMethod.card, child: Text('Card')),
-              DropdownMenuItem(value: PaymentMethod.check, child: Text('Check')),
-              DropdownMenuItem(value: PaymentMethod.other, child: Text('Other')),
+              DropdownMenuItem(
+                value: PaymentMethod.check,
+                child: Text('Check'),
+              ),
+              DropdownMenuItem(
+                value: PaymentMethod.other,
+                child: Text('Other'),
+              ),
             ],
-            onChanged: (v) => setState(() => _method = v ?? PaymentMethod.other),
+            onChanged: (v) =>
+                setState(() => _method = v ?? PaymentMethod.other),
           ),
           const SizedBox(height: 10),
           TextField(
@@ -1559,10 +1748,16 @@ class _MarkPaidDialogState extends State<_MarkPaidDialog> {
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
         FilledButton(
           onPressed: () {
-            Navigator.pop(context, _PayResult(method: _method, note: _note.text.trim()));
+            Navigator.pop(
+              context,
+              _PayResult(method: _method, note: _note.text.trim()),
+            );
           },
           child: const Text('Confirm'),
         ),
