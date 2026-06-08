@@ -28,6 +28,7 @@ Nota:
 
 ## Reglas De Trabajo
 
+- Siempre preguntar/decir primero que entendi antes de hacer cualquier trabajo: "Esto es lo que entendi...".
 - Antes de hacer cambios, decir brevemente lo entendido.
 - No pedir aclaraciones si hay una decision razonable y segura.
 - Guardar en este archivo los cambios importantes, decisiones y comandos utiles.
@@ -68,3 +69,10 @@ Nota:
 - Verificacion:
   - `dart format lib/features/account/change_password_screen.dart lib/ui/home_screen.dart`: OK.
   - `dart analyze lib/features/account/change_password_screen.dart lib/ui/home_screen.dart`: sin errores; solo infos preexistentes de `withOpacity` en Home.
+
+## 2026-06-08 - Regla De Entendimiento
+
+- Pedido: grabar en el documento que siempre debo preguntar/decir que entendi antes de actuar.
+- Regla agregada en `Reglas De Trabajo`.
+- Version subida por cambio de repo: `1.0.1+25` -> `1.0.2+26`.
+- Texto visible en Home actualizado: `v1.0.2 (26)`.

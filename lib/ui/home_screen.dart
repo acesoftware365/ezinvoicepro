@@ -39,7 +39,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const String _forcedVersionText = 'v1.0.1 (25)';
+  static const String _forcedVersionText = 'v1.0.2 (26)';
   // ---- Brand tokens ----
   static const Color brandGreen = Color(0xFF1F6E5C);
   static const Color pageBg = Color(0xFFF6F7F9);
