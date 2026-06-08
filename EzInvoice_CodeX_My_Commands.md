@@ -194,3 +194,18 @@ Nota:
 - Verificacion:
   - `dart format lib/ui/shell/responsive_main_shell.dart lib/ui/auth_gate.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: OK.
   - `dart analyze lib/ui/shell/responsive_main_shell.dart lib/ui/auth_gate.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos; solo infos preexistentes en `home_screen.dart`.
+
+## 2026-06-08 - Clients UI/UX Mobile + Tablet
+
+- Pedido: rehacer Contactos/Clients segun mockups: mobile compacto con cards, menu de tres puntos y FAB; tablet master-detail.
+- Version subida por cambio de repo: `1.0.9+33` -> `1.0.10+34`.
+- Login y Home ahora muestran `Version 1.0.10`.
+- Cambio implementado:
+  - `ClientsScreen` ahora es responsive.
+  - Mobile: titulo grande, search bar, cards compactas con avatar/letra, nombre, telefono, email y menu de tres puntos.
+  - Mobile: no se muestran botones separados Call/SMS/WhatsApp/Email/Delete dentro de cada card.
+  - Menu por cliente: Call, Message, Share, Edit, Delete.
+  - Share abre bottom sheet con SMS, WhatsApp y Email.
+  - Tablet: layout master-detail con panel izquierdo de busqueda/lista y panel derecho con detalles del cliente.
+  - Tablet: acciones Call, Share, Edit y Delete permanecen visibles en el detalle.
+  - Se mantiene el flujo existente de add/edit/delete y los launchers existentes de tel/sms/WhatsApp/email.
