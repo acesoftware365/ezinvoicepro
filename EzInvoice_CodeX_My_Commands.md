@@ -76,3 +76,13 @@ Nota:
 - Regla agregada en `Reglas De Trabajo`.
 - Version subida por cambio de repo: `1.0.1+25` -> `1.0.2+26`.
 - Texto visible en Home actualizado: `v1.0.2 (26)`.
+
+## 2026-06-08 - Version En Login
+
+- Problema reportado con captura: pantalla de Login seguia mostrando `v1.0.0 (23)`.
+- Causa: `lib/ui/login_screen.dart` tenia su propio `_forcedVersionText`, separado del Home.
+- Cambio:
+  - Login actualizado a `v1.0.3 (27)`.
+  - Home actualizado a `v1.0.3 (27)`.
+  - `pubspec.yaml` actualizado a `1.0.3+27`.
+- Nota frecuente: cuando se suba version, revisar todos los textos `_forcedVersionText` con `rg "_forcedVersionText|v1\\." lib pubspec.yaml`.
