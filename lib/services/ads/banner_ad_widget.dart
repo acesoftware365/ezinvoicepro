@@ -56,7 +56,11 @@ class _BannerAdWidgetState extends State<BannerAdWidget>
   }
 
   Future<void> _loadForCurrentWidth({bool force = false}) async {
-    if (!AdsManager.instance.adsEnabled || _isLoading) return;
+    if (_isLoading) return;
+    if (!AdsManager.instance.adsEnabled) {
+      _scheduleRetry(minDelay: const Duration(seconds: 2));
+      return;
+    }
 
     final width = MediaQuery.sizeOf(context).width.truncate();
     if (width <= 0) return;
@@ -134,15 +138,18 @@ class _BannerAdWidgetState extends State<BannerAdWidget>
     await banner.load();
   }
 
-  void _scheduleRetry() {
+  void _scheduleRetry({Duration? minDelay}) {
     _retryTimer?.cancel();
     _retryAttempt += 1;
-    final delay = switch (_retryAttempt) {
+    final backoffDelay = switch (_retryAttempt) {
       1 => const Duration(seconds: 5),
       2 => const Duration(seconds: 15),
       3 => const Duration(seconds: 30),
       _ => const Duration(seconds: 60),
     };
+    final delay = minDelay != null && minDelay < backoffDelay
+        ? minDelay
+        : backoffDelay;
 
     if (kDebugMode) {
       debugPrint(

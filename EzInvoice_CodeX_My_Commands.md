@@ -288,3 +288,15 @@ Nota:
   - Por seguridad no se guarda password en texto plano; solo email y preferencia.
 - Verificacion:
   - `dart analyze lib/features/invoices/invoices_screen.dart lib/ui/clients/client_form_screen.dart lib/ui/login_screen.dart`: OK.
+
+## 2026-06-08 - Banner Mount Retry Fix
+
+- Pedido: el ad banner a veces aparece y a veces queda en blanco.
+- Causa: `AppShell` condicionaba el montaje del banner a `AdsManager.adsEnabled`, pero ese valor se actualiza desde `AuthGate` despues de leer Firestore y no notifica directamente al shell. En algunos arranques Free, el banner podia no montarse/reintentar cuando AdsManager se reactivaba.
+- Version subida por cambio de repo: `1.0.16+40` -> `1.0.17+41`.
+- Login y Home ahora muestran `Version 1.0.17`.
+- Cambio implementado:
+  - `AppShell` monta `BannerAdWidget` para toda cuenta Free usando solo `SubscriptionManager.state.isPro`.
+  - `BannerAdWidget` ahora reintenta cada 2s si se monto antes de que `AdsManager` estuviera activo.
+  - Se mantiene backoff para fallos de AdMob/no-fill: 5s, 15s, 30s, luego 60s.
+- Nota: si AdMob responde `no fill`, no se puede forzar inventario desde la app, pero ahora el widget no se queda apagado permanentemente.
