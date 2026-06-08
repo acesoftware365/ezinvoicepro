@@ -1,9 +1,8 @@
 import 'package:ezinvoice/services/purchases/subscription_manager.dart';
-import 'package:ezinvoice/ui/home_screen.dart';
 import 'package:ezinvoice/ui/login_screen.dart';
+import 'package:ezinvoice/ui/shell/responsive_main_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -44,7 +43,7 @@ class _AuthGateState extends State<AuthGate> {
         // ✅ Inicia IAP al entrar (una sola vez)
         _startIapOnce();
 
-        return const HomeScreen();
+        return const ResponsiveMainShell();
       },
     );
   }

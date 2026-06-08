@@ -170,3 +170,27 @@ Nota:
 - Verificacion:
   - `dart format lib/services/ads/ads_manager.dart lib/features/reports/reports_screen.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: OK.
   - `dart analyze lib/services/ads/ads_manager.dart lib/features/reports/reports_screen.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos; solo infos preexistentes de `withOpacity`/`value`.
+
+## 2026-06-08 - Codex UI/UX June 8 2026
+
+- Pedido: preservar lo que funciona, no eliminar botones/funciones, y redisenar la experiencia para tablet y phone segun referencias SaaS premium.
+- Backup antes de cambios:
+  - Tag: `backup-before-codex-ui-ux-june-8-2026`
+  - Rama local: `Codex-UI-UX-June-8-2026`
+- Version subida por cambio de repo: `1.0.8+32` -> `1.0.9+33`.
+- Login y Home ahora muestran `Version 1.0.9`.
+- Analisis de referencia:
+  - Tablet: sidebar permanente, contenido ancho, dashboard con metricas, quick actions, tabla y panel analitico derecho.
+  - Phone: bottom navigation, metricas verticales, quick actions 2x2, listas compactas, perfil/settings desde avatar.
+  - Paleta principal: verde `#1F7A64`, fondo `#F5F7F8`, cards blancas, radius 16, sombras suaves.
+- Cambio implementado:
+  - Nuevo `lib/ui/shell/responsive_main_shell.dart`.
+  - `AuthGate` ahora entra a `ResponsiveMainShell` para usuarios autenticados.
+  - Tablet usa sidebar de 280px con Home, Clients, Invoices, Reports, Business, Settings.
+  - Phone usa bottom navigation con Home, Clients, Invoices, Reports, Business.
+  - Dashboard nuevo usa datos reales de invoices/usuario para sales, tip, subtotal, tax, recent invoices, collection rate y plan.
+  - Se conservan pantallas existentes de Clients, Invoices, Reports y Business para no perder funciones.
+  - Settings tablet concentra Language, Subscription, Privacy Policy, Delete Account y Log out.
+- Verificacion:
+  - `dart format lib/ui/shell/responsive_main_shell.dart lib/ui/auth_gate.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: OK.
+  - `dart analyze lib/ui/shell/responsive_main_shell.dart lib/ui/auth_gate.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos; solo infos preexistentes en `home_screen.dart`.
