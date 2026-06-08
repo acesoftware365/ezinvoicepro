@@ -118,7 +118,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     final controller = TextEditingController(text: current ?? '');
     final value = await showDialog<String>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(current == null ? 'Add service' : 'Edit service'),
         content: TextField(
           controller: controller,
@@ -127,15 +127,16 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
             labelText: 'Service name',
             prefixIcon: Icon(Icons.design_services_outlined),
           ),
-          onSubmitted: (v) => Navigator.pop(context, v.trim()),
+          onSubmitted: (v) => Navigator.of(dialogContext).pop(v.trim()),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: const Text('Cancel'),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text.trim()),
+            onPressed: () =>
+                Navigator.of(dialogContext).pop(controller.text.trim()),
             child: const Text('Save'),
           ),
         ],
@@ -153,8 +154,24 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     next.add(value.trim());
     final sorted = next.toList()..sort((a, b) => a.compareTo(b));
 
+    final previous = _presets.toList();
     setState(() => _presets = sorted);
-    await _repo.setPresets(sorted);
+
+    try {
+      await _repo.setPresets(sorted);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(current == null ? 'Service added' : 'Service updated'),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _presets = previous);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).genericError)),
+      );
+    }
   }
 
   Future<void> _removePreset(String text) async {

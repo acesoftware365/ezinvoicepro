@@ -300,3 +300,17 @@ Nota:
   - `BannerAdWidget` ahora reintenta cada 2s si se monto antes de que `AdsManager` estuviera activo.
   - Se mantiene backoff para fallos de AdMob/no-fill: 5s, 15s, 30s, luego 60s.
 - Nota: si AdMob responde `no fill`, no se puede forzar inventario desde la app, pero ahora el widget no se queda apagado permanentemente.
+
+## 2026-06-08 - Client Phone Import And Service Dialog Fix
+
+- Pedido: en New Client, telefono importado seguia mostrando `+1` y daba `Invalid phone number`; en Business Profile, dialogo `Add service` no guardaba.
+- Version subida por cambio de repo: `1.0.17+41` -> `1.0.18+42`.
+- Login y Home ahora muestran `Version 1.0.18`.
+- Cambio implementado:
+  - `NewClientScreen` ya no usa selector internacional para telefono de cliente.
+  - Campo telefono ahora es local y formatea como `123-456-7890`, removiendo prefijo `+1`/`1` cuando aplica.
+  - Se elimina la validacion interna que mostraba `Invalid phone number` para telefonos importados.
+  - Dialogo `Add service/Edit service` usa `dialogContext` para cerrar solo el dialogo.
+  - Guardado de servicio muestra feedback y revierte cambios si Firestore falla.
+- Verificacion:
+  - `dart analyze lib/ui/clients/client_form_screen.dart lib/ui/business/business_profile_screen.dart`: OK.

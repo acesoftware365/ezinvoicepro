@@ -1,5 +1,6 @@
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
@@ -947,39 +948,55 @@ class _PhoneField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFBFCFD),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE5EAF0)),
+    return TextFormField(
+      controller: controller,
+      keyboardType: TextInputType.phone,
+      textInputAction: TextInputAction.next,
+      inputFormatters: const [_UsPhoneTextInputFormatter()],
+      decoration: const InputDecoration(
+        labelText: 'Client Phone',
+        prefixIcon: Icon(Icons.phone_outlined, color: Color(0xFF1F7A63)),
       ),
-      child: InternationalPhoneNumberInput(
-        initialValue: initialValue,
-        textFieldController: controller,
-        selectorConfig: const SelectorConfig(
-          selectorType: PhoneInputSelectorType.DROPDOWN,
-          setSelectorButtonAsPrefixIcon: true,
-          leadingPadding: 0,
-        ),
-        formatInput: true,
-        autoValidateMode: AutovalidateMode.disabled,
-        keyboardType: const TextInputType.numberWithOptions(
-          signed: false,
-          decimal: false,
-        ),
-        inputDecoration: const InputDecoration(
-          labelText: 'Client Phone',
-          prefixIcon: Icon(Icons.phone_outlined, color: Color(0xFF1F7A63)),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          errorBorder: InputBorder.none,
-          focusedErrorBorder: InputBorder.none,
-        ),
-        onInputChanged: onChanged,
-      ),
+      onChanged: (value) {
+        final digits = value.replaceAll(RegExp(r'\D'), '');
+        onChanged(
+          PhoneNumber(
+            isoCode: initialValue.isoCode ?? 'US',
+            phoneNumber: digits.length == 10 ? '+1$digits' : null,
+          ),
+        );
+      },
     );
+  }
+}
+
+class _UsPhoneTextInputFormatter extends TextInputFormatter {
+  const _UsPhoneTextInputFormatter();
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    var digits = newValue.text.replaceAll(RegExp(r'\D'), '');
+    if (digits.length == 11 && digits.startsWith('1')) {
+      digits = digits.substring(1);
+    }
+    if (digits.length > 10) digits = digits.substring(0, 10);
+
+    final formatted = _format(digits);
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+
+  String _format(String digits) {
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) {
+      return '${digits.substring(0, 3)}-${digits.substring(3)}';
+    }
+    return '${digits.substring(0, 3)}-${digits.substring(3, 6)}-${digits.substring(6)}';
   }
 }
 
