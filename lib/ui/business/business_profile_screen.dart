@@ -115,19 +115,20 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
   }
 
   Future<void> _showPresetDialog({String? current}) async {
-    final controller = TextEditingController(text: current ?? '');
+    var draft = current ?? '';
     final value = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(current == null ? 'Add service' : 'Edit service'),
-        content: TextField(
-          controller: controller,
+        content: TextFormField(
+          initialValue: draft,
           autofocus: true,
           decoration: const InputDecoration(
             labelText: 'Service name',
             prefixIcon: Icon(Icons.design_services_outlined),
           ),
-          onSubmitted: (v) => Navigator.of(dialogContext).pop(v.trim()),
+          onChanged: (value) => draft = value,
+          onFieldSubmitted: (v) => Navigator.of(dialogContext).pop(v.trim()),
         ),
         actions: [
           TextButton(
@@ -135,14 +136,12 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
             child: const Text('Cancel'),
           ),
           FilledButton(
-            onPressed: () =>
-                Navigator.of(dialogContext).pop(controller.text.trim()),
+            onPressed: () => Navigator.of(dialogContext).pop(draft.trim()),
             child: const Text('Save'),
           ),
         ],
       ),
     );
-    controller.dispose();
 
     if (value == null || value.trim().isEmpty) return;
 

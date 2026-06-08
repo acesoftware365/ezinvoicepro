@@ -314,3 +314,15 @@ Nota:
   - Guardado de servicio muestra feedback y revierte cambios si Firestore falla.
 - Verificacion:
   - `dart analyze lib/ui/clients/client_form_screen.dart lib/ui/business/business_profile_screen.dart`: OK.
+
+## 2026-06-08 - Add Service Save Crash Fix
+
+- Pedido: al tocar `Save` en el dialogo `Add service`, aparecia pantalla roja con `'_dependents.isEmpty': is not true`.
+- Causa: el dialogo usaba un `TextEditingController` local y lo destruia inmediatamente al cerrar el dialogo, mientras Flutter todavia desmontaba el `TextField`.
+- Version subida por cambio de repo: `1.0.18+42` -> `1.0.19+43`.
+- Login y Home ahora muestran `Version 1.0.19`.
+- Cambio implementado:
+  - `Add service/Edit service` ahora usa `TextFormField(initialValue:)` y variable local `draft`, sin controller temporal.
+  - Se elimina el dispose que causaba el assert de Flutter al cerrar con `Save`.
+- Verificacion:
+  - `dart analyze lib/ui/business/business_profile_screen.dart`: OK.
