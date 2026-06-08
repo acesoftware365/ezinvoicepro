@@ -360,7 +360,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(width: 320, child: _logoCard(t, hasLogo, logoPath)),
             const SizedBox(width: 20),

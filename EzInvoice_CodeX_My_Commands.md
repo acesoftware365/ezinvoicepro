@@ -248,3 +248,12 @@ Nota:
   - Currency/Tax settings en phone ahora se apilan cuando el ancho no permite dos columnas sin overflow.
   - Currency dropdown usa `isExpanded` y selected value corto para evitar overflow horizontal.
   - Badge del tab Business ya no usa `Badge`; ahora usa `Stack` simple con semantica interna excluida para evitar el assert `!semantics.parentDataDirty`.
+
+## 2026-06-08 - Business Profile Tablet Layout Fix
+
+- Pedido: Business Profile en tablet/iPad queda en blanco y no abre correctamente.
+- Version subida por cambio de repo: `1.0.13+37` -> `1.0.14+38`.
+- Login y Home ahora muestran `Version 1.0.14`.
+- Cambio implementado:
+  - Tablet Business Profile ya no usa `crossAxisAlignment: stretch` dentro del scroll.
+  - Corrige el error `BoxConstraints forces an infinite height` en la fila de logo + business information.
