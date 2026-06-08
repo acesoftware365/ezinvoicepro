@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ezinvoice/features/account/change_password_screen.dart';
 import 'package:ezinvoice/features/privacy/delete_account_screen.dart';
 import 'package:ezinvoice/features/paywall/paywall_screen.dart';
 import 'package:ezinvoice/features/privacy/privacy_screen.dart';
@@ -38,7 +39,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const String _forcedVersionText = 'v1.0.0 (23)';
+  static const String _forcedVersionText = 'v1.0.1 (25)';
   // ---- Brand tokens ----
   static const Color brandGreen = Color(0xFF1F6E5C);
   static const Color pageBg = Color(0xFFF6F7F9);
@@ -513,9 +514,11 @@ $_storeUrl
                             vertical: 6,
                           ),
                         ),
-                        icon: const Icon(Icons.privacy_tip, size: 16),
+                        icon: const Icon(Icons.lock_reset, size: 16),
                         label: Text(
-                          t.privacyPolicy,
+                          Localizations.localeOf(context).languageCode == 'es'
+                              ? 'Contrasena'
+                              : 'Password',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -523,7 +526,7 @@ $_storeUrl
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const PrivacyScreen(),
+                              builder: (_) => const ChangePasswordScreen(),
                             ),
                           );
                         },
@@ -540,31 +543,56 @@ $_storeUrl
                             vertical: 6,
                           ),
                         ),
-                        icon: const Icon(
-                          Icons.delete_forever_outlined,
-                          color: Colors.red,
-                          size: 16,
-                        ),
+                        icon: const Icon(Icons.privacy_tip, size: 16),
                         label: Text(
-                          t.deleteAccountTitle,
+                          t.privacyPolicy,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.w700,
-                          ),
                         ),
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const DeleteAccountScreen(),
+                              builder: (_) => const PrivacyScreen(),
                             ),
                           );
                         },
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    minimumSize: const Size.fromHeight(36),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                  ),
+                  icon: const Icon(
+                    Icons.delete_forever_outlined,
+                    color: Colors.red,
+                    size: 16,
+                  ),
+                  label: Text(
+                    t.deleteAccountTitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const DeleteAccountScreen(),
+                      ),
+                    );
+                  },
                 ),
                 _brandFooter(),
               ],

@@ -32,6 +32,7 @@ Nota:
 - No pedir aclaraciones si hay una decision razonable y segura.
 - Guardar en este archivo los cambios importantes, decisiones y comandos utiles.
 - Mantener los cambios versionados y subirlos a GitHub cuando el trabajo quede verificado.
+- Subir version/build de la app en cada cambio (`pubspec.yaml`) y sincronizar cualquier texto visible de version.
 
 ## 2026-06-08
 
@@ -50,3 +51,20 @@ Nota:
   - `dart analyze lib/services/ads/banner_ad_widget.dart`: OK, no issues.
   - `flutter analyze`: falla por 161 issues preexistentes en otros archivos; no reporta errores en `banner_ad_widget.dart`.
   - `flutter test`: falla por `test/widget_test.dart`, porque el test arranca `AuthGate` sin `Firebase.initializeApp()` y luego espera un counter demo que ya no existe.
+
+## 2026-06-08 - Change Password
+
+- Pedido: agregar una forma para que el usuario pueda cambiar password.
+- Regla frecuente confirmada: cada cambio debe subir version/build de app y luego commitearse/subirse a GitHub.
+- Version subida: `1.0.0+24` -> `1.0.1+25`.
+- Texto visible en Home actualizado: `v1.0.1 (25)`.
+- Cambio implementado:
+  - Nueva pantalla `lib/features/account/change_password_screen.dart`.
+  - Reautentica con password actual usando `EmailAuthProvider.credential`.
+  - Actualiza password con `user.updatePassword(newPassword)`.
+  - Valida minimo 6 caracteres, confirmacion y que la nueva password sea diferente.
+  - Maneja errores comunes: password actual incorrecta, password debil, requires-recent-login.
+  - En Home se agrego acceso inferior a `Password/Contrasena`.
+- Verificacion:
+  - `dart format lib/features/account/change_password_screen.dart lib/ui/home_screen.dart`: OK.
+  - `dart analyze lib/features/account/change_password_screen.dart lib/ui/home_screen.dart`: sin errores; solo infos preexistentes de `withOpacity` en Home.
