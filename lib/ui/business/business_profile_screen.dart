@@ -17,6 +17,12 @@ class BusinessProfileScreen extends StatefulWidget {
 }
 
 class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
+  static const brandGreen = Color(0xFF1F7A63);
+  static const brandGreenSoft = Color(0xFFE7F3EF);
+  static const pageBg = Color(0xFFF5F6F8);
+  static const ink = Color(0xFF202124);
+  static const muted = Color(0xFF74787D);
+
   final _repo = BusinessProfileRepository();
   final _formKey = GlobalKey<FormState>();
 
@@ -30,11 +36,9 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
   final _address = TextEditingController();
   final _taxRate = TextEditingController();
   final _footer = TextEditingController();
-
-  // ✅ NEW: presets
   final _presetCtrl = TextEditingController();
-  List<String> _presets = [];
 
+  List<String> _presets = [];
   String _currencyCode = 'USD';
 
   @override
@@ -68,9 +72,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     _taxRate.text = p.defaultTaxRate.toStringAsFixed(2);
     _currencyCode = p.currencyCode;
     _footer.text = p.footerNote;
-
-    // ✅ NEW
-    _presets = (p.servicePresets).toList();
+    _presets = p.servicePresets.toList();
 
     if (!mounted) return;
     setState(() => _loading = false);
@@ -112,41 +114,54 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     });
   }
 
-  // ✅ NEW: add preset
-  Future<void> _addPreset() async {
-    final t = AppLocalizations.of(context);
-    final v = _presetCtrl.text.trim();
-    if (v.isEmpty) return;
+  Future<void> _showPresetDialog({String? current}) async {
+    final controller = TextEditingController(text: current ?? '');
+    final value = await showDialog<String>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(current == null ? 'Add service' : 'Edit service'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            labelText: 'Service name',
+            prefixIcon: Icon(Icons.design_services_outlined),
+          ),
+          onSubmitted: (v) => Navigator.pop(context, v.trim()),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, controller.text.trim()),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
 
-    // UI first
-    final next = {..._presets, v}.toList()..sort((a, b) => a.compareTo(b));
-    setState(() {
-      _presets = next;
-      _presetCtrl.clear();
-    });
+    if (value == null || value.trim().isEmpty) return;
 
-    try {
-      await _repo.setPresets(next);
-    } catch (_) {
-      // rollback simple
-      if (!mounted) return;
-      setState(() => _presets = _presets.where((e) => e != v).toList());
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(t.genericError)));
-    }
+    final next = _presets
+        .where((p) => current == null || p != current)
+        .map((p) => p.trim())
+        .where((p) => p.isNotEmpty)
+        .toSet();
+    next.add(value.trim());
+    final sorted = next.toList()..sort((a, b) => a.compareTo(b));
+
+    setState(() => _presets = sorted);
+    await _repo.setPresets(sorted);
   }
 
-  // ✅ NEW: remove preset
   Future<void> _removePreset(String text) async {
-    final t = AppLocalizations.of(context);
-    final v = text.trim();
-    if (v.isEmpty) return;
-
     final prev = _presets.toList();
     setState(() {
       _presets = _presets
-          .where((e) => e.trim().toLowerCase() != v.toLowerCase())
+          .where((e) => e.trim().toLowerCase() != text.trim().toLowerCase())
           .toList();
     });
 
@@ -155,15 +170,14 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     } catch (_) {
       if (!mounted) return;
       setState(() => _presets = prev);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(t.genericError)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).genericError)),
+      );
     }
   }
 
   Future<void> _save() async {
     final t = AppLocalizations.of(context);
-
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     final p = _profile.copyWith(
@@ -175,7 +189,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
       currencyCode: _currencyCode,
       defaultTaxRate: _parseTax(_taxRate.text),
       footerNote: _footer.text.trim(),
-      // ✅ NEW
       servicePresets: _presets,
     );
 
@@ -196,37 +209,35 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-
-    // Brand
-    const brandGreen = Color(0xFF1F6E5C);
-    const brandGreenSoft = Color(0xFFE6F3EF);
-    const pageBg = Color(0xFFF6F7F9);
-
     final logoPath = _profile.logoFilePath;
     final hasLogo =
         logoPath != null && logoPath.isNotEmpty && File(logoPath).existsSync();
+    final isTablet = MediaQuery.sizeOf(context).width >= 760;
 
     final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-
     return Theme(
       data: theme.copyWith(
         scaffoldBackgroundColor: pageBg,
-        colorScheme: cs.copyWith(primary: brandGreen, secondary: brandGreen),
+        colorScheme: theme.colorScheme.copyWith(
+          primary: brandGreen,
+          secondary: brandGreen,
+          surface: Colors.white,
+        ),
         inputDecorationTheme: theme.inputDecorationTheme.copyWith(
           filled: true,
           fillColor: Colors.white,
+          isDense: true,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: Colors.black.withOpacity(0.08)),
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: Colors.black.withValues(alpha: 0.07)),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: Colors.black.withOpacity(0.10)),
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: Colors.black.withValues(alpha: 0.08)),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: brandGreen, width: 1.6),
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: brandGreen, width: 1.5),
           ),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 14,
@@ -236,343 +247,381 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: brandGreen,
-          foregroundColor: Colors.white,
+          backgroundColor: pageBg,
+          foregroundColor: ink,
           elevation: 0,
+          surfaceTintColor: Colors.transparent,
           title: Text(
             t.businessProfileTitle,
-            style: const TextStyle(
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
+            style: const TextStyle(color: ink, fontWeight: FontWeight.w900),
           ),
-          iconTheme: const IconThemeData(color: Colors.white),
           actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: TextButton.icon(
-                onPressed: _loading ? null : _save,
-                icon: _loading
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.save_outlined, color: Colors.white),
-                label: Text(
-                  t.save,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+            IconButton.filledTonal(
+              tooltip: t.save,
+              onPressed: _loading ? null : _save,
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: brandGreen,
               ),
+              icon: _loading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.save_outlined),
             ),
+            const SizedBox(width: 12),
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          elevation: 10,
+          backgroundColor: brandGreen,
+          foregroundColor: Colors.white,
+          shape: const CircleBorder(),
+          onPressed: _loading ? null : () => _showPresetDialog(),
+          child: const Icon(Icons.add),
         ),
         body: _loading
             ? const Center(child: CircularProgressIndicator())
             : SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                child: Form(
+                  key: _formKey,
+                  child: CustomScrollView(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    slivers: [
+                      SliverPadding(
+                        padding: EdgeInsets.fromLTRB(
+                          isTablet ? 24 : 16,
+                          8,
+                          isTablet ? 24 : 16,
+                          96,
+                        ),
+                        sliver: SliverToBoxAdapter(
+                          child: isTablet
+                              ? _tabletLayout(t, hasLogo, logoPath)
+                              : _phoneLayout(t, hasLogo, logoPath),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget _phoneLayout(AppLocalizations t, bool hasLogo, String? logoPath) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _logoCard(t, hasLogo, logoPath, large: true),
+        const SizedBox(height: 16),
+        _businessInfoCard(t),
+        const SizedBox(height: 16),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: _settingsCard(t, currencyOnly: true)),
+            const SizedBox(width: 12),
+            Expanded(child: _settingsCard(t, taxOnly: true)),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _footerCard(t),
+        const SizedBox(height: 16),
+        _presetsCard(t),
+      ],
+    );
+  }
+
+  Widget _tabletLayout(AppLocalizations t, bool hasLogo, String? logoPath) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(width: 320, child: _logoCard(t, hasLogo, logoPath)),
+            const SizedBox(width: 20),
+            Expanded(child: _businessInfoCard(t)),
+          ],
+        ),
+        const SizedBox(height: 18),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: _settingsCard(t, currencyOnly: true)),
+            const SizedBox(width: 16),
+            Expanded(child: _settingsCard(t, taxOnly: true)),
+          ],
+        ),
+        const SizedBox(height: 18),
+        _footerCard(t),
+        const SizedBox(height: 18),
+        _presetsCard(t),
+      ],
+    );
+  }
+
+  Widget _logoCard(
+    AppLocalizations t,
+    bool hasLogo,
+    String? logoPath, {
+    bool large = false,
+  }) {
+    return _card(
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const Expanded(child: _CardTitle('Business Logo')),
+              if (hasLogo)
+                PopupMenuButton<String>(
+                  tooltip: 'Logo options',
+                  icon: const Icon(Icons.more_horiz),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  onSelected: (value) {
+                    if (value == 'change') _pickLogo();
+                    if (value == 'remove') _removeLogo();
+                  },
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(
+                      value: 'change',
+                      child: _MenuRow(
+                        icon: Icons.image_outlined,
+                        label: 'Change Logo',
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'remove',
+                      child: _MenuRow(
+                        icon: Icons.delete_outline,
+                        label: 'Remove Logo',
+                        danger: true,
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Container(
+            width: large ? 128 : 118,
+            height: large ? 128 : 118,
+            decoration: BoxDecoration(
+              color: brandGreenSoft,
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(color: brandGreen.withValues(alpha: 0.18)),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: hasLogo
+                ? Image.file(File(logoPath!), fit: BoxFit.cover)
+                : const Icon(
+                    Icons.storefront_outlined,
+                    color: brandGreen,
+                    size: 52,
+                  ),
+          ),
+          const SizedBox(height: 18),
+          FilledButton.tonalIcon(
+            onPressed: _pickLogo,
+            icon: const Icon(Icons.upload_outlined),
+            label: Text(t.uploadLogo),
+            style: FilledButton.styleFrom(
+              backgroundColor: brandGreenSoft,
+              foregroundColor: brandGreen,
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(999),
+              ),
+              textStyle: const TextStyle(fontWeight: FontWeight.w900),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _businessInfoCard(AppLocalizations t) {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _CardTitle(t.businessInfoSection),
+          const SizedBox(height: 16),
+          _field(
+            controller: _businessName,
+            label: t.businessNameLabel,
+            icon: Icons.business_outlined,
+            validator: (v) =>
+                (v == null || v.trim().isEmpty) ? t.requiredField : null,
+          ),
+          _field(
+            controller: _ownerName,
+            label: t.ownerNameLabel,
+            icon: Icons.person_outline,
+          ),
+          _field(
+            controller: _phone,
+            label: t.phoneLabel,
+            icon: Icons.phone_outlined,
+            keyboardType: TextInputType.phone,
+          ),
+          _field(
+            controller: _email,
+            label: t.email,
+            icon: Icons.email_outlined,
+            keyboardType: TextInputType.emailAddress,
+          ),
+          _field(
+            controller: _address,
+            label: t.addressLabel,
+            icon: Icons.location_on_outlined,
+            maxLines: 2,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _settingsCard(
+    AppLocalizations t, {
+    bool currencyOnly = false,
+    bool taxOnly = false,
+  }) {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _CardTitle(currencyOnly ? t.currencyLabel : t.taxDefaultLabel),
+          const SizedBox(height: 14),
+          if (!taxOnly) _currencyDropdown(t),
+          if (!currencyOnly) _taxField(t),
+        ],
+      ),
+    );
+  }
+
+  Widget _footerCard(AppLocalizations t) {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _CardTitle(t.footerNoteLabel),
+          const SizedBox(height: 14),
+          _field(
+            controller: _footer,
+            label: 'Thank you for your business.',
+            icon: Icons.notes_outlined,
+            maxLines: 4,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _presetsCard(AppLocalizations t) {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(child: _CardTitle(t.servicePresetsTitle)),
+              IconButton.filledTonal(
+                tooltip: t.servicePresetsAddButton,
+                onPressed: () => _showPresetDialog(),
+                style: IconButton.styleFrom(
+                  backgroundColor: brandGreenSoft,
+                  foregroundColor: brandGreen,
+                ),
+                icon: const Icon(Icons.add),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            t.servicePresetsHint,
+            style: const TextStyle(color: muted, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 12),
+          if (_presets.isEmpty)
+            Text(
+              t.noPresetsYet,
+              style: const TextStyle(color: muted, fontWeight: FontWeight.w700),
+            )
+          else
+            Column(
+              children: [
+                for (final preset in _presets)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    minLeadingWidth: 0,
+                    leading: const Icon(
+                      Icons.design_services_outlined,
+                      color: brandGreen,
+                    ),
+                    title: Text(
+                      preset,
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        _card(
-                          child: Row(
-                            children: [
-                              _logoAvatar(
-                                hasLogo: hasLogo,
-                                logoPath: logoPath,
-                                brandGreen: brandGreen,
-                                brandGreenSoft: brandGreenSoft,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Wrap(
-                                  spacing: 10,
-                                  runSpacing: 10,
-                                  children: [
-                                    FilledButton.tonalIcon(
-                                      onPressed: _pickLogo,
-                                      icon: const Icon(Icons.image_outlined),
-                                      label: Text(t.uploadLogo),
-                                      style: FilledButton.styleFrom(
-                                        backgroundColor: brandGreenSoft,
-                                        foregroundColor: brandGreen,
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 14,
-                                          vertical: 12,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            14,
-                                          ),
-                                        ),
-                                        textStyle: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ),
-                                    OutlinedButton.icon(
-                                      onPressed: hasLogo ? _removeLogo : null,
-                                      icon: const Icon(Icons.delete_outline),
-                                      label: Text(t.remove),
-                                      style: OutlinedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 14,
-                                          vertical: 12,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            14,
-                                          ),
-                                        ),
-                                        foregroundColor: Colors.redAccent,
-                                        side: BorderSide(
-                                          color: Colors.redAccent.withOpacity(
-                                            0.35,
-                                          ),
-                                        ),
-                                        textStyle: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                        IconButton(
+                          tooltip: t.edit,
+                          onPressed: () => _showPresetDialog(current: preset),
+                          icon: const Icon(Icons.edit_outlined),
                         ),
-                        const SizedBox(height: 14),
-
-                        _sectionTitle(t.businessInfoSection),
-                        const SizedBox(height: 10),
-
-                        _field(
-                          controller: _businessName,
-                          label: t.businessNameLabel,
-                          icon: Icons.business_outlined,
-                          validator: (v) => (v == null || v.trim().isEmpty)
-                              ? t.requiredField
-                              : null,
-                        ),
-                        _field(
-                          controller: _ownerName,
-                          label: t.ownerNameLabel,
-                          icon: Icons.person_outline,
-                        ),
-                        _field(
-                          controller: _phone,
-                          label: t.phoneLabel,
-                          icon: Icons.phone_outlined,
-                          keyboardType: TextInputType.phone,
-                        ),
-                        _field(
-                          controller: _email,
-                          label: t.email,
-                          icon: Icons.email_outlined,
-                          keyboardType: TextInputType.emailAddress,
-                        ),
-                        _field(
-                          controller: _address,
-                          label: t.addressLabel,
-                          icon: Icons.location_on_outlined,
-                          maxLines: 2,
-                        ),
-
-                        const SizedBox(height: 14),
-                        _sectionTitle(t.settingsSection),
-                        const SizedBox(height: 10),
-
-                        Row(
-                          children: [
-                            Expanded(child: _currencyDropdown(t, brandGreen)),
-                            const SizedBox(width: 12),
-                            Expanded(child: _taxField(t)),
-                          ],
-                        ),
-
-                        const SizedBox(height: 14),
-                        _sectionTitle(t.footerSection),
-                        const SizedBox(height: 10),
-
-                        _field(
-                          controller: _footer,
-                          label: t.footerNoteLabel,
-                          icon: Icons.notes_outlined,
-                          maxLines: 2,
-                        ),
-
-                        const SizedBox(height: 14),
-
-                        // ✅ NEW: Service Presets
-                        _sectionTitle(t.servicePresetsTitle),
-                        const SizedBox(height: 10),
-                        _card(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                t.servicePresetsHint,
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.65),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextField(
-                                      controller: _presetCtrl,
-                                      decoration: InputDecoration(
-                                        labelText: t.addServiceLabel,
-                                        prefixIcon: const Icon(
-                                          Icons.playlist_add,
-                                        ),
-                                      ),
-                                      onSubmitted: (_) => _addPreset(),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  FilledButton(
-                                    onPressed: _addPreset,
-                                    style: FilledButton.styleFrom(
-                                      backgroundColor: brandGreen,
-                                      foregroundColor: Colors.white,
-                                    ),
-                                    child: Text(t.servicePresetsAddButton),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              if (_presets.isEmpty)
-                                Text(
-                                  t.noPresetsYet,
-                                  style: TextStyle(
-                                    color: Colors.black.withOpacity(0.55),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                )
-                              else
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: _presets.map((p) {
-                                    return Chip(
-                                      label: Text(p),
-                                      onDeleted: () => _removePreset(p),
-                                      deleteIcon: const Icon(
-                                        Icons.close,
-                                        size: 18,
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 18),
-
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton.icon(
-                            onPressed: _loading ? null : _save,
-                            icon: const Icon(Icons.save_outlined),
-                            label: Text(t.saveChanges),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: brandGreen,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              textStyle: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 16,
-                              ),
-                            ),
+                        IconButton(
+                          tooltip: t.delete,
+                          onPressed: () => _removePreset(preset),
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.red,
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ),
+              ],
+            ),
+        ],
       ),
     );
   }
 
   Widget _card({required Widget child}) {
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
         boxShadow: [
           BoxShadow(
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-            color: Colors.black.withOpacity(0.06),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+            color: Colors.black.withValues(alpha: 0.05),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       child: child,
     );
   }
 
-  Widget _logoAvatar({
-    required bool hasLogo,
-    required String? logoPath,
-    required Color brandGreen,
-    required Color brandGreenSoft,
-  }) {
-    return Container(
-      width: 62,
-      height: 62,
-      decoration: BoxDecoration(
-        color: brandGreenSoft,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: brandGreen.withOpacity(0.20)),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: hasLogo
-          ? Image.file(File(logoPath!), fit: BoxFit.cover)
-          : Icon(Icons.storefront_outlined, color: brandGreen, size: 30),
-    );
-  }
-
-  Widget _sectionTitle(String text) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontWeight: FontWeight.w800,
-        fontSize: 13,
-        letterSpacing: 0.2,
-        color: Colors.black.withOpacity(0.70),
-      ),
-    );
-  }
-
-  Widget _currencyDropdown(AppLocalizations t, Color brandGreen) {
+  Widget _currencyDropdown(AppLocalizations t) {
     return DropdownButtonFormField<String>(
       key: ValueKey('currency_$_currencyCode'),
       initialValue: _currencyCode,
       decoration: InputDecoration(
         labelText: t.currencyLabel,
-        prefixIcon: Icon(Icons.attach_money, color: brandGreen),
+        prefixIcon: const Icon(Icons.attach_money, color: brandGreen),
       ),
       items: const [
         DropdownMenuItem(value: 'USD', child: Text('USD - \$')),
@@ -616,6 +665,51 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
         maxLines: maxLines,
         decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
       ),
+    );
+  }
+}
+
+class _CardTitle extends StatelessWidget {
+  const _CardTitle(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        color: _BusinessProfileScreenState.ink,
+        fontSize: 16,
+        fontWeight: FontWeight.w900,
+      ),
+    );
+  }
+}
+
+class _MenuRow extends StatelessWidget {
+  const _MenuRow({
+    required this.icon,
+    required this.label,
+    this.danger = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool danger;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = danger ? Colors.red : _BusinessProfileScreenState.ink;
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: color),
+        const SizedBox(width: 10),
+        Text(
+          label,
+          style: TextStyle(color: color, fontWeight: FontWeight.w800),
+        ),
+      ],
     );
   }
 }

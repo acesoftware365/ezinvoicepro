@@ -223,3 +223,18 @@ Nota:
   - Acciones movidas al menu: View PDF, Send Invoice, Mark as Paid/Unpaid, Receipt PDF, Edit Invoice, Delete Invoice.
   - FAB verde circular mantiene crear nueva factura.
   - Se conserva la logica existente de PDF, send/unsend, paid/unpaid, edit y delete.
+
+## 2026-06-08 - Business Profile UI/UX + Completion Reminder
+
+- Pedido: redisenar Business Profile para que se sienta como perfil profesional de empresa, no formulario largo.
+- Version subida por cambio de repo: `1.0.11+35` -> `1.0.12+36`.
+- Login y Home ahora muestran `Version 1.0.12`.
+- Cambio implementado:
+  - `BusinessProfileScreen` ahora usa cards premium responsive para phone/tablet.
+  - Phone: logo card, business information, settings row, footer note y service presets.
+  - Tablet: layout dashboard con logo a la izquierda, business information a la derecha, settings/footer/presets debajo.
+  - Logo: si existe, muestra menu de tres puntos con Change Logo y Remove Logo.
+  - Service presets: lista compacta con edit y delete por servicio; FAB verde para agregar servicio.
+  - Se conserva guardado de business profile, logo local, currency, tax, footer note y presets.
+  - `ResponsiveMainShell` muestra badge de alerta en Business si faltan campos clave.
+  - Snackbar una vez al dia recuerda completar Business Profile y permite abrir Business.

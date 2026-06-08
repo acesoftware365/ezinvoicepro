@@ -4,7 +4,9 @@ import 'package:ezinvoice/features/paywall/paywall_screen.dart';
 import 'package:ezinvoice/features/privacy/delete_account_screen.dart';
 import 'package:ezinvoice/features/privacy/privacy_screen.dart';
 import 'package:ezinvoice/features/reports/reports_screen.dart';
+import 'package:ezinvoice/models/business_profile.dart';
 import 'package:ezinvoice/models/invoice.dart';
+import 'package:ezinvoice/repositories/business_profile_repository.dart';
 import 'package:ezinvoice/services/invoices/invoices_service.dart';
 import 'package:ezinvoice/services/purchases/subscription_manager.dart';
 import 'package:ezinvoice/settings/language_settings_screen.dart';
@@ -12,6 +14,7 @@ import 'package:ezinvoice/ui/business/business_profile_screen.dart';
 import 'package:ezinvoice/ui/clients/clients_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ResponsiveMainShell extends StatefulWidget {
   const ResponsiveMainShell({super.key});
@@ -23,89 +26,108 @@ class ResponsiveMainShell extends StatefulWidget {
 class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
   static const _brandGreen = Color(0xFF1F7A64);
   static const _pageBg = Color(0xFFF5F7F8);
+  static const _businessReminderPref = 'business_profile_reminder_day';
 
   int _index = 0;
+  final _businessRepo = BusinessProfileRepository();
+  bool _businessReminderScheduled = false;
 
   @override
   Widget build(BuildContext context) {
     final isTablet = MediaQuery.sizeOf(context).width >= 900;
 
-    if (isTablet) {
-      return Theme(
-        data: _theme(context),
-        child: Scaffold(
-          backgroundColor: _pageBg,
-          body: Row(
-            children: [
-              _Sidebar(
-                selectedIndex: _index,
-                onSelected: (i) => setState(() => _index = i),
-              ),
-              Expanded(
-                child: IndexedStack(
-                  index: _index,
-                  children: [
-                    _DashboardScreen(onNavigate: _go),
-                    const ClientsScreen(),
-                    const InvoicesScreen(),
-                    const ReportsScreen(),
-                    const BusinessProfileScreen(),
-                    const _SettingsHubScreen(),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+    return StreamBuilder<BusinessProfile>(
+      stream: _businessRepo.stream(),
+      builder: (context, businessSnap) {
+        final businessProfile = businessSnap.data ?? const BusinessProfile();
+        final businessIncomplete = _isBusinessIncomplete(businessProfile);
+        _maybeShowBusinessReminder(businessIncomplete);
 
-    return Theme(
-      data: _theme(context),
-      child: Scaffold(
-        backgroundColor: _pageBg,
-        body: IndexedStack(
-          index: _index.clamp(0, 4),
-          children: [
-            _DashboardScreen(onNavigate: _go),
-            const ClientsScreen(),
-            const InvoicesScreen(),
-            const ReportsScreen(),
-            const BusinessProfileScreen(),
-          ],
-        ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _index.clamp(0, 4),
-          onDestinationSelected: (i) => setState(() => _index = i),
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home),
-              label: 'Home',
+        if (isTablet) {
+          return Theme(
+            data: _theme(context),
+            child: Scaffold(
+              backgroundColor: _pageBg,
+              body: Row(
+                children: [
+                  _Sidebar(
+                    selectedIndex: _index,
+                    businessIncomplete: businessIncomplete,
+                    onSelected: (i) => setState(() => _index = i),
+                  ),
+                  Expanded(
+                    child: IndexedStack(
+                      index: _index,
+                      children: [
+                        _DashboardScreen(onNavigate: _go),
+                        const ClientsScreen(),
+                        const InvoicesScreen(),
+                        const ReportsScreen(),
+                        const BusinessProfileScreen(),
+                        const _SettingsHubScreen(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            NavigationDestination(
-              icon: Icon(Icons.people_alt_outlined),
-              selectedIcon: Icon(Icons.people_alt),
-              label: 'Clients',
+          );
+        }
+
+        return Theme(
+          data: _theme(context),
+          child: Scaffold(
+            backgroundColor: _pageBg,
+            body: IndexedStack(
+              index: _index.clamp(0, 4),
+              children: [
+                _DashboardScreen(onNavigate: _go),
+                const ClientsScreen(),
+                const InvoicesScreen(),
+                const ReportsScreen(),
+                const BusinessProfileScreen(),
+              ],
             ),
-            NavigationDestination(
-              icon: Icon(Icons.receipt_long_outlined),
-              selectedIcon: Icon(Icons.receipt_long),
-              label: 'Invoices',
+            bottomNavigationBar: NavigationBar(
+              selectedIndex: _index.clamp(0, 4),
+              onDestinationSelected: (i) => setState(() => _index = i),
+              destinations: [
+                const NavigationDestination(
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                const NavigationDestination(
+                  icon: Icon(Icons.people_alt_outlined),
+                  selectedIcon: Icon(Icons.people_alt),
+                  label: 'Clients',
+                ),
+                const NavigationDestination(
+                  icon: Icon(Icons.receipt_long_outlined),
+                  selectedIcon: Icon(Icons.receipt_long),
+                  label: 'Invoices',
+                ),
+                const NavigationDestination(
+                  icon: Icon(Icons.bar_chart_outlined),
+                  selectedIcon: Icon(Icons.bar_chart),
+                  label: 'Reports',
+                ),
+                NavigationDestination(
+                  icon: _BusinessNavIcon(
+                    icon: Icons.business_center_outlined,
+                    showBadge: businessIncomplete,
+                  ),
+                  selectedIcon: _BusinessNavIcon(
+                    icon: Icons.business_center,
+                    showBadge: businessIncomplete,
+                  ),
+                  label: 'Business',
+                ),
+              ],
             ),
-            NavigationDestination(
-              icon: Icon(Icons.bar_chart_outlined),
-              selectedIcon: Icon(Icons.bar_chart),
-              label: 'Reports',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.business_center_outlined),
-              selectedIcon: Icon(Icons.business_center),
-              label: 'Business',
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -136,14 +158,92 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
   void _go(int index) {
     setState(() => _index = index);
   }
+
+  bool _isBusinessIncomplete(BusinessProfile profile) {
+    final required = [
+      profile.businessName,
+      profile.ownerName,
+      profile.phone,
+      profile.email,
+      profile.address,
+    ];
+    return required.any((value) => value.trim().isEmpty);
+  }
+
+  void _maybeShowBusinessReminder(bool incomplete) {
+    if (!incomplete || _index == 4 || _businessReminderScheduled) return;
+    _businessReminderScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) {
+        _businessReminderScheduled = false;
+        return;
+      }
+      final prefs = await SharedPreferences.getInstance();
+      final now = DateTime.now();
+      final today = '${now.year}-${now.month}-${now.day}';
+      if (prefs.getString(_businessReminderPref) == today) {
+        _businessReminderScheduled = false;
+        return;
+      }
+      await prefs.setString(_businessReminderPref, today);
+      if (!mounted || _index == 4) {
+        _businessReminderScheduled = false;
+        return;
+      }
+
+      final isEs = Localizations.localeOf(context).languageCode == 'es';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isEs
+                ? 'Completa tu Business Profile para que tus facturas se vean profesionales.'
+                : 'Complete your Business Profile so your invoices look professional.',
+          ),
+          action: SnackBarAction(
+            label: isEs ? 'Abrir' : 'Open',
+            onPressed: () => setState(() => _index = 4),
+          ),
+        ),
+      );
+      _businessReminderScheduled = false;
+    });
+  }
+}
+
+class _BusinessNavIcon extends StatelessWidget {
+  const _BusinessNavIcon({
+    required this.icon,
+    required this.showBadge,
+    this.color,
+  });
+
+  final IconData icon;
+  final bool showBadge;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final iconWidget = Icon(icon, color: color);
+    if (!showBadge) return iconWidget;
+    return Badge(
+      backgroundColor: Colors.orange.shade700,
+      smallSize: 9,
+      child: iconWidget,
+    );
+  }
 }
 
 class _Sidebar extends StatelessWidget {
-  const _Sidebar({required this.selectedIndex, required this.onSelected});
+  const _Sidebar({
+    required this.selectedIndex,
+    required this.businessIncomplete,
+    required this.onSelected,
+  });
 
   static const _brandGreen = Color(0xFF1F7A64);
 
   final int selectedIndex;
+  final bool businessIncomplete;
   final ValueChanged<int> onSelected;
 
   @override
@@ -198,6 +298,7 @@ class _Sidebar extends StatelessWidget {
                   icon: items[i].$1,
                   label: items[i].$2,
                   selected: selectedIndex == i,
+                  showBadge: i == 4 && businessIncomplete,
                   onTap: () => onSelected(i),
                 ),
               const Spacer(),
@@ -215,6 +316,7 @@ class _SidebarItem extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.selected,
+    required this.showBadge,
     required this.onTap,
   });
 
@@ -223,6 +325,7 @@ class _SidebarItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool selected;
+  final bool showBadge;
   final VoidCallback onTap;
 
   @override
@@ -241,7 +344,11 @@ class _SidebarItem extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(icon, color: selected ? _brandGreen : Colors.black87),
+              _BusinessNavIcon(
+                icon: icon,
+                showBadge: showBadge,
+                color: selected ? _brandGreen : Colors.black87,
+              ),
               const SizedBox(width: 12),
               Text(
                 label,
