@@ -14,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  static const String _forcedVersionText = 'Version 1.0.4';
+  static const String _forcedVersionText = 'Version 1.0.5';
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -44,6 +44,58 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showMessage(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  bool get _isSpanish {
+    return Localizations.localeOf(context).languageCode.toLowerCase() == 'es';
+  }
+
+  Future<void> _sendPasswordResetEmail() async {
+    final email = _normalizeDemoEmail(_emailController.text.trim());
+    final isEs = _isSpanish;
+
+    if (email.isEmpty || !email.contains('@')) {
+      _showMessage(
+        isEs
+            ? 'Ingresa tu email para enviarte el enlace.'
+            : 'Enter your email to send the reset link.',
+      );
+      return;
+    }
+
+    setState(() => _loading = true);
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      _showMessage(
+        isEs
+            ? 'Te enviamos un email para restablecer tu contrasena.'
+            : 'We sent you an email to reset your password.',
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        _showMessage(
+          isEs
+              ? 'No encontramos una cuenta con ese email.'
+              : 'No account was found for that email.',
+        );
+      } else if (e.code == 'invalid-email') {
+        _showMessage(isEs ? 'Email invalido.' : 'Invalid email.');
+      } else {
+        _showMessage(
+          isEs
+              ? 'No se pudo enviar el email. Intenta otra vez.'
+              : 'Could not send the email. Try again.',
+        );
+      }
+    } catch (_) {
+      _showMessage(
+        isEs
+            ? 'No se pudo enviar el email. Intenta otra vez.'
+            : 'Could not send the email. Try again.',
+      );
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   // 🔹 create / ensure user doc
@@ -306,6 +358,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
+
+                  if (_isLogin) ...[
+                    const SizedBox(height: 2),
+                    TextButton(
+                      onPressed: _loading ? null : _sendPasswordResetEmail,
+                      child: Text(
+                        _isSpanish
+                            ? 'Olvidaste tu contrasena?'
+                            : 'Forgot password?',
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ],
 
                   const SizedBox(height: 20),
                   Text(

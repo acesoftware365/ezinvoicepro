@@ -35,6 +35,7 @@ Nota:
 - Mantener los cambios versionados y subirlos a GitHub cuando el trabajo quede verificado.
 - Subir version/build de la app en cada cambio (`pubspec.yaml`) y sincronizar cualquier texto visible de version.
 - Texto visible de version debe usar formato `Version x.x.x`, sin `v` y sin build entre parentesis.
+- Usar la version de Git como fuente principal y sincronizar la carpeta local que se usa para correr la app despues de cada push.
 
 ## 2026-06-08
 
@@ -94,3 +95,18 @@ Nota:
 - Version subida por cambio de repo: `1.0.3+27` -> `1.0.4+28`.
 - Login y Home ahora muestran `Version 1.0.4`.
 - Regla agregada: texto visible de version debe ser `Version x.x.x`, sin `v` y sin build entre parentesis.
+
+## 2026-06-08 - Forgot Password
+
+- Pedido: si al usuario se le olvida el password, agregar forma de recuperarlo.
+- Regla confirmada: usar la version de Git como fuente principal y conservar lo hecho hasta ahora.
+- Version subida por cambio de repo: `1.0.4+28` -> `1.0.5+29`.
+- Login y Home ahora muestran `Version 1.0.5`.
+- Cambio implementado:
+  - En Login, boton `Forgot password?` / `Olvidaste tu contrasena?` solo cuando esta en modo login.
+  - Usa `FirebaseAuth.instance.sendPasswordResetEmail(email: email)`.
+  - Valida que el email este escrito antes de enviar.
+  - Maneja errores `user-not-found`, `invalid-email` y errores generales.
+- Verificacion:
+  - `dart format lib/ui/login_screen.dart lib/ui/home_screen.dart`: OK.
+  - `dart analyze lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos; solo infos preexistentes de `withOpacity` en Home.
