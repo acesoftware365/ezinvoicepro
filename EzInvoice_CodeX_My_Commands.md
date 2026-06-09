@@ -379,3 +379,17 @@ Nota:
   - Al remover logo, se limpia correctamente la ruta local y la copia persistente.
 - Verificacion:
   - `dart analyze lib/models/business_profile.dart lib/utils/logo_storage.dart lib/ui/business/business_profile_screen.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos del cambio; quedan avisos informativos existentes de `withOpacity`/lint UI en esos archivos.
+
+## 2026-06-08 - Reports Rewarded Export Only
+
+- Pedido: remover la tarjeta `View report` y el boton `Watch ad`; el reporte debe verse normal y el rewarded ad debe salir solo al tocar `Export PDF` o `Export CSV`.
+- Version subida por cambio de repo: `1.0.23+47` -> `1.0.24+48`.
+- Login y Home ahora muestran `Version 1.0.24`.
+- Cambio implementado:
+  - `ReportsScreen` vuelve a mostrar el reporte directamente sin gate visual.
+  - Se mantiene rewarded ad para usuarios Free en `Export PDF`.
+  - Se mantiene rewarded ad para usuarios Free en las acciones de `Export CSV`.
+  - Pro sigue exportando sin anuncios.
+  - Textos visibles del menu CSV ahora cambian entre ingles/espanol segun el idioma seleccionado.
+- Verificacion:
+  - `dart analyze lib/features/reports/reports_screen.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos del cambio; quedan avisos informativos existentes de `withOpacity`/lint UI en esos archivos.

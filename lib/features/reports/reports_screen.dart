@@ -30,7 +30,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
   int _year = DateTime.now().year;
 
   bool _exporting = false;
-  bool _reportViewUnlocked = false;
 
   List<int> get _years {
     final now = DateTime.now().year;
@@ -66,12 +65,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   bool get _isPro => SubscriptionManager.instance.state.value.isPro;
 
-  void _resetReportViewAccess() {
-    if (_reportViewUnlocked) {
-      _reportViewUnlocked = false;
-    }
-  }
-
   Future<bool> _showReportRewardedAd({
     required RewardType rewardType,
     required String spanishMessage,
@@ -106,18 +99,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
     );
   }
 
-  Future<void> _unlockReportViewWithRewardedAd() async {
-    final ok = await _showReportRewardedAd(
-      rewardType: RewardType.viewMonthlyTaxReportDetailedOnce,
-      spanishMessage:
-          'Mira el anuncio completo para ver este reporte. Actualiza a Pro para ver reportes sin anuncios.',
-      englishMessage:
-          'Watch the full ad to view this report. Upgrade to Pro to view reports without ads.',
-    );
-    if (!ok || !mounted) return;
-    setState(() => _reportViewUnlocked = true);
-  }
-
   Future<void> _exportPdf() async {
     if (_exporting) return;
 
@@ -143,6 +124,23 @@ class _ReportsScreenState extends State<ReportsScreen> {
   Future<void> _exportCsvMenu() async {
     if (_exporting) return;
 
+    final shareCsvFileTitle = _isSpanish
+        ? 'Compartir archivo CSV'
+        : 'Share CSV file';
+    final shareCsvFileSubtitle = _isSpanish
+        ? 'Comparte el archivo .csv por email, Drive u otra app'
+        : 'Share the .csv attachment by email, Drive, or another app';
+    final shareTextTitle = _isSpanish
+        ? 'Compartir como texto (WhatsApp / SMS)'
+        : 'Share as text (WhatsApp / SMS)';
+    final shareTextSubtitle = _isSpanish
+        ? 'Envía un resumen del reporte como texto'
+        : 'Sends a report summary as text';
+    final printCsvTitle = _isSpanish ? 'Imprimir CSV' : 'Print CSV';
+    final printCsvSubtitle = _isSpanish
+        ? 'Imprime el reporte como tabla PDF'
+        : 'Print as a table (PDF print)';
+
     await showModalBottomSheet(
       context: context,
       showDragHandle: true,
@@ -159,10 +157,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 const SizedBox(height: 6),
                 ListTile(
                   leading: const Icon(Icons.insert_drive_file_outlined),
-                  title: const Text('Share CSV file'),
-                  subtitle: const Text(
-                    'Share the .csv attachment (email/drive/etc)',
-                  ),
+                  title: Text(shareCsvFileTitle),
+                  subtitle: Text(shareCsvFileSubtitle),
                   onTap: () async {
                     Navigator.pop(ctx);
                     await _runExport(
@@ -177,8 +173,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.message_outlined),
-                  title: const Text('Share as text (WhatsApp / SMS)'),
-                  subtitle: const Text('Sends a report summary as text'),
+                  title: Text(shareTextTitle),
+                  subtitle: Text(shareTextSubtitle),
                   onTap: () async {
                     Navigator.pop(ctx);
                     await _runExport(
@@ -193,8 +189,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.print_outlined),
-                  title: const Text('Print CSV'),
-                  subtitle: const Text('Print as a table (PDF print)'),
+                  title: Text(printCsvTitle),
+                  subtitle: Text(printCsvSubtitle),
                   onTap: () async {
                     Navigator.pop(ctx);
                     await _runExport(
@@ -224,7 +220,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
       await action();
     } catch (e) {
-      _snack('Export error: $e');
+      _snack(_isSpanish ? 'Error al exportar: $e' : 'Export error: $e');
     } finally {
       if (mounted) setState(() => _exporting = false);
     }
@@ -233,7 +229,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final canViewReport = _isPro || _reportViewUnlocked;
 
     final Stream<ReportResult> reportStream = _tab == 0
         ? ReportsService.streamMonthlyReport(year: _year, month: _month)
@@ -261,30 +256,27 @@ class _ReportsScreenState extends State<ReportsScreen> {
             _filtersCard(t),
             const SizedBox(height: 12),
 
-            if (canViewReport)
-              StreamBuilder<ReportResult>(
-                stream: reportStream,
-                builder: (context, snap) {
-                  if (snap.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(18),
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  }
+            StreamBuilder<ReportResult>(
+              stream: reportStream,
+              builder: (context, snap) {
+                if (snap.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(18),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
 
-                  final r = snap.data ?? ReportResult.empty;
+                final r = snap.data ?? ReportResult.empty;
 
-                  final title = _tab == 0
-                      ? '${t.report} • ${_monthName(_month)} $_year'
-                      : '${t.report} • $_year';
+                final title = _tab == 0
+                    ? '${t.report} • ${_monthName(_month)} $_year'
+                    : '${t.report} • $_year';
 
-                  return _reportCard(t, title, r);
-                },
-              )
-            else
-              _rewardedReportGateCard(),
+                return _reportCard(t, title, r);
+              },
+            ),
 
             const SizedBox(height: 12),
             _exportRow(t),
@@ -308,20 +300,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
             child: _segBtn(
               text: t.byMonth,
               selected: _tab == 0,
-              onTap: () => setState(() {
-                _tab = 0;
-                _resetReportViewAccess();
-              }),
+              onTap: () => setState(() => _tab = 0),
             ),
           ),
           Expanded(
             child: _segBtn(
               text: t.byYear,
               selected: _tab == 1,
-              onTap: () => setState(() {
-                _tab = 1;
-                _resetReportViewAccess();
-              }),
+              onTap: () => setState(() => _tab = 1),
             ),
           ),
         ],
@@ -388,10 +374,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 final m = i + 1;
                 return DropdownMenuItem(value: m, child: Text(_monthName(m)));
               }),
-              onChanged: (v) => setState(() {
-                _month = v ?? _month;
-                _resetReportViewAccess();
-              }),
+              onChanged: (v) => setState(() => _month = v ?? _month),
             ),
             const SizedBox(height: 10),
           ],
@@ -404,84 +387,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             items: _years
                 .map((y) => DropdownMenuItem(value: y, child: Text('$y')))
                 .toList(),
-            onChanged: (v) => setState(() {
-              _year = v ?? _year;
-              _resetReportViewAccess();
-            }),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _rewardedReportGateCard() {
-    final title = _isSpanish ? 'Ver reporte' : 'View report';
-    final body = _isSpanish
-        ? 'Mira un anuncio para ver este reporte una vez. Pro no tiene anuncios.'
-        : 'Watch an ad to view this report once. Pro has no ads.';
-    final button = _isSpanish ? 'Ver anuncio' : 'Watch ad';
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-            color: Colors.black.withValues(alpha: 0.05),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: brandGreen.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Icon(Icons.play_circle_outline, color: brandGreen),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            body,
-            style: TextStyle(
-              color: Colors.black.withValues(alpha: 0.62),
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: _unlockReportViewWithRewardedAd,
-              style: FilledButton.styleFrom(
-                backgroundColor: brandGreen,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 13),
-              ),
-              icon: const Icon(Icons.ondemand_video_outlined),
-              label: Text(button),
-            ),
+            onChanged: (v) => setState(() => _year = v ?? _year),
           ),
         ],
       ),
