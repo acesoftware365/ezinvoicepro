@@ -1,6 +1,7 @@
 // lib/ui/business/business_profile_screen.dart
 
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:ezinvoice/models/business_profile.dart';
@@ -61,7 +62,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
   }
 
   Future<void> _load() async {
-    final p = await _repo.load();
+    var p = await _repo.load();
+    p = await _restoreLogoFileIfNeeded(p);
     _profile = p;
 
     _businessName.text = p.businessName;
@@ -78,6 +80,38 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     setState(() => _loading = false);
   }
 
+  Future<BusinessProfile> _restoreLogoFileIfNeeded(
+    BusinessProfile profile,
+  ) async {
+    final path = profile.logoFilePath;
+    final hasLocalLogo =
+        path != null && path.isNotEmpty && File(path).existsSync();
+    if (hasLocalLogo || (profile.logoDataBase64 ?? '').trim().isEmpty) {
+      return profile;
+    }
+
+    final restoredPath = await LogoStorage.restoreLogoFileFromBase64(
+      profile.logoDataBase64,
+    );
+    if (restoredPath == null) return profile;
+
+    final restored = profile.copyWith(logoFilePath: restoredPath);
+    await _repo.save(restored);
+    return restored;
+  }
+
+  Future<String?> _logoDataForSave() async {
+    final currentData = (_profile.logoDataBase64 ?? '').trim();
+    if (currentData.isNotEmpty) return currentData;
+
+    final path = _profile.logoFilePath;
+    if (path == null || path.isEmpty) return null;
+
+    final file = File(path);
+    if (!await file.exists()) return null;
+    return base64Encode(await file.readAsBytes());
+  }
+
   double _parseTax(String v) {
     final raw = v.trim().replaceAll('%', '');
     final n = double.tryParse(raw) ?? 0.0;
@@ -90,11 +124,15 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     final picker = ImagePicker();
     final x = await picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 90,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 80,
     );
     if (x == null) return;
 
-    final savedPath = await LogoStorage.saveLogoFile(File(x.path));
+    final source = File(x.path);
+    final savedPath = await LogoStorage.saveLogoFile(source);
+    final logoDataBase64 = base64Encode(await source.readAsBytes());
 
     if (_profile.logoFilePath != null && _profile.logoFilePath != savedPath) {
       await LogoStorage.deleteLogoIfExists(_profile.logoFilePath);
@@ -102,7 +140,10 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
 
     if (!mounted) return;
     setState(() {
-      _profile = _profile.copyWith(logoFilePath: savedPath);
+      _profile = _profile.copyWith(
+        logoFilePath: savedPath,
+        logoDataBase64: logoDataBase64,
+      );
     });
   }
 
@@ -110,7 +151,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
     await LogoStorage.deleteLogoIfExists(_profile.logoFilePath);
     if (!mounted) return;
     setState(() {
-      _profile = _profile.copyWith(logoFilePath: null);
+      _profile = _profile.copyWith(logoFilePath: null, logoDataBase64: null);
     });
   }
 
@@ -206,6 +247,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
       defaultTaxRate: _parseTax(_taxRate.text),
       footerNote: _footer.text.trim(),
       servicePresets: _presets,
+      logoDataBase64: await _logoDataForSave(),
     );
 
     setState(() => _loading = true);

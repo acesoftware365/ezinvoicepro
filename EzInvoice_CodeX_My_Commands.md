@@ -365,3 +365,17 @@ Nota:
   - Pro sigue viendo y exportando reportes sin anuncios.
 - Verificacion:
   - `dart analyze lib/features/reports/reports_screen.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos del cambio; quedan avisos informativos existentes de `withOpacity`/lint UI en esos archivos.
+
+## 2026-06-08 - Business Logo Persistence Fix
+
+- Pedido: el logo del Business Profile se borra/desaparece despues de hacer logout aunque se toque Save.
+- Version subida por cambio de repo: `1.0.22+46` -> `1.0.23+47`.
+- Login y Home ahora muestran `Version 1.0.23`.
+- Cambio implementado:
+  - `BusinessProfile` ahora guarda tambien `logoDataBase64` junto con `logoFilePath`.
+  - Al cargar Business Profile, si la ruta local del logo no existe, se restaura el archivo desde `logoDataBase64` guardado en Firestore.
+  - Al subir logo, se guarda la ruta local y una copia persistente compacta del archivo.
+  - Al tocar Save con un logo local existente, tambien se genera la copia persistente para logos subidos antes de este cambio.
+  - Al remover logo, se limpia correctamente la ruta local y la copia persistente.
+- Verificacion:
+  - `dart analyze lib/models/business_profile.dart lib/utils/logo_storage.dart lib/ui/business/business_profile_screen.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos del cambio; quedan avisos informativos existentes de `withOpacity`/lint UI en esos archivos.

@@ -1,6 +1,8 @@
 // lib/models/business_profile.dart
 
 class BusinessProfile {
+  static const Object _unset = Object();
+
   final String businessName;
   final String ownerName;
   final String phone;
@@ -17,6 +19,7 @@ class BusinessProfile {
   final String reportLayoutId;
 
   final String? logoFilePath;
+  final String? logoDataBase64;
   factory BusinessProfile.empty() => const BusinessProfile(
     businessName: '',
     currencyCode: 'USD',
@@ -42,6 +45,7 @@ class BusinessProfile {
     this.invoiceLayoutId = 'minimal',
     this.reportLayoutId = 'minimal',
     this.logoFilePath,
+    this.logoDataBase64,
     this.servicePresets = const [],
   });
 
@@ -59,7 +63,8 @@ class BusinessProfile {
     String? reportPaletteId,
     String? invoiceLayoutId,
     String? reportLayoutId,
-    String? logoFilePath,
+    Object? logoFilePath = _unset,
+    Object? logoDataBase64 = _unset,
     List<String>? servicePresets,
   }) {
     return BusinessProfile(
@@ -76,7 +81,12 @@ class BusinessProfile {
       reportPaletteId: reportPaletteId ?? this.reportPaletteId,
       invoiceLayoutId: invoiceLayoutId ?? this.invoiceLayoutId,
       reportLayoutId: reportLayoutId ?? this.reportLayoutId,
-      logoFilePath: logoFilePath ?? this.logoFilePath,
+      logoFilePath: identical(logoFilePath, _unset)
+          ? this.logoFilePath
+          : logoFilePath as String?,
+      logoDataBase64: identical(logoDataBase64, _unset)
+          ? this.logoDataBase64
+          : logoDataBase64 as String?,
       servicePresets: servicePresets ?? this.servicePresets,
     );
   }
@@ -97,6 +107,7 @@ class BusinessProfile {
       'invoiceLayoutId': invoiceLayoutId,
       'reportLayoutId': reportLayoutId,
       'logoFilePath': logoFilePath,
+      'logoDataBase64': logoDataBase64,
       // ✅ NEW
       'servicePresets': servicePresets,
     };
@@ -140,6 +151,7 @@ class BusinessProfile {
       invoiceLayoutId: (m['invoiceLayoutId'] ?? 'minimal').toString(),
       reportLayoutId: (m['reportLayoutId'] ?? 'minimal').toString(),
       logoFilePath: (m['logoFilePath'] as String?),
+      logoDataBase64: (m['logoDataBase64'] as String?),
       // ✅ NEW
       servicePresets: toStringList(m['servicePresets']),
     );
