@@ -653,12 +653,16 @@ class _DashboardTrends {
   final List<double> tip;
   final List<double> subtotal;
   final List<double> tax;
+  final List<String> compactLabels;
+  final List<String> fullLabels;
 
   const _DashboardTrends({
     required this.sales,
     required this.tip,
     required this.subtotal,
     required this.tax,
+    required this.compactLabels,
+    required this.fullLabels,
   });
 
   factory _DashboardTrends.from(List<Invoice> invoices, DateTime month) {
@@ -679,11 +683,21 @@ class _DashboardTrends {
       tax[index] += inv.taxAmount;
     }
 
+    final buckets = _weeklyBucketsForMonth(month);
+    final compactLabels = [
+      for (var i = 0; i < buckets.length; i++) 'W${i + 1}',
+    ];
+    final fullLabels = [
+      for (var i = 0; i < buckets.length; i++) 'Week ${i + 1}',
+    ];
+
     return _DashboardTrends(
-      sales: _compressTrend(sales),
-      tip: _compressTrend(tip),
-      subtotal: _compressTrend(subtotal),
-      tax: _compressTrend(tax),
+      sales: _compressWeeklyTrend(sales, buckets),
+      tip: _compressWeeklyTrend(tip, buckets),
+      subtotal: _compressWeeklyTrend(subtotal, buckets),
+      tax: _compressWeeklyTrend(tax, buckets),
+      compactLabels: compactLabels,
+      fullLabels: fullLabels,
     );
   }
 }
@@ -797,6 +811,8 @@ class _TabletDashboard extends StatelessWidget {
                                 value: _money(totals.sales),
                                 amount: totals.sales,
                                 trend: trends.sales,
+                                compactLabels: trends.compactLabels,
+                                fullLabels: trends.fullLabels,
                                 onTap: () => _openMetric(context, 'Sales'),
                               ),
                             ),
@@ -808,6 +824,8 @@ class _TabletDashboard extends StatelessWidget {
                                 value: _money(totals.tip),
                                 amount: totals.tip,
                                 trend: trends.tip,
+                                compactLabels: trends.compactLabels,
+                                fullLabels: trends.fullLabels,
                                 onTap: () => _openMetric(context, 'Tip'),
                               ),
                             ),
@@ -819,6 +837,8 @@ class _TabletDashboard extends StatelessWidget {
                                 value: _money(totals.subtotal),
                                 amount: totals.subtotal,
                                 trend: trends.subtotal,
+                                compactLabels: trends.compactLabels,
+                                fullLabels: trends.fullLabels,
                                 onTap: () => _openMetric(context, 'Subtotal'),
                               ),
                             ),
@@ -830,6 +850,8 @@ class _TabletDashboard extends StatelessWidget {
                                 value: _money(totals.tax),
                                 amount: totals.tax,
                                 trend: trends.tax,
+                                compactLabels: trends.compactLabels,
+                                fullLabels: trends.fullLabels,
                                 onTap: () => _openMetric(context, 'Tax'),
                               ),
                             ),
@@ -891,6 +913,8 @@ class _TabletDashboard extends StatelessWidget {
                       isPro: isPro,
                       limit: limit,
                       trend: trends.sales,
+                      compactLabels: trends.compactLabels,
+                      fullLabels: trends.fullLabels,
                       invoices: recent,
                     ),
                   ),
@@ -963,6 +987,8 @@ class _MobileDashboard extends StatelessWidget {
             value: _money(totals.sales),
             amount: totals.sales,
             trend: trends.sales,
+            compactLabels: trends.compactLabels,
+            fullLabels: trends.fullLabels,
             onTap: () => _openMetric(context, 'Sales'),
           ),
           const SizedBox(height: 12),
@@ -972,6 +998,8 @@ class _MobileDashboard extends StatelessWidget {
             value: _money(totals.tip),
             amount: totals.tip,
             trend: trends.tip,
+            compactLabels: trends.compactLabels,
+            fullLabels: trends.fullLabels,
             onTap: () => _openMetric(context, 'Tip'),
           ),
           const SizedBox(height: 12),
@@ -981,6 +1009,8 @@ class _MobileDashboard extends StatelessWidget {
             value: _money(totals.subtotal),
             amount: totals.subtotal,
             trend: trends.subtotal,
+            compactLabels: trends.compactLabels,
+            fullLabels: trends.fullLabels,
             onTap: () => _openMetric(context, 'Subtotal'),
           ),
           const SizedBox(height: 12),
@@ -990,6 +1020,8 @@ class _MobileDashboard extends StatelessWidget {
             value: _money(totals.tax),
             amount: totals.tax,
             trend: trends.tax,
+            compactLabels: trends.compactLabels,
+            fullLabels: trends.fullLabels,
             onTap: () => _openMetric(context, 'Tax'),
           ),
           const SizedBox(height: 22),
@@ -1336,6 +1368,8 @@ class _MetricTile extends StatelessWidget {
     required this.value,
     required this.amount,
     required this.trend,
+    required this.compactLabels,
+    required this.fullLabels,
     this.onTap,
   });
 
@@ -1346,6 +1380,8 @@ class _MetricTile extends StatelessWidget {
   final String value;
   final double amount;
   final List<double> trend;
+  final List<String> compactLabels;
+  final List<String> fullLabels;
   final VoidCallback? onTap;
 
   @override
@@ -1390,6 +1426,8 @@ class _MetricTile extends StatelessWidget {
             title: label,
             values: trend,
             maxValue: amount,
+            compactLabels: compactLabels,
+            fullLabels: fullLabels,
             compact: true,
           ),
         ],
@@ -1609,6 +1647,8 @@ class _AnalyticsPanel extends StatelessWidget {
     required this.isPro,
     required this.limit,
     required this.trend,
+    required this.compactLabels,
+    required this.fullLabels,
     required this.invoices,
   });
 
@@ -1619,6 +1659,8 @@ class _AnalyticsPanel extends StatelessWidget {
   final bool isPro;
   final int limit;
   final List<double> trend;
+  final List<String> compactLabels;
+  final List<String> fullLabels;
   final List<Invoice> invoices;
 
   @override
@@ -1643,6 +1685,8 @@ class _AnalyticsPanel extends StatelessWidget {
                   title: 'Monthly sales',
                   values: trend,
                   maxValue: trend.fold(0.0, (total, value) => total + value),
+                  compactLabels: compactLabels,
+                  fullLabels: fullLabels,
                   compact: false,
                   filled: true,
                 ),
@@ -1960,6 +2004,8 @@ class _TrendChart extends StatelessWidget {
     required this.title,
     required this.values,
     required this.maxValue,
+    required this.compactLabels,
+    required this.fullLabels,
     required this.compact,
     this.filled = false,
   });
@@ -1967,6 +2013,8 @@ class _TrendChart extends StatelessWidget {
   final String title;
   final List<double> values;
   final double maxValue;
+  final List<String> compactLabels;
+  final List<String> fullLabels;
   final bool compact;
   final bool filled;
 
@@ -1983,6 +2031,7 @@ class _TrendChart extends StatelessWidget {
         child: _ChartCanvas(
           values: values,
           maxValue: maxValue,
+          labels: compactLabels,
           filled: filled,
           labelStyle: TextStyle(
             color: Colors.black.withValues(alpha: 0.55),
@@ -2039,6 +2088,7 @@ class _TrendChart extends StatelessWidget {
                 child: _ChartCanvas(
                   values: values,
                   maxValue: maxValue,
+                  labels: fullLabels,
                   filled: true,
                   labelStyle: const TextStyle(
                     color: Colors.black54,
@@ -2059,12 +2109,14 @@ class _ChartCanvas extends StatelessWidget {
   const _ChartCanvas({
     required this.values,
     required this.maxValue,
+    required this.labels,
     required this.filled,
     required this.labelStyle,
   });
 
   final List<double> values;
   final double maxValue;
+  final List<String> labels;
   final bool filled;
   final TextStyle labelStyle;
 
@@ -2087,12 +2139,50 @@ class _ChartCanvas extends StatelessWidget {
         ),
         const SizedBox(width: 5),
         Expanded(
-          child: CustomPaint(
-            painter: filled
-                ? _AreaChartPainter(values: values, maxValue: maxValue)
-                : _SparklinePainter(values: values, maxValue: maxValue),
+          child: Column(
+            children: [
+              Expanded(
+                child: CustomPaint(
+                  painter: filled
+                      ? _AreaChartPainter(values: values, maxValue: maxValue)
+                      : _SparklinePainter(values: values, maxValue: maxValue),
+                ),
+              ),
+              const SizedBox(height: 3),
+              _WeekAxisLabels(labels: labels, style: labelStyle),
+            ],
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _WeekAxisLabels extends StatelessWidget {
+  const _WeekAxisLabels({required this.labels, required this.style});
+
+  final List<String> labels;
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    if (labels.isEmpty) return const SizedBox.shrink();
+    return Row(
+      children: [
+        for (var i = 0; i < labels.length; i++)
+          Expanded(
+            child: Text(
+              labels[i],
+              textAlign: i == 0
+                  ? TextAlign.start
+                  : i == labels.length - 1
+                  ? TextAlign.end
+                  : TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: style,
+            ),
+          ),
       ],
     );
   }
@@ -2186,23 +2276,30 @@ void _paintGrid(Canvas canvas, Size size) {
   }
 }
 
-List<double> _compressTrend(List<double> values, {int points = 8}) {
-  if (values.isEmpty) return List<double>.filled(points, 0);
-  if (values.length <= points) {
-    return [...values, ...List<double>.filled(points - values.length, 0)];
+List<({int start, int end})> _weeklyBucketsForMonth(DateTime month) {
+  final days = DateUtils.getDaysInMonth(month.year, month.month);
+  final buckets = <({int start, int end})>[];
+  for (var start = 1; start <= days; start += 7) {
+    final end = (start + 6).clamp(1, days);
+    buckets.add((start: start, end: end));
   }
+  return buckets;
+}
 
-  final result = <double>[];
-  for (var i = 0; i < points; i++) {
-    final start = (i * values.length / points).floor();
-    final end = (((i + 1) * values.length / points).ceil()).clamp(
-      start + 1,
-      values.length,
-    );
-    final bucket = values.sublist(start, end);
-    result.add(bucket.fold(0.0, (total, value) => total + value));
-  }
-  return result;
+List<double> _compressWeeklyTrend(
+  List<double> values,
+  List<({int start, int end})> buckets,
+) {
+  if (buckets.isEmpty) return const <double>[];
+  return [
+    for (final bucket in buckets)
+      values
+          .sublist(
+            bucket.start - 1,
+            bucket.end.clamp(bucket.start, values.length),
+          )
+          .fold(0.0, (total, value) => total + value),
+  ];
 }
 
 List<double> _normaliseTrend(List<double> values, double maxValue) {

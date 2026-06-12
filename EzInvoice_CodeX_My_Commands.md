@@ -477,3 +477,17 @@ Nota:
 - Verificacion:
   - `dart format lib/ui/shell/responsive_main_shell.dart`: OK.
   - `dart analyze lib/ui/shell/responsive_main_shell.dart`: OK.
+
+## 2026-06-12 - Dashboard Chart Weekly Axis
+
+- Pedido: dividir la parte inferior de las graficas por semanas.
+- Version subida por cambio de repo: `1.0.42+66` -> `1.0.43+67`.
+- Login y Home ahora muestran `Version 1.0.43`.
+- Cambio implementado:
+  - Las tendencias del Dashboard ahora se agrupan por semanas del mes seleccionado.
+  - Graficas pequenas muestran labels compactos `W1`, `W2`, `W3`, `W4`, `W5` cuando aplica.
+  - Popup grande muestra labels claros `Week 1`, `Week 2`, etc.
+  - Se mantiene eje izquierdo con monto actual y `0`, lineas guia, y popup al tocar.
+- Verificacion:
+  - `dart format lib/ui/shell/responsive_main_shell.dart`: OK.
+  - `dart analyze lib/ui/shell/responsive_main_shell.dart`: OK.
