@@ -260,12 +260,17 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
   }
 
   Rect _shareOriginFrom(BuildContext context) {
-    final box = context.findRenderObject() as RenderBox?;
+    final renderObject = context.findRenderObject();
+    final box = renderObject is RenderBox ? renderObject : null;
     if (box == null || !box.hasSize) {
-      // fallback válido para iPad
+      // Fallback valido para iPad/iOS when the callback context belongs to a sliver.
       return const Rect.fromLTWH(0, 0, 1, 1);
     }
-    return box.localToGlobal(Offset.zero) & box.size;
+    final rect = box.localToGlobal(Offset.zero) & box.size;
+    if (rect.width <= 0 || rect.height <= 0) {
+      return const Rect.fromLTWH(0, 0, 1, 1);
+    }
+    return rect;
   }
 
   Future<void> _shareInvoicePdf(BuildContext context, Invoice inv) async {
@@ -360,6 +365,37 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
           child: StreamBuilder<List<Invoice>>(
             stream: InvoicesService.streamInvoices(),
             builder: (context, snap) {
+              if (snap.hasError) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 48,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Error loading invoices',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          snap.error.toString(),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.black54),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
               if (snap.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }

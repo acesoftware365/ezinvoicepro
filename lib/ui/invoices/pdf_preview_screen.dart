@@ -17,10 +17,17 @@ class PdfPreviewScreen extends StatelessWidget {
     await OpenFilex.open(pdfFile.path);
   }
 
-  Future<void> _share() async {
+  Future<void> _share(BuildContext context) async {
+    final renderObject = context.findRenderObject();
+    final box = renderObject is RenderBox ? renderObject : null;
+    final origin = (box != null && box.hasSize)
+        ? (box.localToGlobal(Offset.zero) & box.size)
+        : null;
+
     await Share.shareXFiles(
       [XFile(pdfFile.path)],
       text: 'Invoice PDF from EzInvoice',
+      sharePositionOrigin: origin,
     );
   }
 
@@ -33,7 +40,7 @@ class PdfPreviewScreen extends StatelessWidget {
           IconButton(
             tooltip: 'Share',
             icon: const Icon(Icons.share),
-            onPressed: _share,
+            onPressed: () => _share(context),
           ),
           IconButton(
             tooltip: 'Open',
@@ -72,7 +79,7 @@ class PdfPreviewScreen extends StatelessWidget {
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.share),
                   label: const Text('Share PDF'),
-                  onPressed: _share,
+                  onPressed: () => _share(context),
                 ),
               ),
               const SizedBox(height: 10),

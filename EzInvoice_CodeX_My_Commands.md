@@ -393,3 +393,55 @@ Nota:
   - Textos visibles del menu CSV ahora cambian entre ingles/espanol segun el idioma seleccionado.
 - Verificacion:
   - `dart analyze lib/features/reports/reports_screen.dart lib/ui/login_screen.dart lib/ui/home_screen.dart`: sin errores nuevos del cambio; quedan avisos informativos existentes de `withOpacity`/lint UI en esos archivos.
+
+## 2026-06-08 - Pro AdBanner Visibility Fix
+
+- Pedido: arreglar que no se vea el adbanner cuando la app tenga una cuenta pro.
+- Version subida por cambio de repo: `1.0.24+48` -> `1.0.25+49`.
+- Login y Home ahora muestran `Version 1.0.25`.
+- Cambio implementado:
+  - `AppShell` ahora elimina completamente el `bottomNavigationBar` cuando el usuario es Pro, en lugar de solo ocultar el widget hijo.
+  - `BannerAdWidget` ahora limpia su estado y deja de reintentar si `AdsManager.adsEnabled` es falso.
+  - `AdsShell` (aunque no se usa activamente) se actualizó para respetar la condición Pro antes de mostrar el banner.
+- Verificacion:
+  - `dart analyze lib/ui/shell/app_shell.dart lib/services/ads/banner_ad_widget.dart lib/ui/shell/ads_shell.dart`: OK.
+
+## 2026-06-09 - Final Data Shield & Build Fix Verified
+
+- Pedido: el usuario continúa recibiendo errores de datos.
+- Version subida por cambio de repo: `1.0.38+62` -> `1.0.39+63`.
+- Login y Home ahora muestran `Version 1.0.39`.
+- Cambio implementado:
+  - **Full Data Shield (Verified)**: Se consolidaron todos los parches de seguridad para manejar datos de Firebase (`Timestamp` vs `int`). El código ahora busca campos por múltiples nombres (`createdAtMs` / `createdAt`, etc.) y los convierte de forma segura.
+  - **Xcode Build Fix**: Se eliminaron todos los rastros de código de diagnóstico que causaban el fallo de compilación en el Mac del usuario.
+  - **Item Resilience**: Cada producto dentro de una factura ahora se procesa de forma independiente, asegurando que un error menor no rompa toda la aplicación.
+- Verificacion:
+  - `dart analyze lib/models/invoice.dart lib/ui/auth_gate.dart`: OK.
+
+## 2026-06-08 - iOS/iPad Share Fix
+
+- Pedido: arreglar que en iOS/iPad no salen las opciones de compartir (email, WhatsApp, etc.) al exportar reportes.
+- Version subida por cambio de repo: `1.0.25+49` -> `1.0.26+50`.
+- Login y Home ahora muestran `Version 1.0.26`.
+- Cambio implementado:
+  - Se agregó `sharePositionOrigin` a todas las llamadas de `Share.share` y `Share.shareXFiles` que faltaban. Esto es obligatorio para iOS (especialmente iPad) para que el sistema sepa dónde anclar el menú de compartir.
+  - `ReportsExportService`: Se actualizó `shareCsvAsText` para usar un helper seguro con `sharePositionOrigin`.
+  - `HomeScreen`: Se actualizó el botón de compartir app con `sharePositionOrigin`.
+  - `PdfPreviewScreen`: Se actualizó la vista previa de facturas para soportar el origen de compartir.
+  - Android no se ve afectado ya que ignora el parámetro `sharePositionOrigin`.
+- Verificacion:
+  - `dart analyze lib/features/reports/reports_export_service.dart lib/ui/home_screen.dart lib/ui/invoices/pdf_preview_screen.dart`: OK.
+
+## 2026-06-11 - Invoice PDF RenderSliver Share Origin Fix
+
+- Pedido: al tocar `View PDF` en Invoices aparece `Invoice PDF error: type 'RenderSliverList' is not a subtype of type 'RenderBox?' in type cast`.
+- Causa: `InvoicesScreen._shareOriginFrom` hacia cast directo de `context.findRenderObject()` a `RenderBox`; en la lista de invoices ese contexto puede pertenecer a un sliver (`RenderSliverList`).
+- Version subida por cambio de repo: `1.0.39+63` -> `1.0.40+64`.
+- Login y Home ahora muestran `Version 1.0.40`.
+- Cambio implementado:
+  - `InvoicesScreen._shareOriginFrom` ahora valida `renderObject is RenderBox` antes de usarlo.
+  - Si el contexto no es `RenderBox`, no tiene tamano, o genera un rect invalido, usa fallback `Rect.fromLTWH(0, 0, 1, 1)` valido para iOS/iPad.
+  - `HomeScreen` y `PdfPreviewScreen` tambien evitan cast directo a `RenderBox` para prevenir el mismo error en otros botones de compartir.
+- Verificacion:
+  - `dart format lib/features/invoices/invoices_screen.dart lib/ui/home_screen.dart lib/ui/login_screen.dart lib/ui/invoices/pdf_preview_screen.dart`: OK.
+  - `dart analyze lib/features/invoices/invoices_screen.dart lib/ui/home_screen.dart lib/ui/login_screen.dart lib/ui/invoices/pdf_preview_screen.dart`: sin errores; quedan infos preexistentes de `withOpacity` en `home_screen.dart`.

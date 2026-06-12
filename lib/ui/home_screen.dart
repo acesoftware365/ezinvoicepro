@@ -38,7 +38,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const String _forcedVersionText = 'Version 1.0.24';
+  static const String _forcedVersionText = 'Version 1.0.40';
   // ---- Brand tokens ----
   static const Color brandGreen = Color(0xFF1F6E5C);
   static const Color pageBg = Color(0xFFF6F7F9);
@@ -78,7 +78,13 @@ ${t.shareAppBody}
 $_storeUrl
 ''';
 
-    await Share.share(text.trim());
+    final renderObject = context.findRenderObject();
+    final box = renderObject is RenderBox ? renderObject : null;
+    final origin = (box != null && box.hasSize)
+        ? (box.localToGlobal(Offset.zero) & box.size)
+        : null;
+
+    await Share.share(text.trim(), sharePositionOrigin: origin);
   }
 
   Future<void> _openStorePage() async {

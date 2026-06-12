@@ -14,10 +14,19 @@ class InvoicesService {
   }
 
   static Stream<List<Invoice>> streamInvoices() {
+    // Quitamos orderBy temporalmente para evitar crashes si Firestore tiene tipos mezclados
+    // Ordenaremos manualmente en Dart.
     return _ref()
-        .orderBy('createdAtMs', descending: true)
         .snapshots()
-        .map((snap) => snap.docs.map((d) => Invoice.fromDoc(id: d.id, map: d.data())).toList());
+        .map((snap) {
+          final list = snap.docs
+              .map((d) => Invoice.fromDoc(id: d.id, map: d.data()))
+              .toList();
+          
+          // Orden descendente por createdAtMs (manual)
+          list.sort((a, b) => b.createdAtMs.compareTo(a.createdAtMs));
+          return list;
+        });
   }
 
   static Future<void> add(Invoice inv) async {

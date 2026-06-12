@@ -145,7 +145,7 @@ class ReportsService {
       count += 1;
       subtotal += inv.subtotal;
       tax += inv.taxAmount;
-      tip += (inv.tip ?? 0.0);
+      tip += inv.tip;
       total += inv.total;
     }
 
@@ -181,7 +181,7 @@ class ReportsService {
     for (final inv in invoices) {
       totalSales += inv.total;
       totalTax += inv.taxAmount;
-      totalTip += (inv.tip ?? 0.0);
+      totalTip += inv.tip;
       net += inv.subtotal;
 
       if (inv.isPaid) {

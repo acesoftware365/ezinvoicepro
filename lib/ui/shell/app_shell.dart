@@ -25,12 +25,14 @@ class AppShell extends StatelessWidget {
               );
             },
           ),
-          bottomNavigationBar: SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [if (showBanner) const BannerAdWidget()],
-            ),
-          ),
+          bottomNavigationBar: showBanner
+              ? SafeArea(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [const BannerAdWidget()],
+                  ),
+                )
+              : null,
         );
       },
     );

@@ -96,32 +96,40 @@ class _ClientsScreenState extends State<ClientsScreen> {
     }
   }
 
+  bool _deletingClient = false;
+
   Future<void> _confirmDelete(BuildContext context, Client c) async {
+    if (_deletingClient) return;
     final t = AppLocalizations.of(context);
 
     final ok = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(t.deleteClientTitle),
         content: Text(t.deleteClientBody(c.name)),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: Text(t.cancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(dialogContext, true),
             child: Text(t.delete),
           ),
         ],
       ),
     );
 
-    if (ok == true) {
-      await ClientsService.delete(c.id);
-      if (_selectedClientId == c.id && mounted) {
-        setState(() => _selectedClientId = null);
+    if (ok == true && mounted) {
+      setState(() => _deletingClient = true);
+      try {
+        await ClientsService.delete(c.id);
+        if (_selectedClientId == c.id && mounted) {
+          setState(() => _selectedClientId = null);
+        }
+      } finally {
+        if (mounted) setState(() => _deletingClient = false);
       }
     }
   }

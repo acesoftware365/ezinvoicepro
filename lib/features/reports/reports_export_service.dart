@@ -129,7 +129,6 @@ class ReportsExportService {
     /// ✅ FIX iOS Share (para Share.share también es buena práctica)
     BuildContext? context,
   }) async {
-    // ✅ Cambiado "•" por "|"
     final title = byMonth
         ? 'Report | ${_monthName(month ?? 1)} $year'
         : 'Report | $year';
@@ -197,10 +196,6 @@ class ReportsExportService {
       subject: title,
     );
   }
-
-  // =========================
-  // ✅ SHARE HELPERS (FIX iOS)
-  // =========================
 
   static Future<void> _shareXFilesSafe({
     required BuildContext? context,

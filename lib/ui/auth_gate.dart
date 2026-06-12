@@ -55,7 +55,9 @@ class _AuthGateState extends State<AuthGate> {
         SubscriptionManager.instance.setCurrentUserEmail(user.email);
 
         // ✅ Inicia IAP al entrar (una sola vez), sin restore automatico.
-        _startIapOnce();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _startIapOnce();
+        });
 
         return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
           stream: FirebaseFirestore.instance
@@ -67,11 +69,14 @@ class _AuthGateState extends State<AuthGate> {
             final isPro = _isProFromUserDoc(data);
             final proPlan = (data['proPlan'] ?? '').toString();
 
-            SubscriptionManager.instance.syncFromBackend(
-              isPro: isPro,
-              proPlan: proPlan,
-            );
-            AdsManager.instance.setAdsEnabled(!isPro);
+            // ✅ Usar post-frame para evitar setState durante build
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              SubscriptionManager.instance.syncFromBackend(
+                isPro: isPro,
+                proPlan: proPlan,
+              );
+              AdsManager.instance.setAdsEnabled(!isPro);
+            });
 
             return const ResponsiveMainShell();
           },

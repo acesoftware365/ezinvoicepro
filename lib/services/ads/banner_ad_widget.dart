@@ -58,7 +58,9 @@ class _BannerAdWidgetState extends State<BannerAdWidget>
   Future<void> _loadForCurrentWidth({bool force = false}) async {
     if (_isLoading) return;
     if (!AdsManager.instance.adsEnabled) {
-      _scheduleRetry(minDelay: const Duration(seconds: 2));
+      // Si los anuncios están desactivados (ej. cuenta Pro),
+      // no cargamos nada y limpiamos lo que exista.
+      _disposeCurrentBanner();
       return;
     }
 

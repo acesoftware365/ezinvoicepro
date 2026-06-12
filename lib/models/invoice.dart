@@ -1,6 +1,7 @@
 // lib/models/invoice.dart
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 /// =========================
 /// Constantes
@@ -51,13 +52,27 @@ class InvoiceItem {
   }
 
   factory InvoiceItem.fromMap(Map<String, dynamic>? map) {
-    final m = map ?? const <String, dynamic>{};
-    return InvoiceItem(
-      description: (m['description'] ?? '').toString(),
-      dateMs: _toNullableInt(m['dateMs']),
-      qty: _toDouble(m['qty'], fallback: 1),
-      price: _toDouble(m['price'], fallback: 0),
-    );
+    try {
+      final m = map ?? const <String, dynamic>{};
+      
+      // Fallback a 'date' si 'dateMs' no existe
+      final dateMsSafe = _toNullableInt(m['dateMs'] ?? m['date']);
+      final qtySafe = _toDouble(m['qty'], fallback: 1);
+      final priceSafe = _toDouble(m['price'], fallback: 0);
+
+      return InvoiceItem(
+        description: (m['description'] ?? '').toString(),
+        dateMs: dateMsSafe,
+        qty: qtySafe,
+        price: priceSafe,
+      );
+    } catch (_) {
+      return const InvoiceItem(
+        description: 'Invalid Item Data',
+        qty: 1,
+        price: 0,
+      );
+    }
   }
 }
 
@@ -179,43 +194,91 @@ class Invoice {
     return Invoice.fromDoc(id: id, map: map);
   }
 
-  /// ✅ Estilo nuevo (named): Invoice.fromDoc(id: ..., map: ...)
   factory Invoice.fromDoc({
     required String id,
     required Map<String, dynamic>? map,
   }) {
-    final m = map ?? const <String, dynamic>{};
+    try {
+      final m = map ?? const <String, dynamic>{};
 
-    final itemsRaw = (m['items'] as List?) ?? const [];
-    final items = itemsRaw
-        .whereType<Map>()
-        .map((e) => InvoiceItem.fromMap(e.cast<String, dynamic>()))
-        .toList();
+      // Extracción de ítems con seguridad máxima
+      List<InvoiceItem> items = [];
+      try {
+        final itemsRaw = m['items'];
+        if (itemsRaw is Iterable) {
+          for (final itemEntry in itemsRaw) {
+            if (itemEntry is Map) {
+              try {
+                final itemMap = Map<String, dynamic>.from(itemEntry);
+                items.add(InvoiceItem.fromMap(itemMap));
+              } catch (_) {
+                items.add(const InvoiceItem(description: 'Item Error', qty: 1, price: 0));
+              }
+            }
+          }
+        }
+      } catch (_) {}
 
-    return Invoice(
-      id: id,
-      invoiceNumber: (m['invoiceNumber'] ?? '').toString(),
-      clientId: (m['clientId'] ?? '').toString(),
-      clientName: (m['clientName'] ?? '').toString(),
-      clientEmail: (m['clientEmail'] ?? '').toString(),
-      clientPhoneE164: (m['clientPhoneE164'] ?? '').toString(),
-      createdAtMs: _toInt(m['createdAtMs'], fallback: 0),
-      dueAtMs: _toNullableInt(m['dueAtMs']),
-      status: (m['status'] ?? InvoiceStatus.unpaid).toString(),
-      sentAtMs: _toNullableInt(m['sentAtMs']),
-      paidAtMs: _toNullableInt(m['paidAtMs']),
-      paymentMethod: (m['paymentMethod'] ?? PaymentMethod.other).toString(),
-      paymentNote: (m['paymentNote'] ?? '').toString(),
-      items: items,
-      subtotal: _toDouble(m['subtotal'], fallback: 0),
-      taxRate: _toDouble(m['taxRate'], fallback: 0),
-      taxAmount: _toDouble(m['taxAmount'], fallback: 0),
-      tip: _toDouble(m['tip'], fallback: 0),
-      tipIsPercent: (m['tipIsPercent'] ?? true) == true,
-      tipPercent: _toDouble(m['tipPercent'], fallback: 0),
-      total: _toDouble(m['total'], fallback: 0),
-      message: (m['message'] ?? '').toString(),
-    );
+      // Fallbacks para campos heredados (Ms vs legacy)
+      final createdAtMsSafe = _toInt(m['createdAtMs'] ?? m['createdAt'], fallback: 0);
+      final dueAtMsSafe = _toNullableInt(m['dueAtMs'] ?? m['dueAt']);
+      final sentAtMsSafe = _toNullableInt(m['sentAtMs'] ?? m['sentAt']);
+      final paidAtMsSafe = _toNullableInt(m['paidAtMs'] ?? m['paidAt']);
+      
+      final subtotalSafe = _toDouble(m['subtotal']);
+      final taxRateSafe = _toDouble(m['taxRate']);
+      final taxAmountSafe = _toDouble(m['taxAmount']);
+      final tipSafe = _toDouble(m['tip']);
+      final tipPercentSafe = _toDouble(m['tipPercent']);
+      final totalSafe = _toDouble(m['total']);
+
+      return Invoice(
+        id: id,
+        invoiceNumber: (m['invoiceNumber'] ?? '').toString(),
+        clientId: (m['clientId'] ?? '').toString(),
+        clientName: (m['clientName'] ?? '').toString(),
+        clientEmail: (m['clientEmail'] ?? '').toString(),
+        clientPhoneE164: (m['clientPhoneE164'] ?? '').toString(),
+        createdAtMs: createdAtMsSafe,
+        dueAtMs: dueAtMsSafe,
+        status: (m['status'] ?? InvoiceStatus.unpaid).toString(),
+        sentAtMs: sentAtMsSafe,
+        paidAtMs: paidAtMsSafe,
+        paymentMethod: (m['paymentMethod'] ?? PaymentMethod.other).toString(),
+        paymentNote: (m['paymentNote'] ?? '').toString(),
+        items: items,
+        subtotal: subtotalSafe,
+        taxRate: taxRateSafe,
+        taxAmount: taxAmountSafe,
+        tip: tipSafe,
+        tipIsPercent: (m['tipIsPercent'] ?? true) == true,
+        tipPercent: tipPercentSafe,
+        total: totalSafe,
+        message: (m['message'] ?? '').toString(),
+      );
+    } catch (e) {
+      return Invoice(
+        id: id,
+        invoiceNumber: 'ERROR-PARSE',
+        clientId: '',
+        clientName: 'Parse Error',
+        clientEmail: '',
+        clientPhoneE164: '',
+        createdAtMs: 0,
+        status: InvoiceStatus.unpaid,
+        paymentMethod: PaymentMethod.other,
+        paymentNote: '',
+        items: const [],
+        subtotal: 0,
+        taxRate: 0,
+        taxAmount: 0,
+        tip: 0,
+        tipIsPercent: true,
+        tipPercent: 0,
+        total: 0,
+        message: 'Error: $e',
+      );
+    }
   }
 
   /// Helper opcional si usas DocumentSnapshot
@@ -283,6 +346,12 @@ int _toInt(dynamic v, {int fallback = 0}) {
   if (v is int) return v;
   if (v is double) return v.toInt();
   if (v is num) return v.toInt();
+  // Manejo súper agresivo para objetos Timestamp de Firebase
+  try {
+    if (v.runtimeType.toString().contains('Timestamp')) {
+      return (v as dynamic).millisecondsSinceEpoch;
+    }
+  } catch (_) {}
   if (v is String) return int.tryParse(v) ?? fallback;
   return fallback;
 }
@@ -292,6 +361,11 @@ int? _toNullableInt(dynamic v) {
   if (v is int) return v;
   if (v is double) return v.toInt();
   if (v is num) return v.toInt();
+  try {
+    if (v.runtimeType.toString().contains('Timestamp')) {
+      return (v as dynamic).millisecondsSinceEpoch;
+    }
+  } catch (_) {}
   if (v is String) return int.tryParse(v);
   return null;
 }
@@ -301,6 +375,11 @@ double _toDouble(dynamic v, {double fallback = 0}) {
   if (v is double) return v;
   if (v is int) return v.toDouble();
   if (v is num) return v.toDouble();
+  try {
+    if (v.runtimeType.toString().contains('Timestamp')) {
+      return (v as dynamic).millisecondsSinceEpoch.toDouble();
+    }
+  } catch (_) {}
   if (v is String) return double.tryParse(v) ?? fallback;
   return fallback;
 }

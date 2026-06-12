@@ -50,18 +50,20 @@ class AdsShell extends StatelessWidget {
           body: child,
 
           // ✅ Banner global + bottomBar (si tienes)
-          bottomNavigationBar: SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // ✅ SOLO 1 BANNER EN TODA LA APP (aquí)
-                const BannerAdWidget(),
+          bottomNavigationBar: !isPro
+              ? SafeArea(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // ✅ SOLO 1 BANNER EN TODA LA APP (aquí)
+                      const BannerAdWidget(),
 
-                // ✅ tu barra/botones abajo si aplica
-                if (bottomBar != null) bottomBar!,
-              ],
-            ),
-          ),
+                      // ✅ tu barra/botones abajo si aplica
+                      if (bottomBar != null) bottomBar!,
+                    ],
+                  ),
+                )
+              : (bottomBar != null ? SafeArea(child: bottomBar!) : null),
         );
       },
     );

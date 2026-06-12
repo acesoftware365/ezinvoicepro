@@ -1,7 +1,6 @@
-// lib/features/invoices/invoice_form_screen.dart
-
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:ezinvoice/repositories/business_profile_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 
@@ -11,6 +10,20 @@ import 'package:ezinvoice/services/clients/clients_service.dart';
 import 'package:ezinvoice/services/invoices/invoices_service.dart';
 
 import 'package:ezinvoice/services/plan/plan_guard.dart';
+
+int? _toNullableInt(dynamic v) {
+  if (v == null) return null;
+  if (v is int) return v;
+  if (v is double) return v.toInt();
+  if (v is num) return v.toInt();
+  try {
+    if (v.runtimeType.toString().contains('Timestamp')) {
+      return (v as dynamic).millisecondsSinceEpoch;
+    }
+  } catch (_) {}
+  if (v is String) return int.tryParse(v);
+  return null;
+}
 
 class InvoiceFormScreen extends StatefulWidget {
   final Invoice? invoice;
@@ -195,7 +208,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
         // ✅ dueAtMs si existe
         try {
-          _dueAtMs = (inv as dynamic).dueAtMs as int?;
+          _dueAtMs = _toNullableInt((inv as dynamic).dueAtMs);
         } catch (_) {
           _dueAtMs = null;
         }

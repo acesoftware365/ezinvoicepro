@@ -512,6 +512,18 @@ class _DashboardScreen extends StatelessWidget {
         return StreamBuilder<List<Invoice>>(
           stream: InvoicesService.streamInvoices(),
           builder: (context, invoiceSnap) {
+            if (invoiceSnap.hasError) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    'Error: ${invoiceSnap.error}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+              );
+            }
             final invoices = invoiceSnap.data ?? const <Invoice>[];
             final now = DateTime.now();
             final monthInvoices = invoices.where((inv) {
@@ -579,11 +591,15 @@ class _DashboardTotals {
   });
 
   factory _DashboardTotals.from(List<Invoice> invoices) {
+    // Filtramos facturas que tengan errores de parseo (marcadas con id 'ERROR' o similar si aplicara)
+    // para evitar que datos corruptos rompan los totales.
+    final validInvoices = invoices.where((inv) => inv.invoiceNumber != 'ERROR').toList();
+    
     return _DashboardTotals(
-      sales: invoices.fold(0, (total, inv) => total + inv.total),
-      tip: invoices.fold(0, (total, inv) => total + inv.tip),
-      subtotal: invoices.fold(0, (total, inv) => total + inv.subtotal),
-      tax: invoices.fold(0, (total, inv) => total + inv.taxAmount),
+      sales: validInvoices.fold(0.0, (total, inv) => total + inv.total),
+      tip: validInvoices.fold(0.0, (total, inv) => total + inv.tip),
+      subtotal: validInvoices.fold(0.0, (total, inv) => total + inv.subtotal),
+      tax: validInvoices.fold(0.0, (total, inv) => total + inv.taxAmount),
     );
   }
 }

@@ -153,12 +153,12 @@ class FirestoreService {
   // REPORTES
   // =========================
 
-  DocumentReference<Map<String, dynamic>> _monthlyReportRef(String monthKey) =>
+  DocumentReference<Map<String, dynamic>> _monthlyReportRef(dynamic monthKey) =>
       _db.collection('users').doc(_uid)
           .collection('reports_monthly')
-          .doc(monthKey);
+          .doc(monthKey.toString());
 
-  DocumentReference<Map<String, dynamic>> _yearlyReportRef(int year) =>
+  DocumentReference<Map<String, dynamic>> _yearlyReportRef(dynamic year) =>
       _db.collection('users').doc(_uid)
           .collection('reports_yearly')
           .doc(year.toString());
@@ -167,8 +167,16 @@ class FirestoreService {
   Future<void> _updateReportsOnCreate(Map<String, dynamic> data) async {
     final batch = _db.batch();
 
-    final monthKey = data['monthKey'] as String;
-    final year = data['year'] as int;
+    final monthKey = data['monthKey']?.toString() ?? '';
+    final yearRaw = data['year'];
+    int year;
+    if (yearRaw is num) {
+      year = yearRaw.toInt();
+    } else if (yearRaw is String) {
+      year = int.tryParse(yearRaw) ?? DateTime.now().year;
+    } else {
+      year = DateTime.now().year;
+    }
 
     batch.set(
       _monthlyReportRef(monthKey),
@@ -254,10 +262,14 @@ class FirestoreService {
       }) {
     final s = isCreate ? 1 : -1;
 
+    final monthKey = d['monthKey']?.toString() ?? '';
+    final monthParts = monthKey.split('-');
+    final month = monthParts.length > 1 ? (int.tryParse(monthParts[1]) ?? 1) : 1;
+
     return {
-      'monthKey': d['monthKey'],
+      'monthKey': monthKey,
       'year': d['year'],
-      'month': int.parse((d['monthKey'] as String).split('-')[1]),
+      'month': month,
       'invoiceCount': FieldValue.increment(s),
       'subtotalSum': FieldValue.increment(s * (d['subtotal'] ?? 0)),
       'taxSum': FieldValue.increment(s * (d['taxTotal'] ?? 0)),
@@ -276,8 +288,11 @@ class FirestoreService {
       }) {
     final s = isCreate ? 1 : -1;
 
+    final yearRaw = d['year'];
+    final year = yearRaw is num ? yearRaw.toInt() : (int.tryParse(yearRaw?.toString() ?? '') ?? DateTime.now().year);
+
     return {
-      'year': d['year'],
+      'year': year,
       'invoiceCount': FieldValue.increment(s),
       'subtotalSum': FieldValue.increment(s * (d['subtotal'] ?? 0)),
       'taxSum': FieldValue.increment(s * (d['taxTotal'] ?? 0)),
