@@ -463,3 +463,17 @@ Nota:
 - Verificacion:
   - `dart format lib/ui/shell/responsive_main_shell.dart`: OK.
   - `dart analyze lib/ui/shell/responsive_main_shell.dart`: OK.
+
+## 2026-06-12 - Dashboard Chart Scale And Popup
+
+- Pedido: poner escala a la izquierda de las graficas, de `0` a la cantidad actual, sin numeros abajo, con lineas guia; y que al tocar la grafica abra grande en popup.
+- Version subida por cambio de repo: `1.0.41+65` -> `1.0.42+66`.
+- Login y Home ahora muestran `Version 1.0.42`.
+- Cambio implementado:
+  - Las graficas de Sales, Tip, Subtotal, Tax y Monthly overview ahora muestran eje izquierdo con monto actual arriba y `0` abajo.
+  - Se agregaron lineas horizontales de referencia dentro del area de la grafica.
+  - Se removieron etiquetas/numeros del eje inferior.
+  - Al tocar una grafica se abre un dialog/popup con la grafica ampliada y el valor actual.
+- Verificacion:
+  - `dart format lib/ui/shell/responsive_main_shell.dart`: OK.
+  - `dart analyze lib/ui/shell/responsive_main_shell.dart`: OK.

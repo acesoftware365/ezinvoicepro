@@ -795,6 +795,7 @@ class _TabletDashboard extends StatelessWidget {
                                 icon: Icons.attach_money,
                                 label: 'Sales',
                                 value: _money(totals.sales),
+                                amount: totals.sales,
                                 trend: trends.sales,
                                 onTap: () => _openMetric(context, 'Sales'),
                               ),
@@ -805,6 +806,7 @@ class _TabletDashboard extends StatelessWidget {
                                 icon: Icons.volunteer_activism_outlined,
                                 label: 'Tip',
                                 value: _money(totals.tip),
+                                amount: totals.tip,
                                 trend: trends.tip,
                                 onTap: () => _openMetric(context, 'Tip'),
                               ),
@@ -815,6 +817,7 @@ class _TabletDashboard extends StatelessWidget {
                                 icon: Icons.receipt_outlined,
                                 label: 'Subtotal',
                                 value: _money(totals.subtotal),
+                                amount: totals.subtotal,
                                 trend: trends.subtotal,
                                 onTap: () => _openMetric(context, 'Subtotal'),
                               ),
@@ -825,6 +828,7 @@ class _TabletDashboard extends StatelessWidget {
                                 icon: Icons.percent,
                                 label: 'Tax',
                                 value: _money(totals.tax),
+                                amount: totals.tax,
                                 trend: trends.tax,
                                 onTap: () => _openMetric(context, 'Tax'),
                               ),
@@ -957,6 +961,7 @@ class _MobileDashboard extends StatelessWidget {
             icon: Icons.attach_money,
             label: 'Sales',
             value: _money(totals.sales),
+            amount: totals.sales,
             trend: trends.sales,
             onTap: () => _openMetric(context, 'Sales'),
           ),
@@ -965,6 +970,7 @@ class _MobileDashboard extends StatelessWidget {
             icon: Icons.volunteer_activism_outlined,
             label: 'Tip',
             value: _money(totals.tip),
+            amount: totals.tip,
             trend: trends.tip,
             onTap: () => _openMetric(context, 'Tip'),
           ),
@@ -973,6 +979,7 @@ class _MobileDashboard extends StatelessWidget {
             icon: Icons.receipt_outlined,
             label: 'Subtotal',
             value: _money(totals.subtotal),
+            amount: totals.subtotal,
             trend: trends.subtotal,
             onTap: () => _openMetric(context, 'Subtotal'),
           ),
@@ -981,6 +988,7 @@ class _MobileDashboard extends StatelessWidget {
             icon: Icons.percent,
             label: 'Tax',
             value: _money(totals.tax),
+            amount: totals.tax,
             trend: trends.tax,
             onTap: () => _openMetric(context, 'Tax'),
           ),
@@ -1326,6 +1334,7 @@ class _MetricTile extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.value,
+    required this.amount,
     required this.trend,
     this.onTap,
   });
@@ -1335,6 +1344,7 @@ class _MetricTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
+  final double amount;
   final List<double> trend;
   final VoidCallback? onTap;
 
@@ -1376,9 +1386,11 @@ class _MetricTile extends StatelessWidget {
               ],
             ),
           ),
-          CustomPaint(
-            size: const Size(72, 28),
-            painter: _SparklinePainter(values: trend),
+          _TrendChart(
+            title: label,
+            values: trend,
+            maxValue: amount,
+            compact: true,
           ),
         ],
       ),
@@ -1627,7 +1639,13 @@ class _AnalyticsPanel extends StatelessWidget {
               SizedBox(
                 height: 130,
                 width: double.infinity,
-                child: CustomPaint(painter: _AreaChartPainter(values: trend)),
+                child: _TrendChart(
+                  title: 'Monthly sales',
+                  values: trend,
+                  maxValue: trend.fold(0.0, (total, value) => total + value),
+                  compact: false,
+                  filled: true,
+                ),
               ),
             ],
           ),
@@ -1937,14 +1955,159 @@ class _StatusBadge extends StatelessWidget {
   }
 }
 
-class _SparklinePainter extends CustomPainter {
-  const _SparklinePainter({required this.values});
+class _TrendChart extends StatelessWidget {
+  const _TrendChart({
+    required this.title,
+    required this.values,
+    required this.maxValue,
+    required this.compact,
+    this.filled = false,
+  });
+
+  final String title;
+  final List<double> values;
+  final double maxValue;
+  final bool compact;
+  final bool filled;
+
+  @override
+  Widget build(BuildContext context) {
+    final height = compact ? 46.0 : 130.0;
+    final width = compact ? 118.0 : double.infinity;
+    return SizedBox(
+      width: width,
+      height: height,
+      child: InkWell(
+        onTap: () => _showChartDialog(context),
+        borderRadius: BorderRadius.circular(8),
+        child: _ChartCanvas(
+          values: values,
+          maxValue: maxValue,
+          filled: filled,
+          labelStyle: TextStyle(
+            color: Colors.black.withValues(alpha: 0.55),
+            fontSize: compact ? 8 : 11,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showChartDialog(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Close',
+                    onPressed: () => Navigator.pop(dialogContext),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Current: ${_money(maxValue)}',
+                style: const TextStyle(
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 240,
+                width: double.infinity,
+                child: _ChartCanvas(
+                  values: values,
+                  maxValue: maxValue,
+                  filled: true,
+                  labelStyle: const TextStyle(
+                    color: Colors.black54,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ChartCanvas extends StatelessWidget {
+  const _ChartCanvas({
+    required this.values,
+    required this.maxValue,
+    required this.filled,
+    required this.labelStyle,
+  });
 
   final List<double> values;
+  final double maxValue;
+  final bool filled;
+  final TextStyle labelStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    final axisWidth = labelStyle.fontSize! <= 8 ? 30.0 : 50.0;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(
+          width: axisWidth,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(_axisMoney(maxValue), style: labelStyle),
+              const Spacer(),
+              Text('0', style: labelStyle),
+            ],
+          ),
+        ),
+        const SizedBox(width: 5),
+        Expanded(
+          child: CustomPaint(
+            painter: filled
+                ? _AreaChartPainter(values: values, maxValue: maxValue)
+                : _SparklinePainter(values: values, maxValue: maxValue),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SparklinePainter extends CustomPainter {
+  const _SparklinePainter({required this.values, required this.maxValue});
+
+  final List<double> values;
+  final double maxValue;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final points = _normaliseTrend(values);
+    _paintGrid(canvas, size);
+    final points = _normaliseTrend(values, maxValue);
     final paint = Paint()
       ..color = const Color(0xFF1F7A64)
       ..style = PaintingStyle.stroke
@@ -1964,17 +2127,19 @@ class _SparklinePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _SparklinePainter oldDelegate) =>
-      oldDelegate.values != values;
+      oldDelegate.values != values || oldDelegate.maxValue != maxValue;
 }
 
 class _AreaChartPainter extends CustomPainter {
-  const _AreaChartPainter({required this.values});
+  const _AreaChartPainter({required this.values, required this.maxValue});
 
   final List<double> values;
+  final double maxValue;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final points = _normaliseTrend(values);
+    _paintGrid(canvas, size);
+    final points = _normaliseTrend(values, maxValue);
     final line = Paint()
       ..color = const Color(0xFF1F7A64)
       ..style = PaintingStyle.stroke
@@ -2008,7 +2173,17 @@ class _AreaChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _AreaChartPainter oldDelegate) =>
-      oldDelegate.values != values;
+      oldDelegate.values != values || oldDelegate.maxValue != maxValue;
+}
+
+void _paintGrid(Canvas canvas, Size size) {
+  final grid = Paint()
+    ..color = const Color(0xFFE1E8E5)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 1;
+  for (final y in [0.0, size.height / 2, size.height]) {
+    canvas.drawLine(Offset(0, y), Offset(size.width, y), grid);
+  }
 }
 
 List<double> _compressTrend(List<double> values, {int points = 8}) {
@@ -2030,19 +2205,27 @@ List<double> _compressTrend(List<double> values, {int points = 8}) {
   return result;
 }
 
-List<double> _normaliseTrend(List<double> values) {
+List<double> _normaliseTrend(List<double> values, double maxValue) {
   final safeValues = values.isEmpty ? List<double>.filled(8, 0) : values;
-  final maxValue = safeValues.fold<double>(
-    0,
-    (max, value) => value > max ? value : max,
-  );
-  if (maxValue <= 0) {
+  final chartMax = maxValue <= 0
+      ? safeValues.fold<double>(0, (max, value) => value > max ? value : max)
+      : maxValue;
+  if (chartMax <= 0) {
     return const [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7];
   }
-  return safeValues.map((value) => 0.85 - ((value / maxValue) * 0.65)).toList();
+  return safeValues
+      .map((value) => 0.9 - ((value / chartMax).clamp(0.0, 1.0) * 0.8))
+      .toList();
 }
 
 String _money(double value) => '\$${value.toStringAsFixed(2)}';
+
+String _axisMoney(double value) {
+  if (value.abs() >= 1000) return '\$${(value / 1000).toStringAsFixed(1)}k';
+  if (value.abs() >= 100) return '\$${value.round()}';
+  if (value == 0) return '\$0';
+  return '\$${value.toStringAsFixed(value.abs() < 10 ? 2 : 1)}';
+}
 
 String _shortDate(int ms) {
   final d = DateTime.fromMillisecondsSinceEpoch(ms);
