@@ -488,10 +488,24 @@ class _PlanFooter extends StatelessWidget {
   }
 }
 
-class _DashboardScreen extends StatelessWidget {
+class _DashboardScreen extends StatefulWidget {
   const _DashboardScreen({required this.onNavigate});
 
   final ValueChanged<int> onNavigate;
+
+  @override
+  State<_DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<_DashboardScreen> {
+  late DateTime _selectedMonth;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _selectedMonth = DateTime(now.year, now.month);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -525,17 +539,27 @@ class _DashboardScreen extends StatelessWidget {
               );
             }
             final invoices = invoiceSnap.data ?? const <Invoice>[];
-            final now = DateTime.now();
             final monthInvoices = invoices.where((inv) {
               final d = DateTime.fromMillisecondsSinceEpoch(inv.createdAtMs);
-              return d.year == now.year && d.month == now.month;
+              return d.year == _selectedMonth.year &&
+                  d.month == _selectedMonth.month;
             }).toList();
+            monthInvoices.sort(
+              (a, b) => b.createdAtMs.compareTo(a.createdAtMs),
+            );
 
             final totals = _DashboardTotals.from(monthInvoices);
+            final trends = _DashboardTrends.from(monthInvoices, _selectedMonth);
             final paidCount = monthInvoices.where((i) => i.isPaid).length;
             final collectionRate = monthInvoices.isEmpty
                 ? 0
                 : ((paidCount / monthInvoices.length) * 100).round();
+            final alerts = _DashboardAlerts.from(
+              invoices: invoices,
+              used: monthInvoices.length,
+              limit: limit,
+              isPro: isPro,
+            );
 
             return LayoutBuilder(
               builder: (context, constraints) {
@@ -547,9 +571,13 @@ class _DashboardScreen extends StatelessWidget {
                     limit: limit,
                     used: monthInvoices.length,
                     totals: totals,
-                    invoices: invoices,
+                    trends: trends,
+                    invoices: monthInvoices,
                     collectionRate: collectionRate,
-                    onNavigate: onNavigate,
+                    selectedMonth: _selectedMonth,
+                    alerts: alerts,
+                    onNavigate: widget.onNavigate,
+                    onPickMonth: () => _pickMonth(context),
                   );
                 }
 
@@ -559,8 +587,12 @@ class _DashboardScreen extends StatelessWidget {
                   limit: limit,
                   used: monthInvoices.length,
                   totals: totals,
-                  invoices: invoices,
-                  onNavigate: onNavigate,
+                  trends: trends,
+                  invoices: monthInvoices,
+                  selectedMonth: _selectedMonth,
+                  alerts: alerts,
+                  onNavigate: widget.onNavigate,
+                  onPickMonth: () => _pickMonth(context),
                 );
               },
             );
@@ -574,6 +606,18 @@ class _DashboardScreen extends StatelessWidget {
     if (value is int) return value;
     if (value is num) return value.toInt();
     return int.tryParse(value?.toString() ?? '') ?? fallback;
+  }
+
+  Future<void> _pickMonth(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedMonth,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(DateTime.now().year + 2, 12, 31),
+      helpText: 'Select report month',
+    );
+    if (picked == null) return;
+    setState(() => _selectedMonth = DateTime(picked.year, picked.month));
   }
 }
 
@@ -593,13 +637,96 @@ class _DashboardTotals {
   factory _DashboardTotals.from(List<Invoice> invoices) {
     // Filtramos facturas que tengan errores de parseo (marcadas con id 'ERROR' o similar si aplicara)
     // para evitar que datos corruptos rompan los totales.
-    final validInvoices = invoices.where((inv) => inv.invoiceNumber != 'ERROR').toList();
-    
+    final validInvoices = invoices.where((inv) => inv.invoiceNumber != 'ERROR');
+
     return _DashboardTotals(
       sales: validInvoices.fold(0.0, (total, inv) => total + inv.total),
       tip: validInvoices.fold(0.0, (total, inv) => total + inv.tip),
       subtotal: validInvoices.fold(0.0, (total, inv) => total + inv.subtotal),
       tax: validInvoices.fold(0.0, (total, inv) => total + inv.taxAmount),
+    );
+  }
+}
+
+class _DashboardTrends {
+  final List<double> sales;
+  final List<double> tip;
+  final List<double> subtotal;
+  final List<double> tax;
+
+  const _DashboardTrends({
+    required this.sales,
+    required this.tip,
+    required this.subtotal,
+    required this.tax,
+  });
+
+  factory _DashboardTrends.from(List<Invoice> invoices, DateTime month) {
+    final days = DateUtils.getDaysInMonth(month.year, month.month);
+    final sales = List<double>.filled(days, 0);
+    final tip = List<double>.filled(days, 0);
+    final subtotal = List<double>.filled(days, 0);
+    final tax = List<double>.filled(days, 0);
+
+    for (final inv in invoices) {
+      if (inv.invoiceNumber == 'ERROR') continue;
+      final date = DateTime.fromMillisecondsSinceEpoch(inv.createdAtMs);
+      if (date.year != month.year || date.month != month.month) continue;
+      final index = (date.day - 1).clamp(0, days - 1);
+      sales[index] += inv.total;
+      tip[index] += inv.tip;
+      subtotal[index] += inv.subtotal;
+      tax[index] += inv.taxAmount;
+    }
+
+    return _DashboardTrends(
+      sales: _compressTrend(sales),
+      tip: _compressTrend(tip),
+      subtotal: _compressTrend(subtotal),
+      tax: _compressTrend(tax),
+    );
+  }
+}
+
+class _DashboardAlerts {
+  final int overdue;
+  final int unsent;
+  final int unpaid;
+  final bool nearFreeLimit;
+
+  const _DashboardAlerts({
+    required this.overdue,
+    required this.unsent,
+    required this.unpaid,
+    required this.nearFreeLimit,
+  });
+
+  int get count => overdue + unsent + unpaid + (nearFreeLimit ? 1 : 0);
+
+  factory _DashboardAlerts.from({
+    required List<Invoice> invoices,
+    required int used,
+    required int limit,
+    required bool isPro,
+  }) {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final overdue = invoices
+        .where(
+          (inv) =>
+              !inv.isPaid &&
+              inv.isSent &&
+              inv.dueAtMs != null &&
+              inv.dueAtMs! < now,
+        )
+        .length;
+    final unsent = invoices.where((inv) => !inv.isPaid && !inv.isSent).length;
+    final unpaid = invoices.where((inv) => !inv.isPaid).length;
+    final nearFreeLimit = !isPro && limit > 0 && used >= (limit * 0.8).ceil();
+    return _DashboardAlerts(
+      overdue: overdue,
+      unsent: unsent,
+      unpaid: unpaid,
+      nearFreeLimit: nearFreeLimit,
     );
   }
 }
@@ -611,9 +738,13 @@ class _TabletDashboard extends StatelessWidget {
     required this.limit,
     required this.used,
     required this.totals,
+    required this.trends,
     required this.invoices,
     required this.collectionRate,
+    required this.selectedMonth,
+    required this.alerts,
     required this.onNavigate,
+    required this.onPickMonth,
   });
 
   final String email;
@@ -621,13 +752,17 @@ class _TabletDashboard extends StatelessWidget {
   final int limit;
   final int used;
   final _DashboardTotals totals;
+  final _DashboardTrends trends;
   final List<Invoice> invoices;
   final int collectionRate;
+  final DateTime selectedMonth;
+  final _DashboardAlerts alerts;
   final ValueChanged<int> onNavigate;
+  final VoidCallback onPickMonth;
 
   @override
   Widget build(BuildContext context) {
-    final monthLabel = _monthLabel(DateTime.now());
+    final monthLabel = _monthLabel(selectedMonth);
     final recent = invoices.take(5).toList();
 
     return SafeArea(
@@ -640,6 +775,9 @@ class _TabletDashboard extends StatelessWidget {
               title: 'Dashboard',
               subtitle: monthLabel,
               email: email,
+              alerts: alerts,
+              onPickMonth: onPickMonth,
+              onNavigate: onNavigate,
             ),
             const SizedBox(height: 22),
             Expanded(
@@ -657,6 +795,8 @@ class _TabletDashboard extends StatelessWidget {
                                 icon: Icons.attach_money,
                                 label: 'Sales',
                                 value: _money(totals.sales),
+                                trend: trends.sales,
+                                onTap: () => _openMetric(context, 'Sales'),
                               ),
                             ),
                             const SizedBox(width: 14),
@@ -665,6 +805,8 @@ class _TabletDashboard extends StatelessWidget {
                                 icon: Icons.volunteer_activism_outlined,
                                 label: 'Tip',
                                 value: _money(totals.tip),
+                                trend: trends.tip,
+                                onTap: () => _openMetric(context, 'Tip'),
                               ),
                             ),
                             const SizedBox(width: 14),
@@ -673,6 +815,8 @@ class _TabletDashboard extends StatelessWidget {
                                 icon: Icons.receipt_outlined,
                                 label: 'Subtotal',
                                 value: _money(totals.subtotal),
+                                trend: trends.subtotal,
+                                onTap: () => _openMetric(context, 'Subtotal'),
                               ),
                             ),
                             const SizedBox(width: 14),
@@ -681,6 +825,8 @@ class _TabletDashboard extends StatelessWidget {
                                 icon: Icons.percent,
                                 label: 'Tax',
                                 value: _money(totals.tax),
+                                trend: trends.tax,
+                                onTap: () => _openMetric(context, 'Tax'),
                               ),
                             ),
                           ],
@@ -740,6 +886,7 @@ class _TabletDashboard extends StatelessWidget {
                       collectionRate: collectionRate,
                       isPro: isPro,
                       limit: limit,
+                      trend: trends.sales,
                       invoices: recent,
                     ),
                   ),
@@ -747,6 +894,17 @@ class _TabletDashboard extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _openMetric(BuildContext context, String metric) {
+    onNavigate(3);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '$metric report opened for ${_monthLabel(selectedMonth)}',
         ),
       ),
     );
@@ -760,8 +918,12 @@ class _MobileDashboard extends StatelessWidget {
     required this.limit,
     required this.used,
     required this.totals,
+    required this.trends,
     required this.invoices,
+    required this.selectedMonth,
+    required this.alerts,
     required this.onNavigate,
+    required this.onPickMonth,
   });
 
   final String email;
@@ -769,8 +931,12 @@ class _MobileDashboard extends StatelessWidget {
   final int limit;
   final int used;
   final _DashboardTotals totals;
+  final _DashboardTrends trends;
   final List<Invoice> invoices;
+  final DateTime selectedMonth;
+  final _DashboardAlerts alerts;
   final ValueChanged<int> onNavigate;
+  final VoidCallback onPickMonth;
 
   @override
   Widget build(BuildContext context) {
@@ -780,32 +946,43 @@ class _MobileDashboard extends StatelessWidget {
         children: [
           _DashboardHeader(
             title: 'Dashboard',
-            subtitle: _monthLabel(DateTime.now()),
+            subtitle: _monthLabel(selectedMonth),
             email: email,
+            alerts: alerts,
+            onPickMonth: onPickMonth,
+            onNavigate: onNavigate,
           ),
           const SizedBox(height: 16),
           _MetricTile(
             icon: Icons.attach_money,
             label: 'Sales',
             value: _money(totals.sales),
+            trend: trends.sales,
+            onTap: () => _openMetric(context, 'Sales'),
           ),
           const SizedBox(height: 12),
           _MetricTile(
             icon: Icons.volunteer_activism_outlined,
             label: 'Tip',
             value: _money(totals.tip),
+            trend: trends.tip,
+            onTap: () => _openMetric(context, 'Tip'),
           ),
           const SizedBox(height: 12),
           _MetricTile(
             icon: Icons.receipt_outlined,
             label: 'Subtotal',
             value: _money(totals.subtotal),
+            trend: trends.subtotal,
+            onTap: () => _openMetric(context, 'Subtotal'),
           ),
           const SizedBox(height: 12),
           _MetricTile(
             icon: Icons.percent,
             label: 'Tax',
             value: _money(totals.tax),
+            trend: trends.tax,
+            onTap: () => _openMetric(context, 'Tax'),
           ),
           const SizedBox(height: 22),
           const _SectionTitle('Quick Actions'),
@@ -852,6 +1029,17 @@ class _MobileDashboard extends StatelessWidget {
       ),
     );
   }
+
+  void _openMetric(BuildContext context, String metric) {
+    onNavigate(3);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '$metric report opened for ${_monthLabel(selectedMonth)}',
+        ),
+      ),
+    );
+  }
 }
 
 class _DashboardHeader extends StatelessWidget {
@@ -859,6 +1047,9 @@ class _DashboardHeader extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.email,
+    required this.alerts,
+    required this.onPickMonth,
+    required this.onNavigate,
   });
 
   static const _brandGreen = Color(0xFF1F7A64);
@@ -866,6 +1057,9 @@ class _DashboardHeader extends StatelessWidget {
   final String title;
   final String subtitle;
   final String email;
+  final _DashboardAlerts alerts;
+  final VoidCallback onPickMonth;
+  final ValueChanged<int> onNavigate;
 
   @override
   Widget build(BuildContext context) {
@@ -884,24 +1078,69 @@ class _DashboardHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w700,
+              InkWell(
+                onTap: onPickMonth,
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.expand_more,
+                        size: 18,
+                        color: Colors.black54,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        IconButton(
-          tooltip: 'Notifications',
-          onPressed: () {},
-          icon: const Icon(Icons.notifications_none),
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            IconButton(
+              tooltip: 'Notifications',
+              onPressed: () => _showAlerts(context, alerts, onNavigate),
+              icon: const Icon(Icons.notifications_none),
+            ),
+            if (alerts.count > 0)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: IgnorePointer(
+                  child: Container(
+                    width: 9,
+                    height: 9,
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade700,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
         PopupMenuButton<String>(
           onSelected: (value) {
-            if (value == 'settings') {
+            if (value == 'business') {
+              onNavigate(4);
+            } else if (value == 'subscription') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PaywallScreen()),
+              );
+            } else if (value == 'settings') {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -923,6 +1162,8 @@ class _DashboardHeader extends StatelessWidget {
             }
           },
           itemBuilder: (context) => const [
+            PopupMenuItem(value: 'business', child: Text('Business Profile')),
+            PopupMenuItem(value: 'subscription', child: Text('Subscription')),
             PopupMenuItem(value: 'settings', child: Text('Settings')),
             PopupMenuItem(value: 'privacy', child: Text('Privacy Policy')),
             PopupMenuItem(value: 'delete', child: Text('Delete Account')),
@@ -949,6 +1190,135 @@ class _DashboardHeader extends StatelessWidget {
     final name = email.split('@').first;
     return name.substring(0, name.length >= 2 ? 2 : 1).toUpperCase();
   }
+
+  static void _showAlerts(
+    BuildContext context,
+    _DashboardAlerts alerts,
+    ValueChanged<int> onNavigate,
+  ) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'Notifications',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 12),
+            if (alerts.count == 0)
+              const _AlertRow(
+                icon: Icons.check_circle_outline,
+                title: 'Everything looks current',
+                subtitle: 'No overdue or pending invoice alerts right now.',
+              )
+            else ...[
+              if (alerts.overdue > 0)
+                _AlertRow(
+                  icon: Icons.warning_amber_rounded,
+                  title:
+                      '${alerts.overdue} overdue invoice${alerts.overdue == 1 ? '' : 's'}',
+                  subtitle: 'Open Invoices to follow up or mark paid.',
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    onNavigate(2);
+                  },
+                ),
+              if (alerts.unsent > 0)
+                _AlertRow(
+                  icon: Icons.outgoing_mail,
+                  title:
+                      '${alerts.unsent} unsent invoice${alerts.unsent == 1 ? '' : 's'}',
+                  subtitle: 'Open Invoices to send them to clients.',
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    onNavigate(2);
+                  },
+                ),
+              if (alerts.unpaid > 0)
+                _AlertRow(
+                  icon: Icons.payments_outlined,
+                  title:
+                      '${alerts.unpaid} unpaid invoice${alerts.unpaid == 1 ? '' : 's'}',
+                  subtitle: 'Review outstanding balances.',
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    onNavigate(2);
+                  },
+                ),
+              if (alerts.nearFreeLimit)
+                _AlertRow(
+                  icon: Icons.workspace_premium_outlined,
+                  title: 'Free invoice limit is almost full',
+                  subtitle: 'Open Subscription to review Pro options.',
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const PaywallScreen()),
+                    );
+                  },
+                ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AlertRow extends StatelessWidget {
+  const _AlertRow({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: _SoftCard(
+        onTap: onTap,
+        child: Row(
+          children: [
+            Icon(icon, color: const Color(0xFF1F7A64)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (onTap != null) const Icon(Icons.chevron_right),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _MetricTile extends StatelessWidget {
@@ -956,6 +1326,8 @@ class _MetricTile extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.value,
+    required this.trend,
+    this.onTap,
   });
 
   static const _brandGreen = Color(0xFF1F7A64);
@@ -963,10 +1335,13 @@ class _MetricTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
+  final List<double> trend;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return _SoftCard(
+      onTap: onTap,
       child: Row(
         children: [
           Container(
@@ -1001,7 +1376,10 @@ class _MetricTile extends StatelessWidget {
               ],
             ),
           ),
-          CustomPaint(size: const Size(72, 28), painter: _SparklinePainter()),
+          CustomPaint(
+            size: const Size(72, 28),
+            painter: _SparklinePainter(values: trend),
+          ),
         ],
       ),
     );
@@ -1218,6 +1596,7 @@ class _AnalyticsPanel extends StatelessWidget {
     required this.collectionRate,
     required this.isPro,
     required this.limit,
+    required this.trend,
     required this.invoices,
   });
 
@@ -1227,6 +1606,7 @@ class _AnalyticsPanel extends StatelessWidget {
   final int collectionRate;
   final bool isPro;
   final int limit;
+  final List<double> trend;
   final List<Invoice> invoices;
 
   @override
@@ -1247,7 +1627,7 @@ class _AnalyticsPanel extends StatelessWidget {
               SizedBox(
                 height: 130,
                 width: double.infinity,
-                child: CustomPaint(painter: _AreaChartPainter()),
+                child: CustomPaint(painter: _AreaChartPainter(values: trend)),
               ),
             ],
           ),
@@ -1558,14 +1938,18 @@ class _StatusBadge extends StatelessWidget {
 }
 
 class _SparklinePainter extends CustomPainter {
+  const _SparklinePainter({required this.values});
+
+  final List<double> values;
+
   @override
   void paint(Canvas canvas, Size size) {
+    final points = _normaliseTrend(values);
     final paint = Paint()
       ..color = const Color(0xFF1F7A64)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
     final path = Path();
-    final points = [0.7, 0.52, 0.6, 0.38, 0.46, 0.32, 0.2];
     for (var i = 0; i < points.length; i++) {
       final x = size.width * (i / (points.length - 1));
       final y = size.height * points[i];
@@ -1579,12 +1963,18 @@ class _SparklinePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _SparklinePainter oldDelegate) =>
+      oldDelegate.values != values;
 }
 
 class _AreaChartPainter extends CustomPainter {
+  const _AreaChartPainter({required this.values});
+
+  final List<double> values;
+
   @override
   void paint(Canvas canvas, Size size) {
+    final points = _normaliseTrend(values);
     final line = Paint()
       ..color = const Color(0xFF1F7A64)
       ..style = PaintingStyle.stroke
@@ -1596,7 +1986,6 @@ class _AreaChartPainter extends CustomPainter {
         colors: [Color(0x5536A37F), Color(0x0036A37F)],
       ).createShader(Offset.zero & size);
 
-    final points = [0.85, 0.7, 0.42, 0.58, 0.35, 0.48, 0.28, 0.18];
     final path = Path();
     final area = Path();
     for (var i = 0; i < points.length; i++) {
@@ -1618,7 +2007,39 @@ class _AreaChartPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _AreaChartPainter oldDelegate) =>
+      oldDelegate.values != values;
+}
+
+List<double> _compressTrend(List<double> values, {int points = 8}) {
+  if (values.isEmpty) return List<double>.filled(points, 0);
+  if (values.length <= points) {
+    return [...values, ...List<double>.filled(points - values.length, 0)];
+  }
+
+  final result = <double>[];
+  for (var i = 0; i < points; i++) {
+    final start = (i * values.length / points).floor();
+    final end = (((i + 1) * values.length / points).ceil()).clamp(
+      start + 1,
+      values.length,
+    );
+    final bucket = values.sublist(start, end);
+    result.add(bucket.fold(0.0, (total, value) => total + value));
+  }
+  return result;
+}
+
+List<double> _normaliseTrend(List<double> values) {
+  final safeValues = values.isEmpty ? List<double>.filled(8, 0) : values;
+  final maxValue = safeValues.fold<double>(
+    0,
+    (max, value) => value > max ? value : max,
+  );
+  if (maxValue <= 0) {
+    return const [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7];
+  }
+  return safeValues.map((value) => 0.85 - ((value / maxValue) * 0.65)).toList();
 }
 
 String _money(double value) => '\$${value.toStringAsFixed(2)}';

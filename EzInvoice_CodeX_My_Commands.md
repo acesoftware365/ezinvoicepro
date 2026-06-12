@@ -445,3 +445,21 @@ Nota:
 - Verificacion:
   - `dart format lib/features/invoices/invoices_screen.dart lib/ui/home_screen.dart lib/ui/login_screen.dart lib/ui/invoices/pdf_preview_screen.dart`: OK.
   - `dart analyze lib/features/invoices/invoices_screen.dart lib/ui/home_screen.dart lib/ui/login_screen.dart lib/ui/invoices/pdf_preview_screen.dart`: sin errores; quedan infos preexistentes de `withOpacity` en `home_screen.dart`.
+
+## 2026-06-12 - Dashboard Graphics Functional
+
+- Pedido: antes de seguir, crear checkpoint en Git con fecha de hoy y luego hacer funcionales los graficos/tarjetas del Dashboard.
+- Checkpoint creado:
+  - Commit: `9d23eca Checkpoint 2026-06-12 before dashboard functionality`.
+- Version subida por cambio de repo: `1.0.40+64` -> `1.0.41+65`.
+- Login y Home ahora muestran `Version 1.0.41`.
+- Cambio implementado:
+  - Dashboard ahora permite seleccionar mes tocando el label del mes.
+  - Las metric cards de Sales, Tip, Subtotal y Tax son tappables y abren Reports con feedback del mes/metric.
+  - Las mini graficas ya usan datos reales del mes seleccionado en vez de forma estatica.
+  - El chart grande de Monthly overview usa la tendencia real de ventas del mes.
+  - La campana de notificaciones ahora abre un bottom sheet con alertas reales: overdue, unsent, unpaid y limite Free cercano.
+  - El avatar conserva acciones de cuenta y agrega acceso directo a Business Profile y Subscription.
+- Verificacion:
+  - `dart format lib/ui/shell/responsive_main_shell.dart`: OK.
+  - `dart analyze lib/ui/shell/responsive_main_shell.dart`: OK.
