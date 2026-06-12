@@ -685,10 +685,12 @@ class _DashboardTrends {
 
     final buckets = _weeklyBucketsForMonth(month);
     final compactLabels = [
-      for (var i = 0; i < buckets.length; i++) 'W${i + 1}',
+      for (var i = 0; i < buckets.length; i++)
+        'W${i + 1}\n${buckets[i].start}-${buckets[i].end}',
     ];
     final fullLabels = [
-      for (var i = 0; i < buckets.length; i++) 'Week ${i + 1}',
+      for (var i = 0; i < buckets.length; i++)
+        'Week ${i + 1}\n${buckets[i].start}-${buckets[i].end}',
     ];
 
     return _DashboardTrends(
@@ -2020,8 +2022,8 @@ class _TrendChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = compact ? 46.0 : 130.0;
-    final width = compact ? 118.0 : double.infinity;
+    final height = compact ? 58.0 : 130.0;
+    final width = compact ? 128.0 : double.infinity;
     return SizedBox(
       width: width,
       height: height,
@@ -2082,9 +2084,15 @@ class _TrendChart extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              SizedBox(
-                height: 240,
+              Container(
+                height: 280,
                 width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.45),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFE1E8E5)),
+                ),
                 child: _ChartCanvas(
                   values: values,
                   maxValue: maxValue,
@@ -2092,7 +2100,8 @@ class _TrendChart extends StatelessWidget {
                   filled: true,
                   labelStyle: const TextStyle(
                     color: Colors.black54,
-                    fontSize: 12,
+                    fontSize: 11,
+                    height: 1.15,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -2178,7 +2187,7 @@ class _WeekAxisLabels extends StatelessWidget {
                   : i == labels.length - 1
                   ? TextAlign.end
                   : TextAlign.center,
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: style,
             ),
@@ -2213,6 +2222,7 @@ class _SparklinePainter extends CustomPainter {
       }
     }
     canvas.drawPath(path, paint);
+    _paintPoints(canvas, size, points, radius: 2.2);
   }
 
   @override
@@ -2259,6 +2269,7 @@ class _AreaChartPainter extends CustomPainter {
     area.close();
     canvas.drawPath(area, fill);
     canvas.drawPath(path, line);
+    _paintPoints(canvas, size, points, radius: 3.5);
   }
 
   @override
@@ -2273,6 +2284,27 @@ void _paintGrid(Canvas canvas, Size size) {
     ..strokeWidth = 1;
   for (final y in [0.0, size.height / 2, size.height]) {
     canvas.drawLine(Offset(0, y), Offset(size.width, y), grid);
+  }
+}
+
+void _paintPoints(
+  Canvas canvas,
+  Size size,
+  List<double> points, {
+  required double radius,
+}) {
+  final fill = Paint()
+    ..color = Colors.white
+    ..style = PaintingStyle.fill;
+  final stroke = Paint()
+    ..color = const Color(0xFF1F7A64)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 2;
+  for (var i = 0; i < points.length; i++) {
+    final x = size.width * (i / (points.length - 1));
+    final y = size.height * points[i];
+    canvas.drawCircle(Offset(x, y), radius, fill);
+    canvas.drawCircle(Offset(x, y), radius, stroke);
   }
 }
 

@@ -491,3 +491,17 @@ Nota:
 - Verificacion:
   - `dart format lib/ui/shell/responsive_main_shell.dart`: OK.
   - `dart analyze lib/ui/shell/responsive_main_shell.dart`: OK.
+
+## 2026-06-12 - Dashboard Chart Week Ranges Popup
+
+- Pedido: que el popup de la grafica se vea mas claro y que las semanas muestren rango de dias, por ejemplo `Week 1 1-7`, `Week 2 8-14`.
+- Version subida por cambio de repo: `1.0.43+67` -> `1.0.44+68`.
+- Login y Home ahora muestran `Version 1.0.44`.
+- Cambio implementado:
+  - Labels compactos ahora muestran `W1` y debajo el rango `1-7`, `8-14`, etc.
+  - Popup grande muestra `Week 1` y debajo el rango de dias.
+  - Popup de grafica ahora usa un panel mas alto con borde suave para que se lea como grafica grande.
+  - Se agregaron puntos/markers en cada semana para aclarar donde cae el valor semanal.
+- Verificacion:
+  - `dart format lib/ui/shell/responsive_main_shell.dart`: OK.
+  - `dart analyze lib/ui/shell/responsive_main_shell.dart`: OK.
