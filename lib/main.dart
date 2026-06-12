@@ -1,6 +1,7 @@
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'firebase_options.dart';
@@ -22,6 +23,7 @@ void main() async {
 
   // 1) Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseAnalytics.instance.logAppOpen();
 
   // 2) Ads
   await AdsManager.instance.init();
@@ -47,9 +49,17 @@ class MyApp extends StatelessWidget {
       animation: LocaleController.instance,
       builder: (context, _) {
         debugPrint('APP LOCALE => ${LocaleController.instance.locale}');
+        final navigatorObservers = Firebase.apps.isEmpty
+            ? <NavigatorObserver>[]
+            : <NavigatorObserver>[
+                FirebaseAnalyticsObserver(
+                  analytics: FirebaseAnalytics.instance,
+                ),
+              ];
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           locale: LocaleController.instance.locale,
+          navigatorObservers: navigatorObservers,
 
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: const [

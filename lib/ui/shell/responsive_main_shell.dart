@@ -31,6 +31,7 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
   int _index = 0;
   final _businessRepo = BusinessProfileRepository();
   bool _businessReminderScheduled = false;
+  bool _businessIncomplete = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +42,7 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
       builder: (context, businessSnap) {
         final businessProfile = businessSnap.data ?? const BusinessProfile();
         final businessIncomplete = _isBusinessIncomplete(businessProfile);
+        _businessIncomplete = businessIncomplete;
         _maybeShowBusinessReminder(businessIncomplete);
 
         if (isTablet) {
@@ -171,7 +173,11 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
   }
 
   void _maybeShowBusinessReminder(bool incomplete) {
-    if (!incomplete || _index == 4 || _businessReminderScheduled) return;
+    if (!incomplete) {
+      _businessReminderScheduled = false;
+      return;
+    }
+    if (_index == 4 || _businessReminderScheduled) return;
     _businessReminderScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) {
@@ -186,7 +192,7 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
         return;
       }
       await prefs.setString(_businessReminderPref, today);
-      if (!mounted || _index == 4) {
+      if (!mounted || _index == 4 || !_businessIncomplete) {
         _businessReminderScheduled = false;
         return;
       }
@@ -399,49 +405,40 @@ class _PlanFooter extends StatelessWidget {
     return ValueListenableBuilder<SubscriptionState>(
       valueListenable: SubscriptionManager.instance.state,
       builder: (context, sub, _) {
+        final user = FirebaseAuth.instance.currentUser;
+        final userDocStream = user == null
+            ? null
+            : FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(user.uid)
+                  .snapshots();
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF7FAF9),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFE1E8E5)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        sub.isPro
-                            ? Icons.workspace_premium_outlined
-                            : Icons.workspace_premium_outlined,
-                        size: 18,
-                        color: sub.isPro ? _brandGreen : Colors.orange,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        sub.isPro ? 'Pro Plan' : 'Free Plan',
-                        style: const TextStyle(fontWeight: FontWeight.w900),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    sub.isPro ? 'Unlimited invoices' : '20 / 20 invoices',
-                    style: const TextStyle(color: Colors.black54, fontSize: 12),
-                  ),
-                  const SizedBox(height: 8),
-                  const LinearProgressIndicator(
-                    value: 1,
-                    minHeight: 4,
-                    color: _brandGreen,
-                    backgroundColor: Color(0xFFDDE8E4),
-                  ),
-                ],
-              ),
+            StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+              stream: userDocStream,
+              builder: (context, userSnap) {
+                final data = userSnap.data?.data() ?? const {};
+                final limit = _asIntValue(
+                  data['freeMonthlyInvoiceLimit'],
+                  fallback: 20,
+                );
+                return StreamBuilder<List<Invoice>>(
+                  stream: user == null
+                      ? null
+                      : InvoicesService.streamInvoices(),
+                  builder: (context, invoiceSnap) {
+                    final used = _countCurrentMonth(
+                      invoiceSnap.data ?? const [],
+                    );
+                    return _PlanSummaryCard(
+                      isPro: sub.isPro,
+                      limit: limit,
+                      used: used,
+                    );
+                  },
+                );
+              },
             ),
             const SizedBox(height: 16),
             Row(
@@ -488,6 +485,85 @@ class _PlanFooter extends StatelessWidget {
   }
 }
 
+class _PlanSummaryCard extends StatelessWidget {
+  const _PlanSummaryCard({
+    required this.isPro,
+    required this.limit,
+    required this.used,
+  });
+
+  static const _brandGreen = Color(0xFF1F7A64);
+
+  final bool isPro;
+  final int limit;
+  final int used;
+
+  @override
+  Widget build(BuildContext context) {
+    final safeLimit = limit <= 0 ? 20 : limit;
+    final remaining = (safeLimit - used).clamp(0, safeLimit);
+    final progress = isPro ? 1.0 : (remaining / safeLimit).clamp(0.0, 1.0);
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7FAF9),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE1E8E5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.workspace_premium_outlined,
+                size: 18,
+                color: isPro ? _brandGreen : Colors.orange,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                isPro ? 'Pro Plan' : 'Free Plan',
+                style: const TextStyle(fontWeight: FontWeight.w900),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            isPro ? 'Unlimited invoices' : '$remaining / $safeLimit invoices',
+            style: const TextStyle(color: Colors.black54, fontSize: 12),
+          ),
+          const SizedBox(height: 8),
+          LinearProgressIndicator(
+            value: progress,
+            minHeight: 4,
+            color: _brandGreen,
+            backgroundColor: const Color(0xFFDDE8E4),
+          ),
+          if (!isPro) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PaywallScreen()),
+                ),
+                icon: const Icon(Icons.workspace_premium_outlined),
+                label: const Text('Upgrade to Pro'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: _brandGreen,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 class _DashboardScreen extends StatefulWidget {
   const _DashboardScreen({required this.onNavigate});
 
@@ -521,7 +597,10 @@ class _DashboardScreenState extends State<_DashboardScreen> {
         final userData = userSnap.data?.data() ?? const <String, dynamic>{};
         final plan = (userData['plan'] ?? 'free').toString();
         final isPro = plan.toLowerCase() == 'pro' || userData['isPro'] == true;
-        final limit = _asInt(userData['freeMonthlyInvoiceLimit'], fallback: 20);
+        final limit = _asIntValue(
+          userData['freeMonthlyInvoiceLimit'],
+          fallback: 20,
+        );
 
         return StreamBuilder<List<Invoice>>(
           stream: InvoicesService.streamInvoices(),
@@ -600,12 +679,6 @@ class _DashboardScreenState extends State<_DashboardScreen> {
         );
       },
     );
-  }
-
-  int _asInt(dynamic value, {required int fallback}) {
-    if (value is int) return value;
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '') ?? fallback;
   }
 
   Future<void> _pickMonth(BuildContext context) async {
@@ -1831,28 +1904,8 @@ class _PlanStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final progress = isPro ? 1.0 : (used / limit).clamp(0.0, 1.0);
     return _SoftCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            isPro ? 'Pro Plan' : 'Free Plan',
-            style: const TextStyle(fontWeight: FontWeight.w900),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            isPro ? 'Unlimited invoices' : '$used / $limit invoices',
-            style: const TextStyle(color: Colors.black54),
-          ),
-          const SizedBox(height: 10),
-          LinearProgressIndicator(
-            value: progress,
-            color: const Color(0xFF1F7A64),
-            backgroundColor: const Color(0xFFDDE8E4),
-          ),
-        ],
-      ),
+      child: _PlanSummaryCard(isPro: isPro, limit: limit, used: used),
     );
   }
 }
@@ -2056,7 +2109,7 @@ class _TrendChart extends StatelessWidget {
       width: width,
       height: height,
       child: InkWell(
-        onTap: () => _showChartDialog(context),
+        onTap: () => _handleChartTap(context),
         borderRadius: BorderRadius.circular(8),
         child: _ChartCanvas(
           values: values,
@@ -2070,6 +2123,17 @@ class _TrendChart extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _handleChartTap(BuildContext context) {
+    if (SubscriptionManager.instance.state.value.isPro) {
+      _showChartDialog(context);
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const PaywallScreen()),
     );
   }
 
@@ -2160,6 +2224,7 @@ class _ChartCanvas extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final axisWidth = labelStyle.fontSize! <= 8 ? 30.0 : 50.0;
+    final middleValue = maxValue / 2;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -2169,6 +2234,13 @@ class _ChartCanvas extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(_axisMoney(maxValue), style: labelStyle),
+              const Spacer(),
+              Text(
+                _axisMoney(middleValue),
+                style: labelStyle.copyWith(
+                  fontSize: (labelStyle.fontSize ?? 11) * 0.92,
+                ),
+              ),
               const Spacer(),
               Text('0', style: labelStyle),
             ],
@@ -2414,6 +2486,21 @@ String _axisMoney(double value) {
   if (value.abs() >= 100) return '\$${value.round()}';
   if (value == 0) return '\$0';
   return '\$${value.toStringAsFixed(value.abs() < 10 ? 2 : 1)}';
+}
+
+int _asIntValue(dynamic value, {required int fallback}) {
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  return int.tryParse(value?.toString() ?? '') ?? fallback;
+}
+
+int _countCurrentMonth(List<Invoice> invoices) {
+  final now = DateTime.now();
+  return invoices.where((inv) {
+    if (inv.invoiceNumber == 'ERROR') return false;
+    final date = DateTime.fromMillisecondsSinceEpoch(inv.createdAtMs);
+    return date.year == now.year && date.month == now.month;
+  }).length;
 }
 
 String _shortDate(int ms) {
