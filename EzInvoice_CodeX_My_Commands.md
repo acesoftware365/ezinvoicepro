@@ -505,3 +505,16 @@ Nota:
 - Verificacion:
   - `dart format lib/ui/shell/responsive_main_shell.dart`: OK.
   - `dart analyze lib/ui/shell/responsive_main_shell.dart`: OK.
+
+## 2026-06-12 - Dashboard Chart Current Week Alignment
+
+- Pedido: si hoy es junio 11, el valor debe caer visualmente en `Week 2 8-14`, no en `Week 3 15-21`.
+- Version subida por cambio de repo: `1.0.44+68` -> `1.0.45+69`.
+- Login y Home ahora muestran `Version 1.0.45`.
+- Cambio implementado:
+  - Los puntos de la grafica ahora se dibujan centrados dentro de la columna de cada semana, alineados con su label.
+  - En el mes actual, cualquier fecha futura se agrupa visualmente en la semana actual para que la grafica sea month-to-date y no parezca que hoy esta en una semana futura.
+  - Se ajusto el area fill para empezar y terminar debajo del primer/ultimo punto semanal, no en los bordes externos del canvas.
+- Verificacion:
+  - `dart format lib/ui/shell/responsive_main_shell.dart`: OK.
+  - `dart analyze lib/ui/shell/responsive_main_shell.dart`: OK.

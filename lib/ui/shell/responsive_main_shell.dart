@@ -666,6 +666,8 @@ class _DashboardTrends {
   });
 
   factory _DashboardTrends.from(List<Invoice> invoices, DateTime month) {
+    final now = DateTime.now();
+    final isCurrentMonth = month.year == now.year && month.month == now.month;
     final days = DateUtils.getDaysInMonth(month.year, month.month);
     final sales = List<double>.filled(days, 0);
     final tip = List<double>.filled(days, 0);
@@ -676,7 +678,8 @@ class _DashboardTrends {
       if (inv.invoiceNumber == 'ERROR') continue;
       final date = DateTime.fromMillisecondsSinceEpoch(inv.createdAtMs);
       if (date.year != month.year || date.month != month.month) continue;
-      final index = (date.day - 1).clamp(0, days - 1);
+      final day = isCurrentMonth && date.isAfter(now) ? now.day : date.day;
+      final index = (day - 1).clamp(0, days - 1);
       sales[index] += inv.total;
       tip[index] += inv.tip;
       subtotal[index] += inv.subtotal;
@@ -2213,7 +2216,7 @@ class _SparklinePainter extends CustomPainter {
       ..strokeWidth = 2;
     final path = Path();
     for (var i = 0; i < points.length; i++) {
-      final x = size.width * (i / (points.length - 1));
+      final x = _chartX(size, i, points.length);
       final y = size.height * points[i];
       if (i == 0) {
         path.moveTo(x, y);
@@ -2254,7 +2257,7 @@ class _AreaChartPainter extends CustomPainter {
     final path = Path();
     final area = Path();
     for (var i = 0; i < points.length; i++) {
-      final x = size.width * (i / (points.length - 1));
+      final x = _chartX(size, i, points.length);
       final y = size.height * points[i];
       if (i == 0) {
         path.moveTo(x, y);
@@ -2265,7 +2268,8 @@ class _AreaChartPainter extends CustomPainter {
         area.lineTo(x, y);
       }
     }
-    area.lineTo(size.width, size.height);
+    area.lineTo(_chartX(size, points.length - 1, points.length), size.height);
+    area.lineTo(_chartX(size, 0, points.length), size.height);
     area.close();
     canvas.drawPath(area, fill);
     canvas.drawPath(path, line);
@@ -2301,11 +2305,16 @@ void _paintPoints(
     ..style = PaintingStyle.stroke
     ..strokeWidth = 2;
   for (var i = 0; i < points.length; i++) {
-    final x = size.width * (i / (points.length - 1));
+    final x = _chartX(size, i, points.length);
     final y = size.height * points[i];
     canvas.drawCircle(Offset(x, y), radius, fill);
     canvas.drawCircle(Offset(x, y), radius, stroke);
   }
+}
+
+double _chartX(Size size, int index, int pointCount) {
+  if (pointCount <= 1) return size.width / 2;
+  return size.width * ((index + 0.5) / pointCount);
 }
 
 List<({int start, int end})> _weeklyBucketsForMonth(DateTime month) {
