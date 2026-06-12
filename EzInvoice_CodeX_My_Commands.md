@@ -518,3 +518,16 @@ Nota:
 - Verificacion:
   - `dart format lib/ui/shell/responsive_main_shell.dart`: OK.
   - `dart analyze lib/ui/shell/responsive_main_shell.dart`: OK.
+
+## 2026-06-12 - Dashboard Chart Month-To-Date Week Fix
+
+- Pedido: la grafica todavia marcaba Week 3 aunque junio 11 debe caer en `Week 2 8-14`.
+- Version subida por cambio de repo: `1.0.45+69` -> `1.0.46+70`.
+- Login y Home ahora muestran `Version 1.0.46`.
+- Cambio implementado:
+  - Para el mes actual, el Dashboard ahora muestra el total month-to-date en la semana actual del calendario.
+  - Esto evita que fechas futuras dentro del mes muevan visualmente el total a Week 3/Week 4.
+  - Meses pasados o futuros siguen mostrando las semanas segun las fechas reales de las invoices.
+- Verificacion:
+  - `dart format lib/ui/shell/responsive_main_shell.dart`: OK.
+  - `dart analyze lib/ui/shell/responsive_main_shell.dart`: OK.

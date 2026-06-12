@@ -697,10 +697,18 @@ class _DashboardTrends {
     ];
 
     return _DashboardTrends(
-      sales: _compressWeeklyTrend(sales, buckets),
-      tip: _compressWeeklyTrend(tip, buckets),
-      subtotal: _compressWeeklyTrend(subtotal, buckets),
-      tax: _compressWeeklyTrend(tax, buckets),
+      sales: isCurrentMonth
+          ? _currentWeekTrend(sales, buckets, now.day)
+          : _compressWeeklyTrend(sales, buckets),
+      tip: isCurrentMonth
+          ? _currentWeekTrend(tip, buckets, now.day)
+          : _compressWeeklyTrend(tip, buckets),
+      subtotal: isCurrentMonth
+          ? _currentWeekTrend(subtotal, buckets, now.day)
+          : _compressWeeklyTrend(subtotal, buckets),
+      tax: isCurrentMonth
+          ? _currentWeekTrend(tax, buckets, now.day)
+          : _compressWeeklyTrend(tax, buckets),
       compactLabels: compactLabels,
       fullLabels: fullLabels,
     );
@@ -2341,6 +2349,21 @@ List<double> _compressWeeklyTrend(
           )
           .fold(0.0, (total, value) => total + value),
   ];
+}
+
+List<double> _currentWeekTrend(
+  List<double> values,
+  List<({int start, int end})> buckets,
+  int currentDay,
+) {
+  if (buckets.isEmpty) return const <double>[];
+  final result = List<double>.filled(buckets.length, 0);
+  final currentWeekIndex = buckets.indexWhere(
+    (bucket) => currentDay >= bucket.start && currentDay <= bucket.end,
+  );
+  final safeIndex = currentWeekIndex < 0 ? 0 : currentWeekIndex;
+  result[safeIndex] = values.fold(0.0, (total, value) => total + value);
+  return result;
 }
 
 List<double> _normaliseTrend(List<double> values, double maxValue) {
