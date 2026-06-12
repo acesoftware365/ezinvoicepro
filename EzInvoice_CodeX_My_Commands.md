@@ -531,3 +531,16 @@ Nota:
 - Verificacion:
   - `dart format lib/ui/shell/responsive_main_shell.dart`: OK.
   - `dart analyze lib/ui/shell/responsive_main_shell.dart`: OK.
+
+## 2026-06-12 - Dashboard Chart Single Week Marker
+
+- Pedido: la grafica seguia viendose mal/confusa en el popup.
+- Version subida por cambio de repo: `1.0.46+70` -> `1.0.47+71`.
+- Login y Home ahora muestran `Version 1.0.47`.
+- Cambio implementado:
+  - Cuando la grafica tiene un solo valor month-to-date, se dibuja como marcador/barra vertical solo en esa semana.
+  - Se evita conectar semanas en cero con el valor actual, para que no parezca que el dato cae en otra semana.
+  - Se mantienen los markers superior/inferior para indicar claramente la semana activa.
+- Verificacion:
+  - `dart format lib/ui/shell/responsive_main_shell.dart`: OK.
+  - `dart analyze lib/ui/shell/responsive_main_shell.dart`: OK.

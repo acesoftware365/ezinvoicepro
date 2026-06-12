@@ -2218,6 +2218,9 @@ class _SparklinePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     _paintGrid(canvas, size);
     final points = _normaliseTrend(values, maxValue);
+    if (_paintSingleValueBar(canvas, size, values, points, radius: 2.2)) {
+      return;
+    }
     final paint = Paint()
       ..color = const Color(0xFF1F7A64)
       ..style = PaintingStyle.stroke
@@ -2251,6 +2254,9 @@ class _AreaChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     _paintGrid(canvas, size);
     final points = _normaliseTrend(values, maxValue);
+    if (_paintSingleValueBar(canvas, size, values, points, radius: 3.5)) {
+      return;
+    }
     final line = Paint()
       ..color = const Color(0xFF1F7A64)
       ..style = PaintingStyle.stroke
@@ -2318,6 +2324,44 @@ void _paintPoints(
     canvas.drawCircle(Offset(x, y), radius, fill);
     canvas.drawCircle(Offset(x, y), radius, stroke);
   }
+}
+
+bool _paintSingleValueBar(
+  Canvas canvas,
+  Size size,
+  List<double> values,
+  List<double> points, {
+  required double radius,
+}) {
+  final activeIndexes = <int>[
+    for (var i = 0; i < values.length; i++)
+      if (values[i] > 0) i,
+  ];
+  if (activeIndexes.length != 1) return false;
+
+  final index = activeIndexes.single;
+  final x = _chartX(size, index, points.length);
+  final topY = size.height * points[index];
+  final bottomY = size.height * 0.88;
+  final line = Paint()
+    ..color = const Color(0xFF1F7A64)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = radius > 3 ? 4 : 3
+    ..strokeCap = StrokeCap.round;
+  canvas.drawLine(Offset(x, bottomY), Offset(x, topY), line);
+
+  final fill = Paint()
+    ..color = Colors.white
+    ..style = PaintingStyle.fill;
+  final stroke = Paint()
+    ..color = const Color(0xFF1F7A64)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 2;
+  canvas.drawCircle(Offset(x, topY), radius, fill);
+  canvas.drawCircle(Offset(x, topY), radius, stroke);
+  canvas.drawCircle(Offset(x, bottomY), radius, fill);
+  canvas.drawCircle(Offset(x, bottomY), radius, stroke);
+  return true;
 }
 
 double _chartX(Size size, int index, int pointCount) {
