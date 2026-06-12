@@ -549,7 +549,7 @@ class _DashboardScreenState extends State<_DashboardScreen> {
             );
 
             final totals = _DashboardTotals.from(monthInvoices);
-            final trends = _DashboardTrends.from(monthInvoices, _selectedMonth);
+            final trends = _DashboardTrends.from(invoices, _selectedMonth);
             final paidCount = monthInvoices.where((i) => i.isPaid).length;
             final collectionRate = monthInvoices.isEmpty
                 ? 0
@@ -665,50 +665,60 @@ class _DashboardTrends {
     required this.fullLabels,
   });
 
-  factory _DashboardTrends.from(List<Invoice> invoices, DateTime month) {
-    final now = DateTime.now();
-    final isCurrentMonth = month.year == now.year && month.month == now.month;
-    final days = DateUtils.getDaysInMonth(month.year, month.month);
-    final sales = List<double>.filled(days, 0);
-    final tip = List<double>.filled(days, 0);
-    final subtotal = List<double>.filled(days, 0);
-    final tax = List<double>.filled(days, 0);
+  factory _DashboardTrends.from(
+    List<Invoice> invoices,
+    DateTime selectedMonth,
+  ) {
+    final sales = List<double>.filled(12, 0);
+    final tip = List<double>.filled(12, 0);
+    final subtotal = List<double>.filled(12, 0);
+    final tax = List<double>.filled(12, 0);
 
     for (final inv in invoices) {
       if (inv.invoiceNumber == 'ERROR') continue;
       final date = DateTime.fromMillisecondsSinceEpoch(inv.createdAtMs);
-      if (date.year != month.year || date.month != month.month) continue;
-      final day = isCurrentMonth && date.isAfter(now) ? now.day : date.day;
-      final index = (day - 1).clamp(0, days - 1);
+      if (date.year != selectedMonth.year) continue;
+      final index = (date.month - 1).clamp(0, 11);
       sales[index] += inv.total;
       tip[index] += inv.tip;
       subtotal[index] += inv.subtotal;
       tax[index] += inv.taxAmount;
     }
 
-    final buckets = _weeklyBucketsForMonth(month);
-    final compactLabels = [
-      for (var i = 0; i < buckets.length; i++)
-        'W${i + 1}\n${buckets[i].start}-${buckets[i].end}',
+    const compactLabels = [
+      'J',
+      'F',
+      'M',
+      'A',
+      'M',
+      'J',
+      'J',
+      'A',
+      'S',
+      'O',
+      'N',
+      'D',
     ];
-    final fullLabels = [
-      for (var i = 0; i < buckets.length; i++)
-        'Week ${i + 1}\n${buckets[i].start}-${buckets[i].end}',
+    const fullLabels = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
 
     return _DashboardTrends(
-      sales: isCurrentMonth
-          ? _currentWeekTrend(sales, buckets, now.day)
-          : _compressWeeklyTrend(sales, buckets),
-      tip: isCurrentMonth
-          ? _currentWeekTrend(tip, buckets, now.day)
-          : _compressWeeklyTrend(tip, buckets),
-      subtotal: isCurrentMonth
-          ? _currentWeekTrend(subtotal, buckets, now.day)
-          : _compressWeeklyTrend(subtotal, buckets),
-      tax: isCurrentMonth
-          ? _currentWeekTrend(tax, buckets, now.day)
-          : _compressWeeklyTrend(tax, buckets),
+      sales: sales,
+      tip: tip,
+      subtotal: subtotal,
+      tax: tax,
       compactLabels: compactLabels,
       fullLabels: fullLabels,
     );
@@ -1438,7 +1448,8 @@ class _MetricTile extends StatelessWidget {
           _TrendChart(
             title: label,
             values: trend,
-            maxValue: amount,
+            maxValue: _chartMax(amount, trend),
+            currentValue: amount,
             compactLabels: compactLabels,
             fullLabels: fullLabels,
             compact: true,
@@ -1697,7 +1708,11 @@ class _AnalyticsPanel extends StatelessWidget {
                 child: _TrendChart(
                   title: 'Monthly sales',
                   values: trend,
-                  maxValue: trend.fold(0.0, (total, value) => total + value),
+                  maxValue: _chartMax(0, trend),
+                  currentValue: trend.fold(
+                    0.0,
+                    (total, value) => total + value,
+                  ),
                   compactLabels: compactLabels,
                   fullLabels: fullLabels,
                   compact: false,
@@ -2017,6 +2032,7 @@ class _TrendChart extends StatelessWidget {
     required this.title,
     required this.values,
     required this.maxValue,
+    required this.currentValue,
     required this.compactLabels,
     required this.fullLabels,
     required this.compact,
@@ -2026,6 +2042,7 @@ class _TrendChart extends StatelessWidget {
   final String title;
   final List<double> values;
   final double maxValue;
+  final double currentValue;
   final List<String> compactLabels;
   final List<String> fullLabels;
   final bool compact;
@@ -2088,7 +2105,7 @@ class _TrendChart extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Current: ${_money(maxValue)}',
+                'Selected: ${_money(currentValue)}',
                 style: const TextStyle(
                   color: Colors.black54,
                   fontWeight: FontWeight.w800,
@@ -2169,7 +2186,7 @@ class _ChartCanvas extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 3),
-              _WeekAxisLabels(labels: labels, style: labelStyle),
+              _TimeAxisLabels(labels: labels, style: labelStyle),
             ],
           ),
         ),
@@ -2178,8 +2195,8 @@ class _ChartCanvas extends StatelessWidget {
   }
 }
 
-class _WeekAxisLabels extends StatelessWidget {
-  const _WeekAxisLabels({required this.labels, required this.style});
+class _TimeAxisLabels extends StatelessWidget {
+  const _TimeAxisLabels({required this.labels, required this.style});
 
   final List<String> labels;
   final TextStyle style;
@@ -2369,47 +2386,6 @@ double _chartX(Size size, int index, int pointCount) {
   return size.width * ((index + 0.5) / pointCount);
 }
 
-List<({int start, int end})> _weeklyBucketsForMonth(DateTime month) {
-  final days = DateUtils.getDaysInMonth(month.year, month.month);
-  final buckets = <({int start, int end})>[];
-  for (var start = 1; start <= days; start += 7) {
-    final end = (start + 6).clamp(1, days);
-    buckets.add((start: start, end: end));
-  }
-  return buckets;
-}
-
-List<double> _compressWeeklyTrend(
-  List<double> values,
-  List<({int start, int end})> buckets,
-) {
-  if (buckets.isEmpty) return const <double>[];
-  return [
-    for (final bucket in buckets)
-      values
-          .sublist(
-            bucket.start - 1,
-            bucket.end.clamp(bucket.start, values.length),
-          )
-          .fold(0.0, (total, value) => total + value),
-  ];
-}
-
-List<double> _currentWeekTrend(
-  List<double> values,
-  List<({int start, int end})> buckets,
-  int currentDay,
-) {
-  if (buckets.isEmpty) return const <double>[];
-  final result = List<double>.filled(buckets.length, 0);
-  final currentWeekIndex = buckets.indexWhere(
-    (bucket) => currentDay >= bucket.start && currentDay <= bucket.end,
-  );
-  final safeIndex = currentWeekIndex < 0 ? 0 : currentWeekIndex;
-  result[safeIndex] = values.fold(0.0, (total, value) => total + value);
-  return result;
-}
-
 List<double> _normaliseTrend(List<double> values, double maxValue) {
   final safeValues = values.isEmpty ? List<double>.filled(8, 0) : values;
   final chartMax = maxValue <= 0
@@ -2424,6 +2400,14 @@ List<double> _normaliseTrend(List<double> values, double maxValue) {
 }
 
 String _money(double value) => '\$${value.toStringAsFixed(2)}';
+
+double _chartMax(double currentValue, List<double> values) {
+  final maxTrend = values.fold<double>(
+    0,
+    (max, value) => value > max ? value : max,
+  );
+  return currentValue > maxTrend ? currentValue : maxTrend;
+}
 
 String _axisMoney(double value) {
   if (value.abs() >= 1000) return '\$${(value / 1000).toStringAsFixed(1)}k';
