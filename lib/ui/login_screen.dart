@@ -15,7 +15,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  static const String _forcedVersionText = 'Version 1.0.51';
+  static const String _forcedVersionText = 'Version 1.0.52';
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 

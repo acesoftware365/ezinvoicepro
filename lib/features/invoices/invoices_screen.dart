@@ -274,6 +274,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
   }
 
   Future<void> _shareInvoicePdf(BuildContext context, Invoice inv) async {
+    final t = AppLocalizations.of(context);
     try {
       final origin = _shareOriginFrom(context);
       final data = _toInvoiceData(inv);
@@ -285,23 +286,24 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
 
       await Share.shareXFiles(
         [XFile(file.path, mimeType: 'application/pdf')],
-        text: 'Invoice ${inv.invoiceNumber}',
+        text: t.shareInvoiceText(inv.invoiceNumber, inv.clientName),
         sharePositionOrigin: origin, // ✅ FIX iPad/iOS
       );
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Invoice PDF error: $e')));
+        ).showSnackBar(SnackBar(content: Text(t.pdfSendError(e.toString()))));
       }
     }
   }
 
   Future<void> _shareReceiptPdf(BuildContext context, Invoice inv) async {
+    final t = AppLocalizations.of(context);
     if (!inv.isPaid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Receipt only available when PAID')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_receiptPaidOnlyLabel(t))));
       return;
     }
 
@@ -316,14 +318,14 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
 
       await Share.shareXFiles(
         [XFile(file.path, mimeType: 'application/pdf')],
-        text: 'Receipt ${inv.invoiceNumber}',
+        text: t.shareReceiptText(inv.invoiceNumber, inv.clientName),
         sharePositionOrigin: origin, // ✅ FIX iPad/iOS
       );
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Receipt PDF error: $e')));
+        ).showSnackBar(SnackBar(content: Text(t.pdfSendError(e.toString()))));
       }
     }
   }
@@ -432,7 +434,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                                 ),
                               ),
                               IconButton.filledTonal(
-                                tooltip: 'Search',
+                                tooltip: _invoiceSearchLabel(t),
                                 onPressed: () => _searchFocus.requestFocus(),
                                 style: IconButton.styleFrom(
                                   backgroundColor: Colors.white,
@@ -450,7 +452,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                                 setState(() => _query = value),
                             textInputAction: TextInputAction.search,
                             decoration: InputDecoration(
-                              hintText: 'Search invoices',
+                              hintText: _invoiceSearchLabel(t),
                               prefixIcon: const Icon(
                                 Icons.search,
                                 color: brandGreen,
@@ -486,7 +488,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                           child: Text(
                             all.isEmpty
                                 ? t.noInvoicesYet
-                                : 'No invoices match your filters.',
+                                : t.noResultsForFilters,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: muted,
@@ -549,7 +551,7 @@ class _StatusFilterBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final items = [
-      (_InvoiceFilter.all, 'All'),
+      (_InvoiceFilter.all, _allLabel(t)),
       (_InvoiceFilter.unsent, t.unsentLabel),
       (_InvoiceFilter.sent, t.sentLabel),
       (_InvoiceFilter.paid, t.paidLabel),
@@ -653,6 +655,7 @@ class _InvoiceCompactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final client = invoice.clientName.trim().isEmpty
         ? '-'
         : invoice.clientName.trim();
@@ -697,7 +700,7 @@ class _InvoiceCompactCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 2),
                     PopupMenuButton<String>(
-                      tooltip: 'Actions',
+                      tooltip: _actionsLabel(t),
                       icon: const Icon(
                         Icons.more_vert,
                         color: _InvoicesScreenState.ink,
@@ -714,11 +717,11 @@ class _InvoiceCompactCard extends StatelessWidget {
                         if (value == 'delete') onDelete();
                       },
                       itemBuilder: (_) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'view_pdf',
                           child: _InvoiceMenuRow(
                             icon: Icons.picture_as_pdf_outlined,
-                            label: 'View PDF',
+                            label: t.sendPdf,
                           ),
                         ),
                         PopupMenuItem(
@@ -727,9 +730,7 @@ class _InvoiceCompactCard extends StatelessWidget {
                             icon: invoice.isSent
                                 ? Icons.undo_outlined
                                 : Icons.send_outlined,
-                            label: invoice.isSent
-                                ? 'Unsend Invoice'
-                                : 'Send Invoice',
+                            label: invoice.isSent ? _unsendLabel(t) : t.sendPdf,
                           ),
                         ),
                         PopupMenuItem(
@@ -739,30 +740,30 @@ class _InvoiceCompactCard extends StatelessWidget {
                                 ? Icons.undo_outlined
                                 : Icons.check_circle_outline,
                             label: invoice.isPaid
-                                ? 'Mark as Unpaid'
-                                : 'Mark as Paid',
+                                ? _markUnpaidLabel(t)
+                                : _markPaidLabel(t),
                           ),
                         ),
                         PopupMenuItem(
                           value: 'receipt',
                           enabled: onReceiptPdf != null,
-                          child: const _InvoiceMenuRow(
+                          child: _InvoiceMenuRow(
                             icon: Icons.receipt_long_outlined,
-                            label: 'Receipt PDF',
+                            label: _receiptPdfLabel(t),
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'edit',
                           child: _InvoiceMenuRow(
                             icon: Icons.edit_outlined,
-                            label: 'Edit Invoice',
+                            label: t.edit,
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
                           child: _InvoiceMenuRow(
                             icon: Icons.delete_outline,
-                            label: 'Delete Invoice',
+                            label: t.delete,
                             danger: true,
                           ),
                         ),
@@ -773,7 +774,7 @@ class _InvoiceCompactCard extends StatelessWidget {
                 const SizedBox(height: 7),
                 Text(
                   invoice.invoiceNumber.trim().isEmpty
-                      ? 'Invoice'
+                      ? t.invoicesTitle
                       : invoice.invoiceNumber.trim(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -913,31 +914,38 @@ class _MarkPaidDialogState extends State<_MarkPaidDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return AlertDialog(
-      title: const Text('Mark as Paid'),
+      title: Text(_markPaidLabel(t)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           DropdownButtonFormField<String>(
             initialValue: _method,
-            decoration: const InputDecoration(
-              labelText: 'Payment method',
-              prefixIcon: Icon(Icons.payments_outlined),
+            decoration: InputDecoration(
+              labelText: _payMethodLabel(t),
+              prefixIcon: const Icon(Icons.payments_outlined),
             ),
-            items: const [
-              DropdownMenuItem(value: PaymentMethod.cash, child: Text('Cash')),
+            items: [
+              DropdownMenuItem(
+                value: PaymentMethod.cash,
+                child: Text(_cashLabel(t)),
+              ),
               DropdownMenuItem(
                 value: PaymentMethod.zelle,
-                child: Text('Zelle'),
+                child: const Text('Zelle'),
               ),
-              DropdownMenuItem(value: PaymentMethod.card, child: Text('Card')),
+              DropdownMenuItem(
+                value: PaymentMethod.card,
+                child: Text(_cardLabel(t)),
+              ),
               DropdownMenuItem(
                 value: PaymentMethod.check,
-                child: Text('Check'),
+                child: Text(_checkLabel(t)),
               ),
               DropdownMenuItem(
                 value: PaymentMethod.other,
-                child: Text('Other'),
+                child: Text(_otherLabel(t)),
               ),
             ],
             onChanged: (v) =>
@@ -947,9 +955,9 @@ class _MarkPaidDialogState extends State<_MarkPaidDialog> {
           TextField(
             controller: _note,
             maxLines: 2,
-            decoration: const InputDecoration(
-              labelText: 'Note (optional)',
-              prefixIcon: Icon(Icons.edit_note_outlined),
+            decoration: InputDecoration(
+              labelText: _noteOptionalLabel(t),
+              prefixIcon: const Icon(Icons.edit_note_outlined),
             ),
           ),
         ],
@@ -957,7 +965,7 @@ class _MarkPaidDialogState extends State<_MarkPaidDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(t.cancel),
         ),
         FilledButton(
           onPressed: () {
@@ -966,9 +974,195 @@ class _MarkPaidDialogState extends State<_MarkPaidDialog> {
               _PayResult(method: _method, note: _note.text.trim()),
             );
           },
-          child: const Text('Confirm'),
+          child: Text(_confirmLabel(t)),
         ),
       ],
     );
   }
 }
+
+String _invLang(AppLocalizations t) => t.localeName.split('_').first;
+
+String _invShort(AppLocalizations t, Map<String, String> values, String en) {
+  return values[_invLang(t)] ?? en;
+}
+
+String _invoiceSearchLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Buscar facturas',
+  'pt': 'Buscar faturas',
+  'fr': 'Chercher factures',
+  'de': 'Rechnungen suchen',
+  'ar': 'بحث الفواتير',
+  'hi': 'इनवॉइस खोजें',
+  'ja': '請求書検索',
+  'ru': 'Найти счета',
+  'zh': '搜索发票',
+}, 'Search invoices');
+
+String _allLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Todo',
+  'pt': 'Tudo',
+  'fr': 'Tout',
+  'de': 'Alle',
+  'ar': 'الكل',
+  'hi': 'सब',
+  'ja': 'すべて',
+  'ru': 'Все',
+  'zh': '全部',
+}, 'All');
+
+String _actionsLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Acciones',
+  'pt': 'Ações',
+  'fr': 'Actions',
+  'de': 'Aktionen',
+  'ar': 'إجراءات',
+  'hi': 'क्रियाएं',
+  'ja': '操作',
+  'ru': 'Действия',
+  'zh': '操作',
+}, 'Actions');
+
+String _unsendLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'No enviada',
+  'pt': 'Não enviada',
+  'fr': 'Non envoyée',
+  'de': 'Nicht gesendet',
+  'ar': 'غير مرسلة',
+  'hi': 'न भेजी',
+  'ja': '未送信',
+  'ru': 'Не отправлено',
+  'zh': '未发送',
+}, 'Unsend');
+
+String _markPaidLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Marcar pagada',
+  'pt': 'Marcar paga',
+  'fr': 'Marquer payée',
+  'de': 'Als bezahlt',
+  'ar': 'تحديد مدفوعة',
+  'hi': 'भुगतान',
+  'ja': '支払い済み',
+  'ru': 'Оплачено',
+  'zh': '标记已付',
+}, 'Mark paid');
+
+String _markUnpaidLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Marcar sin pagar',
+  'pt': 'Marcar não paga',
+  'fr': 'Marquer impayée',
+  'de': 'Als offen',
+  'ar': 'غير مدفوعة',
+  'hi': 'बकाया',
+  'ja': '未払い',
+  'ru': 'Не оплачено',
+  'zh': '标记未付',
+}, 'Mark unpaid');
+
+String _receiptPdfLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Recibo PDF',
+  'pt': 'Recibo PDF',
+  'fr': 'Reçu PDF',
+  'de': 'Beleg PDF',
+  'ar': 'إيصال PDF',
+  'hi': 'रसीद PDF',
+  'ja': '領収書PDF',
+  'ru': 'Квитанция PDF',
+  'zh': '收据 PDF',
+}, 'Receipt PDF');
+
+String _receiptPaidOnlyLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Recibo solo si está pagada.',
+  'pt': 'Recibo só se paga.',
+  'fr': 'Reçu si payée.',
+  'de': 'Beleg nur bezahlt.',
+  'ar': 'الإيصال للمدفوعة فقط.',
+  'hi': 'रसीद केवल भुगतान पर.',
+  'ja': '領収書は支払い済みのみ。',
+  'ru': 'Квитанция после оплаты.',
+  'zh': '仅已付款可开收据。',
+}, 'Receipt only when paid.');
+
+String _payMethodLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Método',
+  'pt': 'Método',
+  'fr': 'Mode',
+  'de': 'Methode',
+  'ar': 'الطريقة',
+  'hi': 'तरीका',
+  'ja': '方法',
+  'ru': 'Метод',
+  'zh': '方式',
+}, 'Method');
+
+String _cashLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Efectivo',
+  'pt': 'Dinheiro',
+  'fr': 'Espèces',
+  'de': 'Bar',
+  'ar': 'نقد',
+  'hi': 'नकद',
+  'ja': '現金',
+  'ru': 'Наличные',
+  'zh': '现金',
+}, 'Cash');
+
+String _cardLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Tarjeta',
+  'pt': 'Cartão',
+  'fr': 'Carte',
+  'de': 'Karte',
+  'ar': 'بطاقة',
+  'hi': 'कार्ड',
+  'ja': 'カード',
+  'ru': 'Карта',
+  'zh': '卡',
+}, 'Card');
+
+String _checkLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Cheque',
+  'pt': 'Cheque',
+  'fr': 'Chèque',
+  'de': 'Scheck',
+  'ar': 'شيك',
+  'hi': 'चेक',
+  'ja': '小切手',
+  'ru': 'Чек',
+  'zh': '支票',
+}, 'Check');
+
+String _otherLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Otro',
+  'pt': 'Outro',
+  'fr': 'Autre',
+  'de': 'Andere',
+  'ar': 'أخرى',
+  'hi': 'अन्य',
+  'ja': 'その他',
+  'ru': 'Другое',
+  'zh': '其他',
+}, 'Other');
+
+String _noteOptionalLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Nota opcional',
+  'pt': 'Nota opcional',
+  'fr': 'Note option',
+  'de': 'Notiz optional',
+  'ar': 'ملاحظة اختيارية',
+  'hi': 'नोट वैकल्पिक',
+  'ja': 'メモ任意',
+  'ru': 'Заметка',
+  'zh': '备注可选',
+}, 'Note optional');
+
+String _confirmLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Confirmar',
+  'pt': 'Confirmar',
+  'fr': 'Confirmer',
+  'de': 'Bestätigen',
+  'ar': 'تأكيد',
+  'hi': 'पुष्टि',
+  'ja': '確認',
+  'ru': 'Подтвердить',
+  'zh': '确认',
+}, 'Confirm');

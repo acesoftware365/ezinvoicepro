@@ -4,6 +4,7 @@ import 'package:ezinvoice/features/paywall/paywall_screen.dart';
 import 'package:ezinvoice/features/privacy/delete_account_screen.dart';
 import 'package:ezinvoice/features/privacy/privacy_screen.dart';
 import 'package:ezinvoice/features/reports/reports_screen.dart';
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:ezinvoice/models/business_profile.dart';
 import 'package:ezinvoice/models/invoice.dart';
 import 'package:ezinvoice/repositories/business_profile_repository.dart';
@@ -36,6 +37,7 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
   @override
   Widget build(BuildContext context) {
     final isTablet = MediaQuery.sizeOf(context).width >= 900;
+    final t = AppLocalizations.of(context);
 
     return StreamBuilder<BusinessProfile>(
       stream: _businessRepo.stream(),
@@ -94,25 +96,25 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
               selectedIndex: _index.clamp(0, 4),
               onDestinationSelected: (i) => setState(() => _index = i),
               destinations: [
-                const NavigationDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home),
-                  label: 'Home',
+                NavigationDestination(
+                  icon: const Icon(Icons.home_outlined),
+                  selectedIcon: const Icon(Icons.home),
+                  label: t.home,
                 ),
-                const NavigationDestination(
-                  icon: Icon(Icons.people_alt_outlined),
-                  selectedIcon: Icon(Icons.people_alt),
-                  label: 'Clients',
+                NavigationDestination(
+                  icon: const Icon(Icons.people_alt_outlined),
+                  selectedIcon: const Icon(Icons.people_alt),
+                  label: t.clients,
                 ),
-                const NavigationDestination(
-                  icon: Icon(Icons.receipt_long_outlined),
-                  selectedIcon: Icon(Icons.receipt_long),
-                  label: 'Invoices',
+                NavigationDestination(
+                  icon: const Icon(Icons.receipt_long_outlined),
+                  selectedIcon: const Icon(Icons.receipt_long),
+                  label: t.invoices,
                 ),
-                const NavigationDestination(
-                  icon: Icon(Icons.bar_chart_outlined),
-                  selectedIcon: Icon(Icons.bar_chart),
-                  label: 'Reports',
+                NavigationDestination(
+                  icon: const Icon(Icons.bar_chart_outlined),
+                  selectedIcon: const Icon(Icons.bar_chart),
+                  label: t.reports,
                 ),
                 NavigationDestination(
                   icon: _BusinessNavIcon(
@@ -123,7 +125,7 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
                     icon: Icons.business_center,
                     showBadge: businessIncomplete,
                   ),
-                  label: 'Business',
+                  label: t.business,
                 ),
               ],
             ),
@@ -197,16 +199,12 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
         return;
       }
 
-      final isEs = Localizations.localeOf(context).languageCode == 'es';
+      final t = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            isEs
-                ? 'Completa tu Business Profile para que tus facturas se vean profesionales.'
-                : 'Complete your Business Profile so your invoices look professional.',
-          ),
+          content: Text(_businessReminderText(t)),
           action: SnackBarAction(
-            label: isEs ? 'Abrir' : 'Open',
+            label: _openLabel(t),
             onPressed: () => setState(() => _index = 4),
           ),
         ),
@@ -277,13 +275,14 @@ class _Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    final items = const [
-      (Icons.home_outlined, 'Home'),
-      (Icons.people_alt_outlined, 'Clients'),
-      (Icons.receipt_long_outlined, 'Invoices'),
-      (Icons.bar_chart_outlined, 'Reports'),
-      (Icons.business_center_outlined, 'Business'),
-      (Icons.settings_outlined, 'Settings'),
+    final t = AppLocalizations.of(context);
+    final items = [
+      (Icons.home_outlined, t.home),
+      (Icons.people_alt_outlined, t.clients),
+      (Icons.receipt_long_outlined, t.invoices),
+      (Icons.bar_chart_outlined, t.reports),
+      (Icons.business_center_outlined, t.business),
+      (Icons.settings_outlined, t.settings),
     ];
 
     return Container(
@@ -500,6 +499,7 @@ class _PlanSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final safeLimit = limit <= 0 ? 20 : limit;
     final remaining = (safeLimit - used).clamp(0, safeLimit);
     final progress = isPro ? 1.0 : (remaining / safeLimit).clamp(0.0, 1.0);
@@ -523,14 +523,16 @@ class _PlanSummaryCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                isPro ? 'Pro Plan' : 'Free Plan',
+                isPro ? _proPlanLabel(t) : _freePlanLabel(t),
                 style: const TextStyle(fontWeight: FontWeight.w900),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
-            isPro ? 'Unlimited invoices' : '$remaining / $safeLimit invoices',
+            isPro
+                ? t.proUnlimitedLabel
+                : '$remaining / $safeLimit ${t.invoices.toLowerCase()}',
             style: const TextStyle(color: Colors.black54, fontSize: 12),
           ),
           const SizedBox(height: 8),
@@ -550,7 +552,7 @@ class _PlanSummaryCard extends StatelessWidget {
                   MaterialPageRoute(builder: (_) => const PaywallScreen()),
                 ),
                 icon: const Icon(Icons.workspace_premium_outlined),
-                label: const Text('Upgrade to Pro'),
+                label: Text(t.upgradeToPro),
                 style: FilledButton.styleFrom(
                   backgroundColor: _brandGreen,
                   foregroundColor: Colors.white,
@@ -872,6 +874,7 @@ class _TabletDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final monthLabel = _monthLabel(selectedMonth);
     final recent = invoices.take(5).toList();
 
@@ -882,7 +885,7 @@ class _TabletDashboard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _DashboardHeader(
-              title: 'Dashboard',
+              title: t.dashboardTitle,
               subtitle: monthLabel,
               email: email,
               alerts: alerts,
@@ -903,66 +906,67 @@ class _TabletDashboard extends StatelessWidget {
                             Expanded(
                               child: _MetricTile(
                                 icon: Icons.attach_money,
-                                label: 'Sales',
+                                label: t.salesTitle,
                                 value: _money(totals.sales),
                                 amount: totals.sales,
                                 trend: trends.sales,
                                 compactLabels: trends.compactLabels,
                                 fullLabels: trends.fullLabels,
-                                onTap: () => _openMetric(context, 'Sales'),
+                                onTap: () => _openMetric(context, t.salesTitle),
                               ),
                             ),
                             const SizedBox(width: 14),
                             Expanded(
                               child: _MetricTile(
                                 icon: Icons.volunteer_activism_outlined,
-                                label: 'Tip',
+                                label: t.tipTitle,
                                 value: _money(totals.tip),
                                 amount: totals.tip,
                                 trend: trends.tip,
                                 compactLabels: trends.compactLabels,
                                 fullLabels: trends.fullLabels,
-                                onTap: () => _openMetric(context, 'Tip'),
+                                onTap: () => _openMetric(context, t.tipTitle),
                               ),
                             ),
                             const SizedBox(width: 14),
                             Expanded(
                               child: _MetricTile(
                                 icon: Icons.receipt_outlined,
-                                label: 'Subtotal',
+                                label: t.subtotalTitle,
                                 value: _money(totals.subtotal),
                                 amount: totals.subtotal,
                                 trend: trends.subtotal,
                                 compactLabels: trends.compactLabels,
                                 fullLabels: trends.fullLabels,
-                                onTap: () => _openMetric(context, 'Subtotal'),
+                                onTap: () =>
+                                    _openMetric(context, t.subtotalTitle),
                               ),
                             ),
                             const SizedBox(width: 14),
                             Expanded(
                               child: _MetricTile(
                                 icon: Icons.percent,
-                                label: 'Tax',
+                                label: t.taxTitle,
                                 value: _money(totals.tax),
                                 amount: totals.tax,
                                 trend: trends.tax,
                                 compactLabels: trends.compactLabels,
                                 fullLabels: trends.fullLabels,
-                                onTap: () => _openMetric(context, 'Tax'),
+                                onTap: () => _openMetric(context, t.taxTitle),
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 22),
-                        const _SectionTitle('Quick actions'),
+                        _SectionTitle(t.quickAccessTitle),
                         const SizedBox(height: 12),
                         Row(
                           children: [
                             Expanded(
                               child: _ActionTile(
                                 icon: Icons.people_alt_outlined,
-                                title: 'Clients',
-                                subtitle: 'Create / edit clients',
+                                title: t.clients,
+                                subtitle: t.clientsManageSubtitle,
                                 onTap: () => onNavigate(1),
                               ),
                             ),
@@ -970,8 +974,8 @@ class _TabletDashboard extends StatelessWidget {
                             Expanded(
                               child: _ActionTile(
                                 icon: Icons.receipt_long_outlined,
-                                title: 'Invoices',
-                                subtitle: 'View and send invoices',
+                                title: t.invoices,
+                                subtitle: t.invoicesViewSendSubtitle,
                                 onTap: () => onNavigate(2),
                               ),
                             ),
@@ -979,8 +983,8 @@ class _TabletDashboard extends StatelessWidget {
                             Expanded(
                               child: _ActionTile(
                                 icon: Icons.bar_chart_outlined,
-                                title: 'Reports',
-                                subtitle: 'View detailed reports',
+                                title: t.reports,
+                                subtitle: t.monthlyYearlySubtitle,
                                 onTap: () => onNavigate(3),
                               ),
                             ),
@@ -988,8 +992,8 @@ class _TabletDashboard extends StatelessWidget {
                             Expanded(
                               child: _ActionTile(
                                 icon: Icons.business_center_outlined,
-                                title: 'Business',
-                                subtitle: 'Profile, logo & tax',
+                                title: t.business,
+                                subtitle: t.businessProfileSubtitle,
                                 onTap: () => onNavigate(4),
                               ),
                             ),
@@ -1064,12 +1068,13 @@ class _MobileDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
         children: [
           _DashboardHeader(
-            title: 'Dashboard',
+            title: t.dashboardTitle,
             subtitle: _monthLabel(selectedMonth),
             email: email,
             alerts: alerts,
@@ -1079,49 +1084,49 @@ class _MobileDashboard extends StatelessWidget {
           const SizedBox(height: 16),
           _MetricTile(
             icon: Icons.attach_money,
-            label: 'Sales',
+            label: t.salesTitle,
             value: _money(totals.sales),
             amount: totals.sales,
             trend: trends.sales,
             compactLabels: trends.compactLabels,
             fullLabels: trends.fullLabels,
-            onTap: () => _openMetric(context, 'Sales'),
+            onTap: () => _openMetric(context, t.salesTitle),
           ),
           const SizedBox(height: 12),
           _MetricTile(
             icon: Icons.volunteer_activism_outlined,
-            label: 'Tip',
+            label: t.tipTitle,
             value: _money(totals.tip),
             amount: totals.tip,
             trend: trends.tip,
             compactLabels: trends.compactLabels,
             fullLabels: trends.fullLabels,
-            onTap: () => _openMetric(context, 'Tip'),
+            onTap: () => _openMetric(context, t.tipTitle),
           ),
           const SizedBox(height: 12),
           _MetricTile(
             icon: Icons.receipt_outlined,
-            label: 'Subtotal',
+            label: t.subtotalTitle,
             value: _money(totals.subtotal),
             amount: totals.subtotal,
             trend: trends.subtotal,
             compactLabels: trends.compactLabels,
             fullLabels: trends.fullLabels,
-            onTap: () => _openMetric(context, 'Subtotal'),
+            onTap: () => _openMetric(context, t.subtotalTitle),
           ),
           const SizedBox(height: 12),
           _MetricTile(
             icon: Icons.percent,
-            label: 'Tax',
+            label: t.taxTitle,
             value: _money(totals.tax),
             amount: totals.tax,
             trend: trends.tax,
             compactLabels: trends.compactLabels,
             fullLabels: trends.fullLabels,
-            onTap: () => _openMetric(context, 'Tax'),
+            onTap: () => _openMetric(context, t.taxTitle),
           ),
           const SizedBox(height: 22),
-          const _SectionTitle('Quick Actions'),
+          _SectionTitle(t.quickAccessTitle),
           const SizedBox(height: 12),
           GridView.count(
             shrinkWrap: true,
@@ -1133,25 +1138,25 @@ class _MobileDashboard extends StatelessWidget {
             children: [
               _ActionTile(
                 icon: Icons.people_alt_outlined,
-                title: 'Clients',
+                title: t.clients,
                 subtitle: '',
                 onTap: () => onNavigate(1),
               ),
               _ActionTile(
                 icon: Icons.receipt_long_outlined,
-                title: 'Invoices',
+                title: t.invoices,
                 subtitle: '',
                 onTap: () => onNavigate(2),
               ),
               _ActionTile(
                 icon: Icons.bar_chart_outlined,
-                title: 'Reports',
+                title: t.reports,
                 subtitle: '',
                 onTap: () => onNavigate(3),
               ),
               _ActionTile(
                 icon: Icons.business_center_outlined,
-                title: 'Business',
+                title: t.business,
                 subtitle: '',
                 onTap: () => onNavigate(4),
               ),
@@ -1199,6 +1204,7 @@ class _DashboardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Row(
       children: [
         Expanded(
@@ -1246,7 +1252,7 @@ class _DashboardHeader extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             IconButton(
-              tooltip: 'Notifications',
+              tooltip: _notificationsLabel(t),
               onPressed: () => _showAlerts(context, alerts, onNavigate),
               icon: const Icon(Icons.notifications_none),
             ),
@@ -1297,14 +1303,17 @@ class _DashboardHeader extends StatelessWidget {
               FirebaseAuth.instance.signOut();
             }
           },
-          itemBuilder: (context) => const [
-            PopupMenuItem(value: 'business', child: Text('Business Profile')),
-            PopupMenuItem(value: 'subscription', child: Text('Subscription')),
-            PopupMenuItem(value: 'settings', child: Text('Settings')),
-            PopupMenuItem(value: 'privacy', child: Text('Privacy Policy')),
-            PopupMenuItem(value: 'delete', child: Text('Delete Account')),
-            PopupMenuDivider(),
-            PopupMenuItem(value: 'logout', child: Text('Log out')),
+          itemBuilder: (context) => [
+            PopupMenuItem(
+              value: 'business',
+              child: Text(t.businessProfileTitle),
+            ),
+            PopupMenuItem(value: 'subscription', child: Text(t.proBadge)),
+            PopupMenuItem(value: 'settings', child: Text(t.settings)),
+            PopupMenuItem(value: 'privacy', child: Text(t.privacyPolicy)),
+            PopupMenuItem(value: 'delete', child: Text(_deleteAccountLabel(t))),
+            const PopupMenuDivider(),
+            PopupMenuItem(value: 'logout', child: Text(t.logout)),
           ],
           child: CircleAvatar(
             backgroundColor: _brandGreen,
@@ -1332,6 +1341,7 @@ class _DashboardHeader extends StatelessWidget {
     _DashboardAlerts alerts,
     ValueChanged<int> onNavigate,
   ) {
+    final t = AppLocalizations.of(context);
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -1341,24 +1351,23 @@ class _DashboardHeader extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Notifications',
+            Text(
+              _notificationsLabel(t),
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 12),
             if (alerts.count == 0)
-              const _AlertRow(
+              _AlertRow(
                 icon: Icons.check_circle_outline,
-                title: 'Everything looks current',
-                subtitle: 'No overdue or pending invoice alerts right now.',
+                title: _allGoodLabel(t),
+                subtitle: _noAlertsLabel(t),
               )
             else ...[
               if (alerts.overdue > 0)
                 _AlertRow(
                   icon: Icons.warning_amber_rounded,
-                  title:
-                      '${alerts.overdue} overdue invoice${alerts.overdue == 1 ? '' : 's'}',
-                  subtitle: 'Open Invoices to follow up or mark paid.',
+                  title: '${alerts.overdue} ${t.overdueLabel}',
+                  subtitle: _openInvoicesLabel(t),
                   onTap: () {
                     Navigator.pop(sheetContext);
                     onNavigate(2);
@@ -1367,9 +1376,8 @@ class _DashboardHeader extends StatelessWidget {
               if (alerts.unsent > 0)
                 _AlertRow(
                   icon: Icons.outgoing_mail,
-                  title:
-                      '${alerts.unsent} unsent invoice${alerts.unsent == 1 ? '' : 's'}',
-                  subtitle: 'Open Invoices to send them to clients.',
+                  title: '${alerts.unsent} ${t.unsentLabel}',
+                  subtitle: _openInvoicesLabel(t),
                   onTap: () {
                     Navigator.pop(sheetContext);
                     onNavigate(2);
@@ -1378,9 +1386,8 @@ class _DashboardHeader extends StatelessWidget {
               if (alerts.unpaid > 0)
                 _AlertRow(
                   icon: Icons.payments_outlined,
-                  title:
-                      '${alerts.unpaid} unpaid invoice${alerts.unpaid == 1 ? '' : 's'}',
-                  subtitle: 'Review outstanding balances.',
+                  title: '${alerts.unpaid} ${_unpaidLabel(t)}',
+                  subtitle: _reviewBalanceLabel(t),
                   onTap: () {
                     Navigator.pop(sheetContext);
                     onNavigate(2);
@@ -1389,8 +1396,8 @@ class _DashboardHeader extends StatelessWidget {
               if (alerts.nearFreeLimit)
                 _AlertRow(
                   icon: Icons.workspace_premium_outlined,
-                  title: 'Free invoice limit is almost full',
-                  subtitle: 'Open Subscription to review Pro options.',
+                  title: _limitAlmostFullLabel(t),
+                  subtitle: t.upgradeToPro,
                   onTap: () {
                     Navigator.pop(sheetContext);
                     Navigator.push(
@@ -1584,20 +1591,21 @@ class _RecentInvoicesTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return _SoftCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionTitle('Recent invoices'),
+          _SectionTitle(_recentInvoicesLabel(t)),
           const SizedBox(height: 14),
           _TableHeader(),
           const Divider(height: 20),
           if (invoices.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 18),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 18),
               child: Text(
-                'No invoices yet.',
-                style: TextStyle(color: Colors.black54),
+                t.noInvoicesYet,
+                style: const TextStyle(color: Colors.black54),
               ),
             )
           else
@@ -1611,20 +1619,21 @@ class _RecentInvoicesTable extends StatelessWidget {
 class _TableHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     const style = TextStyle(
       color: Colors.black54,
       fontSize: 12,
       fontWeight: FontWeight.w800,
     );
-    return const Row(
+    return Row(
       children: [
-        Expanded(flex: 2, child: Text('Invoice #', style: style)),
-        Expanded(flex: 3, child: Text('Client', style: style)),
-        Expanded(flex: 2, child: Text('Date', style: style)),
-        Expanded(flex: 2, child: Text('Status', style: style)),
+        Expanded(flex: 2, child: Text(t.invoiceAutoNumberLabel, style: style)),
+        Expanded(flex: 3, child: Text(t.clientLabel, style: style)),
+        Expanded(flex: 2, child: Text(t.dateLabel, style: style)),
+        Expanded(flex: 2, child: Text(_statusLabel(t), style: style)),
         Expanded(
           flex: 2,
-          child: Text('Amount', textAlign: TextAlign.end, style: style),
+          child: Text(t.totalTitle, textAlign: TextAlign.end, style: style),
         ),
       ],
     );
@@ -1638,11 +1647,12 @@ class _InvoiceTableRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final status = invoice.isPaid
-        ? 'Paid'
+        ? t.paidLabel
         : invoice.isSent
-        ? 'Sent'
-        : 'Pending';
+        ? t.sentLabel
+        : t.unsentLabel;
     final color = invoice.isPaid
         ? Colors.green
         : invoice.isSent
@@ -1692,17 +1702,15 @@ class _RecentInvoicesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return _SoftCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionTitle('Recent Invoices'),
+          _SectionTitle(_recentInvoicesLabel(t)),
           const SizedBox(height: 12),
           if (invoices.isEmpty)
-            const Text(
-              'No invoices yet.',
-              style: TextStyle(color: Colors.black54),
-            )
+            Text(t.noInvoicesYet, style: const TextStyle(color: Colors.black54))
           else
             for (final inv in invoices)
               Padding(
@@ -1762,16 +1770,17 @@ class _AnalyticsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Column(
       children: [
         _SoftCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
+              Row(
                 children: [
-                  Expanded(child: _SectionTitle('Monthly overview')),
-                  Icon(Icons.more_horiz),
+                  Expanded(child: _SectionTitle(t.monthSummaryTitle)),
+                  const Icon(Icons.more_horiz),
                 ],
               ),
               const SizedBox(height: 18),
@@ -1779,7 +1788,7 @@ class _AnalyticsPanel extends StatelessWidget {
                 height: 130,
                 width: double.infinity,
                 child: _TrendChart(
-                  title: 'Monthly sales',
+                  title: t.salesTitle,
                   values: trend,
                   maxValue: _chartMax(0, trend),
                   currentValue: trend.fold(
@@ -1797,13 +1806,13 @@ class _AnalyticsPanel extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         _SideStat(
-          label: 'Total invoices',
+          label: t.invoices,
           value: '$invoiceCount',
           icon: Icons.receipt_long,
         ),
         const SizedBox(height: 10),
         _SideStat(
-          label: 'Collection rate',
+          label: _collectionRateLabel(t),
           value: '$collectionRate%',
           icon: Icons.check_circle_outline,
         ),
@@ -1814,12 +1823,12 @@ class _AnalyticsPanel extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const _SectionTitle('Recent activity'),
+              _SectionTitle(_recentActivityLabel(t)),
               const SizedBox(height: 12),
               if (invoices.isEmpty)
-                const Text(
-                  'No recent activity.',
-                  style: TextStyle(color: Colors.black54),
+                Text(
+                  _noActivityLabel(t),
+                  style: const TextStyle(color: Colors.black54),
                 )
               else
                 for (final inv in invoices.take(3))
@@ -1839,7 +1848,7 @@ class _AnalyticsPanel extends StatelessWidget {
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            '${inv.invoiceNumber} ${inv.isPaid ? 'paid' : 'created'}',
+                            '${inv.invoiceNumber} ${inv.isPaid ? t.paidLabel : _createdLabel(t)}',
                             style: const TextStyle(fontWeight: FontWeight.w700),
                           ),
                         ),
@@ -1915,18 +1924,19 @@ class _SettingsHubScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.all(28),
         children: [
-          const Text(
-            'Settings',
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
+          Text(
+            t.settings,
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 20),
           _SettingsTile(
             icon: Icons.language,
-            title: 'Language',
+            title: t.settingsLanguage,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const LanguageSettingsScreen()),
@@ -1934,7 +1944,7 @@ class _SettingsHubScreen extends StatelessWidget {
           ),
           _SettingsTile(
             icon: Icons.workspace_premium_outlined,
-            title: 'Subscription',
+            title: t.proBadge,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const PaywallScreen()),
@@ -1942,7 +1952,7 @@ class _SettingsHubScreen extends StatelessWidget {
           ),
           _SettingsTile(
             icon: Icons.privacy_tip_outlined,
-            title: 'Privacy Policy',
+            title: t.privacyPolicy,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const PrivacyScreen()),
@@ -1950,7 +1960,7 @@ class _SettingsHubScreen extends StatelessWidget {
           ),
           _SettingsTile(
             icon: Icons.delete_outline,
-            title: 'Delete Account',
+            title: _deleteAccountLabel(t),
             danger: true,
             onTap: () => Navigator.push(
               context,
@@ -1959,7 +1969,7 @@ class _SettingsHubScreen extends StatelessWidget {
           ),
           _SettingsTile(
             icon: Icons.logout,
-            title: 'Log out',
+            title: t.logout,
             onTap: () => FirebaseAuth.instance.signOut(),
           ),
         ],
@@ -2161,7 +2171,7 @@ class _TrendChart extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    tooltip: 'Close',
+                    tooltip: AppLocalizations.of(context).close,
                     onPressed: () => Navigator.pop(dialogContext),
                     icon: const Icon(Icons.close),
                   ),
@@ -2169,7 +2179,7 @@ class _TrendChart extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Selected: ${_money(currentValue)}',
+                '${_selectedLabel(AppLocalizations.of(context))}: ${_money(currentValue)}',
                 style: const TextStyle(
                   color: Colors.black54,
                   fontWeight: FontWeight.w800,
@@ -2502,6 +2512,240 @@ int _countCurrentMonth(List<Invoice> invoices) {
     return date.year == now.year && date.month == now.month;
   }).length;
 }
+
+String _lang(AppLocalizations t) => t.localeName.split('_').first;
+
+String _shortByLang(AppLocalizations t, Map<String, String> values, String en) {
+  return values[_lang(t)] ?? en;
+}
+
+String _freePlanLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Gratis',
+  'pt': 'Grátis',
+  'fr': 'Gratuit',
+  'de': 'Gratis',
+  'ar': 'مجاني',
+  'hi': 'फ्री',
+  'ja': '無料',
+  'ru': 'Бесплатно',
+  'zh': '免费',
+}, 'Free');
+
+String _proPlanLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Pro',
+  'pt': 'Pro',
+  'fr': 'Pro',
+  'de': 'Pro',
+  'ar': 'Pro',
+  'hi': 'Pro',
+  'ja': 'Pro',
+  'ru': 'Pro',
+  'zh': 'Pro',
+}, 'Pro');
+
+String _openLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Abrir',
+  'pt': 'Abrir',
+  'fr': 'Ouvrir',
+  'de': 'Öffnen',
+  'ar': 'فتح',
+  'hi': 'खोलें',
+  'ja': '開く',
+  'ru': 'Открыть',
+  'zh': '打开',
+}, 'Open');
+
+String _businessReminderText(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Completa tu perfil para facturas pro.',
+  'pt': 'Complete seu perfil para faturas pro.',
+  'fr': 'Complétez le profil pour des factures pro.',
+  'de': 'Profil für Pro-Rechnungen ausfüllen.',
+  'ar': 'أكمل ملف العمل لفواتير احترافية.',
+  'hi': 'प्रो इनवॉइस के लिए प्रोफाइल पूरा करें.',
+  'ja': 'プロ請求書用にプロフィールを完成。',
+  'ru': 'Заполните профиль для проф. счетов.',
+  'zh': '完善资料，生成专业发票。',
+}, 'Complete your profile for pro invoices.');
+
+String _deleteAccountLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Borrar cuenta',
+  'pt': 'Excluir conta',
+  'fr': 'Supprimer compte',
+  'de': 'Konto löschen',
+  'ar': 'حذف الحساب',
+  'hi': 'खाता हटाएं',
+  'ja': 'アカウント削除',
+  'ru': 'Удалить аккаунт',
+  'zh': '删除账户',
+}, 'Delete account');
+
+String _notificationsLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Avisos',
+  'pt': 'Avisos',
+  'fr': 'Alertes',
+  'de': 'Hinweise',
+  'ar': 'تنبيهات',
+  'hi': 'अलर्ट',
+  'ja': '通知',
+  'ru': 'Уведомления',
+  'zh': '通知',
+}, 'Alerts');
+
+String _allGoodLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Todo al día',
+  'pt': 'Tudo em dia',
+  'fr': 'Tout est à jour',
+  'de': 'Alles aktuell',
+  'ar': 'كل شيء محدث',
+  'hi': 'सब ठीक है',
+  'ja': 'すべて最新',
+  'ru': 'Все актуально',
+  'zh': '一切正常',
+}, 'All clear');
+
+String _noAlertsLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Sin alertas pendientes.',
+  'pt': 'Sem alertas pendentes.',
+  'fr': 'Aucune alerte.',
+  'de': 'Keine Hinweise.',
+  'ar': 'لا توجد تنبيهات.',
+  'hi': 'कोई अलर्ट नहीं.',
+  'ja': '通知はありません。',
+  'ru': 'Нет уведомлений.',
+  'zh': '没有通知。',
+}, 'No alerts.');
+
+String _openInvoicesLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Abre Facturas.',
+  'pt': 'Abra Faturas.',
+  'fr': 'Ouvrir Factures.',
+  'de': 'Rechnungen öffnen.',
+  'ar': 'افتح الفواتير.',
+  'hi': 'इनवॉइस खोलें.',
+  'ja': '請求書を開く。',
+  'ru': 'Откройте счета.',
+  'zh': '打开发票。',
+}, 'Open invoices.');
+
+String _unpaidLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'sin pagar',
+  'pt': 'não pagas',
+  'fr': 'impayées',
+  'de': 'offen',
+  'ar': 'غير مدفوعة',
+  'hi': 'बकाया',
+  'ja': '未払い',
+  'ru': 'не оплачено',
+  'zh': '未付款',
+}, 'unpaid');
+
+String _reviewBalanceLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Revisa balances.',
+  'pt': 'Revise saldos.',
+  'fr': 'Vérifiez soldes.',
+  'de': 'Salden prüfen.',
+  'ar': 'راجع الأرصدة.',
+  'hi': 'बैलेंस देखें.',
+  'ja': '残高を確認。',
+  'ru': 'Проверьте баланс.',
+  'zh': '查看余额。',
+}, 'Review balances.');
+
+String _limitAlmostFullLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Límite casi lleno',
+  'pt': 'Limite quase cheio',
+  'fr': 'Limite presque pleine',
+  'de': 'Limit fast voll',
+  'ar': 'الحد شبه ممتلئ',
+  'hi': 'सीमा लगभग पूरी',
+  'ja': '上限間近',
+  'ru': 'Лимит почти полон',
+  'zh': '额度快满',
+}, 'Limit almost full');
+
+String _recentInvoicesLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Facturas recientes',
+  'pt': 'Faturas recentes',
+  'fr': 'Factures récentes',
+  'de': 'Neue Rechnungen',
+  'ar': 'فواتير حديثة',
+  'hi': 'हाल की इनवॉइस',
+  'ja': '最近の請求書',
+  'ru': 'Новые счета',
+  'zh': '最近发票',
+}, 'Recent invoices');
+
+String _statusLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Estado',
+  'pt': 'Status',
+  'fr': 'Statut',
+  'de': 'Status',
+  'ar': 'الحالة',
+  'hi': 'स्थिति',
+  'ja': '状態',
+  'ru': 'Статус',
+  'zh': '状态',
+}, 'Status');
+
+String _collectionRateLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Cobro',
+  'pt': 'Cobrança',
+  'fr': 'Paiement',
+  'de': 'Zahlung',
+  'ar': 'التحصيل',
+  'hi': 'कलेक्शन',
+  'ja': '回収率',
+  'ru': 'Оплата',
+  'zh': '收款',
+}, 'Paid rate');
+
+String _recentActivityLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Actividad',
+  'pt': 'Atividade',
+  'fr': 'Activité',
+  'de': 'Aktivität',
+  'ar': 'النشاط',
+  'hi': 'गतिविधि',
+  'ja': '履歴',
+  'ru': 'Активность',
+  'zh': '活动',
+}, 'Activity');
+
+String _noActivityLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Sin actividad.',
+  'pt': 'Sem atividade.',
+  'fr': 'Aucune activité.',
+  'de': 'Keine Aktivität.',
+  'ar': 'لا يوجد نشاط.',
+  'hi': 'कोई गतिविधि नहीं.',
+  'ja': '履歴なし。',
+  'ru': 'Нет активности.',
+  'zh': '没有活动。',
+}, 'No activity.');
+
+String _createdLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'creada',
+  'pt': 'criada',
+  'fr': 'créée',
+  'de': 'erstellt',
+  'ar': 'تم الإنشاء',
+  'hi': 'बनाई',
+  'ja': '作成',
+  'ru': 'создан',
+  'zh': '已创建',
+}, 'created');
+
+String _selectedLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Actual',
+  'pt': 'Atual',
+  'fr': 'Actuel',
+  'de': 'Aktuell',
+  'ar': 'الحالي',
+  'hi': 'वर्तमान',
+  'ja': '現在',
+  'ru': 'Текущий',
+  'zh': '当前',
+}, 'Current');
 
 String _shortDate(int ms) {
   final d = DateTime.fromMillisecondsSinceEpoch(ms);
