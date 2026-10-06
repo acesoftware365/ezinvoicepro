@@ -1212,3 +1212,39 @@ The app should be reviewed in Apple's sandbox environment. If the products do no
 - Versión fuente `1.0.108+133`; etiquetas visibles sincronizadas.
 - En narrow, la cabecera y el resumen completo se convirtieron en el objetivo de apertura de búsqueda para compensar clics desplazados del simulador vertical.
 - Filtros y facturas quedan fuera de esa zona y mantienen sus acciones propias.
+
+
+## 2026-10-05 - Alertas del dashboard
+
+- Versión fuente `1.0.109+134`; etiquetas visibles sincronizadas.
+- El botón de avisos ahora tiene un objetivo táctil de 64 × 56 puntos y en narrow responde al inicio del toque, igual que la búsqueda.
+- La hoja de alertas recibió un encabezado, contador, iconos por prioridad y filas con el mismo lenguaje visual verde de la app.
+
+
+## 2026-10-05 - Cierre de alertas
+
+- Versión fuente `1.0.110+135`; etiquetas visibles sincronizadas.
+- La hoja de avisos tiene una X de cierre en el encabezado.
+- Cualquier toque fuera de la hoja cierra la vista desde el evento inicial del puntero, incluso en narrow.
+
+
+## 2026-10-05 - Encabezado compacto de alertas
+
+- Versión fuente `1.0.111+136`; etiquetas visibles sincronizadas.
+- El encabezado elimina el texto sobredimensionado y presenta el estado en una etiqueta compacta.
+- Los estilos de título y contador quedan definidos de forma explícita para conservar el mismo aspecto en las dos orientaciones.
+
+
+## 2026-10-05 - Alertas que abren facturas filtradas
+
+- Versión fuente `1.0.112+137`; etiquetas visibles sincronizadas.
+- La alerta de no enviadas abre Facturas con `Unsent` activo.
+- La alerta de saldos pendientes abre Facturas con el nuevo filtro `Unpaid`, que reúne todas las facturas aún no pagadas.
+- El filtro seleccionado se aplica de nuevo incluso cuando se toca la misma alerta dos veces.
+
+
+## 2026-10-05 - Atajo de vencidas en alertas
+
+- Versión fuente `1.0.113+138`; etiquetas visibles sincronizadas.
+- Alertas incluye siempre el atajo `Overdue` para que las tres categorías lleven a un filtro real.
+- Si no hay facturas vencidas, se muestra el conteo cero y un mensaje claro; el atajo sigue abriendo el filtro correspondiente.

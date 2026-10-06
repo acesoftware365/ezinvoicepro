@@ -9,8 +9,19 @@ import 'package:share_plus/share_plus.dart';
 
 import 'invoice_form_screen.dart';
 
+enum InvoiceListFilter { all, unsent, unpaid, sent, paid, overdue }
+
 class InvoicesScreen extends StatefulWidget {
-  const InvoicesScreen({super.key});
+  const InvoicesScreen({
+    super.key,
+    this.initialFilter = InvoiceListFilter.all,
+    this.filterRequestId = 0,
+  });
+
+  /// The dashboard uses this value when an alert needs to open a meaningful
+  /// subset of invoices. A changed request id reapplies even the same filter.
+  final InvoiceListFilter initialFilter;
+  final int filterRequestId;
 
   @override
   State<InvoicesScreen> createState() => _InvoicesScreenState();
@@ -27,7 +38,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
   late final Stream<List<Invoice>> _invoicesStream;
   String _query = '';
   bool _searchOpen = false;
-  _InvoiceFilter _filter = _InvoiceFilter.all;
+  InvoiceListFilter _filter = InvoiceListFilter.all;
   bool _deletingInvoice = false;
 
   @override
@@ -36,6 +47,21 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
     // Keep one subscription for the screen. Replacing the stream on every
     // keystroke briefly rebuilt the loader and removed the search field.
     _invoicesStream = InvoicesService.streamInvoices();
+    _filter = widget.initialFilter;
+  }
+
+  @override
+  void didUpdateWidget(covariant InvoicesScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.filterRequestId == widget.filterRequestId) return;
+
+    _search.clear();
+    _searchFocus.unfocus();
+    setState(() {
+      _query = '';
+      _searchOpen = false;
+      _filter = widget.initialFilter;
+    });
   }
 
   @override
@@ -78,11 +104,12 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
 
   bool _matchesFilter(Invoice inv) {
     return switch (_filter) {
-      _InvoiceFilter.all => true,
-      _InvoiceFilter.unsent => !inv.isPaid && !inv.isSent,
-      _InvoiceFilter.sent => inv.isSent && !inv.isPaid && !_isOverdue(inv),
-      _InvoiceFilter.paid => inv.isPaid,
-      _InvoiceFilter.overdue => _isOverdue(inv),
+      InvoiceListFilter.all => true,
+      InvoiceListFilter.unsent => !inv.isPaid && !inv.isSent,
+      InvoiceListFilter.unpaid => !inv.isPaid,
+      InvoiceListFilter.sent => inv.isSent && !inv.isPaid && !_isOverdue(inv),
+      InvoiceListFilter.paid => inv.isPaid,
+      InvoiceListFilter.overdue => _isOverdue(inv),
     };
   }
 
@@ -690,8 +717,6 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
   }
 }
 
-enum _InvoiceFilter { all, unsent, sent, paid, overdue }
-
 class _InvoiceSummaryBar extends StatelessWidget {
   const _InvoiceSummaryBar({
     required this.invoiceCount,
@@ -880,18 +905,19 @@ class _InvoicesEmptyState extends StatelessWidget {
 class _StatusFilterBar extends StatelessWidget {
   const _StatusFilterBar({required this.selected, required this.onChanged});
 
-  final _InvoiceFilter selected;
-  final ValueChanged<_InvoiceFilter> onChanged;
+  final InvoiceListFilter selected;
+  final ValueChanged<InvoiceListFilter> onChanged;
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final items = [
-      (_InvoiceFilter.all, _allLabel(t)),
-      (_InvoiceFilter.unsent, t.unsentLabel),
-      (_InvoiceFilter.sent, t.sentLabel),
-      (_InvoiceFilter.paid, t.paidLabel),
-      (_InvoiceFilter.overdue, t.overdueLabel),
+      (InvoiceListFilter.all, _allLabel(t)),
+      (InvoiceListFilter.unsent, t.unsentLabel),
+      (InvoiceListFilter.unpaid, _unpaidFilterLabel(t)),
+      (InvoiceListFilter.sent, t.sentLabel),
+      (InvoiceListFilter.paid, t.paidLabel),
+      (InvoiceListFilter.overdue, t.overdueLabel),
     ];
 
     return Wrap(
@@ -1427,6 +1453,18 @@ String _allLabel(AppLocalizations t) => _invShort(t, {
   'ru': 'Все',
   'zh': '全部',
 }, 'All');
+
+String _unpaidFilterLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Sin pagar',
+  'pt': 'Em aberto',
+  'fr': 'Impayées',
+  'de': 'Offen',
+  'ar': 'غير مدفوعة',
+  'hi': 'बकाया',
+  'ja': '未払い',
+  'ru': 'Не оплачено',
+  'zh': '未付款',
+}, 'Unpaid');
 
 String _actionsLabel(AppLocalizations t) => _invShort(t, {
   'es': 'Acciones',

@@ -42,6 +42,8 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
   bool _businessReminderScheduled = false;
   bool _businessIncomplete = false;
   List<int> _quickAccess = List<int>.from(QuickAccessService.defaultOrder);
+  InvoiceListFilter _invoiceFilter = InvoiceListFilter.all;
+  int _invoiceFilterRequestId = 0;
 
   @override
   void initState() {
@@ -83,11 +85,12 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
                       children: [
                         _DashboardScreen(
                           onNavigate: _go,
+                          onOpenInvoicesWithFilter: _openInvoicesWithFilter,
                           onActionUsed: _recordUsage,
                           quickAccess: _quickAccess,
                         ),
                         const ClientsScreen(),
-                        const InvoicesScreen(),
+                        _buildInvoicesScreen(),
                         const ReportsScreen(),
                         BusinessProfileScreen(key: _businessProfileKey),
                         const _SettingsHubScreen(),
@@ -119,11 +122,12 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
                           children: [
                             _DashboardScreen(
                               onNavigate: _go,
+                              onOpenInvoicesWithFilter: _openInvoicesWithFilter,
                               onActionUsed: _recordUsage,
                               quickAccess: _quickAccess,
                             ),
                             const ClientsScreen(),
-                            const InvoicesScreen(),
+                            _buildInvoicesScreen(),
                             const ReportsScreen(),
                             BusinessProfileScreen(key: _businessProfileKey),
                           ],
@@ -136,11 +140,12 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
                     children: [
                       _DashboardScreen(
                         onNavigate: _go,
+                        onOpenInvoicesWithFilter: _openInvoicesWithFilter,
                         onActionUsed: _recordUsage,
                         quickAccess: _quickAccess,
                       ),
                       const ClientsScreen(),
-                      const InvoicesScreen(),
+                      _buildInvoicesScreen(),
                       const ReportsScreen(),
                       BusinessProfileScreen(key: _businessProfileKey),
                     ],
@@ -282,6 +287,20 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
     setState(() => _index = index);
     _recordUsage(index);
   }
+
+  void _openInvoicesWithFilter(InvoiceListFilter filter) {
+    setState(() {
+      _invoiceFilter = filter;
+      _invoiceFilterRequestId++;
+      _index = 2;
+    });
+    _recordUsage(2);
+  }
+
+  InvoicesScreen _buildInvoicesScreen() => InvoicesScreen(
+    initialFilter: _invoiceFilter,
+    filterRequestId: _invoiceFilterRequestId,
+  );
 
   bool _isBusinessIncomplete(BusinessProfile profile) {
     final required = [
@@ -771,11 +790,13 @@ class _PlanSummaryCard extends StatelessWidget {
 class _DashboardScreen extends StatefulWidget {
   const _DashboardScreen({
     required this.onNavigate,
+    required this.onOpenInvoicesWithFilter,
     required this.onActionUsed,
     required this.quickAccess,
   });
 
   final ValueChanged<int> onNavigate;
+  final ValueChanged<InvoiceListFilter> onOpenInvoicesWithFilter;
   final ValueChanged<int> onActionUsed;
   final List<int> quickAccess;
 
@@ -870,6 +891,8 @@ class _DashboardScreenState extends State<_DashboardScreen> {
                         selectedMonth: _selectedMonth,
                         alerts: alerts,
                         onNavigate: widget.onNavigate,
+                        onOpenInvoicesWithFilter:
+                            widget.onOpenInvoicesWithFilter,
                         quickAccess: widget.quickAccess,
                         onPickMonth: () => _pickMonth(context),
                       )
@@ -884,6 +907,8 @@ class _DashboardScreenState extends State<_DashboardScreen> {
                         selectedMonth: _selectedMonth,
                         alerts: alerts,
                         onNavigate: widget.onNavigate,
+                        onOpenInvoicesWithFilter:
+                            widget.onOpenInvoicesWithFilter,
                         quickAccess: widget.quickAccess,
                         onPickMonth: () => _pickMonth(context),
                       );
@@ -1034,7 +1059,9 @@ class _DashboardAlerts {
     required this.nearFreeLimit,
   });
 
-  int get count => overdue + unsent + unpaid + (nearFreeLimit ? 1 : 0);
+  // Overdue and unsent invoices are already part of the unpaid total. Count
+  // each invoice once so the badge and sheet do not exaggerate the workload.
+  int get count => unpaid + (nearFreeLimit ? 1 : 0);
 
   factory _DashboardAlerts.from({
     required List<Invoice> invoices,
@@ -1078,6 +1105,7 @@ class _TabletDashboard extends StatelessWidget {
     required this.selectedMonth,
     required this.alerts,
     required this.onNavigate,
+    required this.onOpenInvoicesWithFilter,
     required this.quickAccess,
     required this.onPickMonth,
   });
@@ -1094,6 +1122,7 @@ class _TabletDashboard extends StatelessWidget {
   final DateTime selectedMonth;
   final _DashboardAlerts alerts;
   final ValueChanged<int> onNavigate;
+  final ValueChanged<InvoiceListFilter> onOpenInvoicesWithFilter;
   final List<int> quickAccess;
   final VoidCallback onPickMonth;
 
@@ -1116,6 +1145,7 @@ class _TabletDashboard extends StatelessWidget {
               alerts: alerts,
               onPickMonth: onPickMonth,
               onNavigate: onNavigate,
+              onOpenInvoicesWithFilter: onOpenInvoicesWithFilter,
             ),
             const SizedBox(height: 22),
             Expanded(
@@ -1236,6 +1266,7 @@ class _MobileDashboard extends StatelessWidget {
     required this.selectedMonth,
     required this.alerts,
     required this.onNavigate,
+    required this.onOpenInvoicesWithFilter,
     required this.quickAccess,
     required this.onPickMonth,
   });
@@ -1250,6 +1281,7 @@ class _MobileDashboard extends StatelessWidget {
   final DateTime selectedMonth;
   final _DashboardAlerts alerts;
   final ValueChanged<int> onNavigate;
+  final ValueChanged<InvoiceListFilter> onOpenInvoicesWithFilter;
   final List<int> quickAccess;
   final VoidCallback onPickMonth;
 
@@ -1267,6 +1299,7 @@ class _MobileDashboard extends StatelessWidget {
             alerts: alerts,
             onPickMonth: onPickMonth,
             onNavigate: onNavigate,
+            onOpenInvoicesWithFilter: onOpenInvoicesWithFilter,
           ),
           DashboardGrid(
             children: [
@@ -1409,6 +1442,7 @@ class _DashboardHeader extends StatelessWidget {
     required this.alerts,
     required this.onPickMonth,
     required this.onNavigate,
+    required this.onOpenInvoicesWithFilter,
   });
 
   static const _brandGreen = Color(0xFF1F7A64);
@@ -1419,6 +1453,7 @@ class _DashboardHeader extends StatelessWidget {
   final _DashboardAlerts alerts;
   final VoidCallback onPickMonth;
   final ValueChanged<int> onNavigate;
+  final ValueChanged<InvoiceListFilter> onOpenInvoicesWithFilter;
 
   @override
   Widget build(BuildContext context) {
@@ -1468,30 +1503,21 @@ class _DashboardHeader extends StatelessWidget {
             ],
           ),
         ),
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            IconButton(
-              tooltip: _notificationsLabel(t),
-              onPressed: () => _showAlerts(context, alerts, onNavigate),
-              icon: const Icon(Icons.notifications_none),
+        LayoutBuilder(
+          builder: (context, _) => _AlertsButton(
+            count: alerts.count,
+            label: _notificationsLabel(t),
+            // Device Hub can translate a short portrait click into a tiny
+            // drag. Respond at pointer-down in that layout, just as search
+            // does, while retaining the regular accessible action elsewhere.
+            useRawPointer: MediaQuery.sizeOf(context).width < 560,
+            onPressed: () => _showAlerts(
+              context,
+              alerts,
+              onNavigate,
+              onOpenInvoicesWithFilter,
             ),
-            if (alerts.count > 0)
-              Positioned(
-                top: 8,
-                right: 8,
-                child: IgnorePointer(
-                  child: Container(
-                    width: 9,
-                    height: 9,
-                    decoration: BoxDecoration(
-                      color: Colors.orange.shade700,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-              ),
-          ],
+          ),
         ),
         PopupMenuButton<String>(
           onSelected: (value) {
@@ -1564,75 +1590,421 @@ class _DashboardHeader extends StatelessWidget {
     BuildContext context,
     _DashboardAlerts alerts,
     ValueChanged<int> onNavigate,
+    ValueChanged<InvoiceListFilter> onOpenInvoicesWithFilter,
   ) {
     final t = AppLocalizations.of(context);
-    showModalBottomSheet<void>(
+    showGeneralDialog<void>(
       context: context,
-      showDragHandle: true,
-      builder: (sheetContext) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              _notificationsLabel(t),
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(height: 12),
-            if (alerts.count == 0)
-              _AlertRow(
-                icon: Icons.check_circle_outline,
-                title: _allGoodLabel(t),
-                subtitle: _noAlertsLabel(t),
-              )
-            else ...[
-              if (alerts.overdue > 0)
+      barrierDismissible: false,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: Colors.black.withValues(alpha: 0.54),
+      transitionDuration: const Duration(milliseconds: 220),
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        final curve = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+          reverseCurve: Curves.easeInCubic,
+        );
+        return FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 0.08),
+              end: Offset.zero,
+            ).animate(curve),
+            child: child,
+          ),
+        );
+      },
+      pageBuilder: (sheetContext, _, __) => _DismissibleAlertsOverlay(
+        onDismiss: () => Navigator.of(sheetContext).pop(),
+        child: _AlertsSheet(
+          title: _notificationsLabel(t),
+          count: alerts.count,
+          onClose: () => Navigator.of(sheetContext).pop(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (alerts.count == 0)
+                _AlertRow(
+                  icon: Icons.check_circle_outline_rounded,
+                  title: _allGoodLabel(t),
+                  subtitle: _noAlertsLabel(t),
+                  tone: _brandGreen,
+                )
+              else ...[
                 _AlertRow(
                   icon: Icons.warning_amber_rounded,
                   title: '${alerts.overdue} ${t.overdueLabel}',
-                  subtitle: _openInvoicesLabel(t),
+                  subtitle: alerts.overdue == 0
+                      ? _noOverdueLabel(t)
+                      : _openInvoicesLabel(t),
+                  tone: alerts.overdue == 0
+                      ? const Color(0xFF75817D)
+                      : const Color(0xFFE77916),
                   onTap: () {
                     Navigator.pop(sheetContext);
-                    onNavigate(2);
+                    onOpenInvoicesWithFilter(InvoiceListFilter.overdue);
                   },
                 ),
-              if (alerts.unsent > 0)
-                _AlertRow(
-                  icon: Icons.outgoing_mail,
-                  title: '${alerts.unsent} ${t.unsentLabel}',
-                  subtitle: _openInvoicesLabel(t),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    onNavigate(2);
-                  },
-                ),
-              if (alerts.unpaid > 0)
-                _AlertRow(
-                  icon: Icons.payments_outlined,
-                  title: '${alerts.unpaid} ${_unpaidLabel(t)}',
-                  subtitle: _reviewBalanceLabel(t),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    onNavigate(2);
-                  },
-                ),
-              if (alerts.nearFreeLimit)
-                _AlertRow(
-                  icon: Icons.workspace_premium_outlined,
-                  title: _limitAlmostFullLabel(t),
-                  subtitle: t.upgradeToPro,
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const PaywallScreen()),
-                    );
-                  },
-                ),
+                if (alerts.unsent > 0)
+                  _AlertRow(
+                    icon: Icons.outgoing_mail,
+                    title: '${alerts.unsent} ${t.unsentLabel}',
+                    subtitle: _openInvoicesLabel(t),
+                    tone: _brandGreen,
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      onOpenInvoicesWithFilter(InvoiceListFilter.unsent);
+                    },
+                  ),
+                if (alerts.unpaid > 0)
+                  _AlertRow(
+                    icon: Icons.payments_outlined,
+                    title: '${alerts.unpaid} ${_unpaidLabel(t)}',
+                    subtitle: _reviewBalanceLabel(t),
+                    tone: const Color(0xFF3971B8),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      onOpenInvoicesWithFilter(InvoiceListFilter.unpaid);
+                    },
+                  ),
+                if (alerts.nearFreeLimit)
+                  _AlertRow(
+                    icon: Icons.workspace_premium_outlined,
+                    title: _limitAlmostFullLabel(t),
+                    subtitle: t.upgradeToPro,
+                    tone: const Color(0xFF7D59A5),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const PaywallScreen(),
+                        ),
+                      );
+                    },
+                  ),
+              ],
             ],
-          ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class _AlertsButton extends StatelessWidget {
+  const _AlertsButton({
+    required this.count,
+    required this.label,
+    required this.useRawPointer,
+    required this.onPressed,
+  });
+
+  final int count;
+  final String label;
+  final bool useRawPointer;
+  final VoidCallback onPressed;
+
+  static const _brandGreen = Color(0xFF1F7A64);
+
+  @override
+  Widget build(BuildContext context) {
+    final button = Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: count > 0
+                ? _brandGreen.withValues(alpha: 0.11)
+                : const Color(0xFFF0F5F3),
+            shape: BoxShape.circle,
+          ),
+          alignment: Alignment.center,
+          child: Icon(
+            count > 0
+                ? Icons.notifications_active_rounded
+                : Icons.notifications_none_rounded,
+            size: 23,
+            color: _brandGreen,
+          ),
+        ),
+        if (count > 0)
+          Positioned(
+            top: 4,
+            right: 3,
+            child: IgnorePointer(
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE77916),
+                  border: Border.all(color: Colors.white, width: 2),
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  count > 9 ? '9+' : '$count',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    height: 1,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+
+    if (!useRawPointer) {
+      return IconButton(
+        tooltip: label,
+        onPressed: onPressed,
+        style: IconButton.styleFrom(
+          minimumSize: const Size(56, 56),
+          padding: EdgeInsets.zero,
+        ),
+        icon: button,
+      );
+    }
+
+    return Semantics(
+      button: true,
+      label: label,
+      onTap: onPressed,
+      child: Listener(
+        behavior: HitTestBehavior.opaque,
+        onPointerDown: (_) => onPressed(),
+        child: SizedBox(width: 64, height: 56, child: Center(child: button)),
+      ),
+    );
+  }
+}
+
+class _AlertsSheet extends StatelessWidget {
+  const _AlertsSheet({
+    required this.title,
+    required this.count,
+    required this.onClose,
+    required this.child,
+  });
+
+  final String title;
+  final int count;
+  final VoidCallback onClose;
+  final Widget child;
+
+  static const _brandGreen = Color(0xFF1F7A64);
+
+  @override
+  Widget build(BuildContext context) {
+    final isClear = count == 0;
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: 540,
+        maxHeight: MediaQuery.sizeOf(context).height * 0.76,
+      ),
+      child: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Container(
+                    width: 38,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF658079),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: (isClear ? _brandGreen : const Color(0xFFE77916))
+                            .withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(13),
+                      ),
+                      child: Icon(
+                        isClear
+                            ? Icons.notifications_none_rounded
+                            : Icons.notifications_active_rounded,
+                        size: 21,
+                        color: isClear ? _brandGreen : const Color(0xFFE77916),
+                      ),
+                    ),
+                    const SizedBox(width: 11),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            textScaler: TextScaler.noScaling,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Color(0xFF1D2927),
+                              backgroundColor: Colors.transparent,
+                              decoration: TextDecoration.none,
+                              fontSize: 18,
+                              height: 1.15,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color:
+                                  (isClear
+                                          ? _brandGreen
+                                          : const Color(0xFFE77916))
+                                      .withValues(alpha: 0.10),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Text(
+                              isClear ? 'All caught up' : '$count to review',
+                              textScaler: TextScaler.noScaling,
+                              maxLines: 1,
+                              style: TextStyle(
+                                color: isClear
+                                    ? _brandGreen
+                                    : const Color(0xFFC65F08),
+                                backgroundColor: Colors.transparent,
+                                decoration: TextDecoration.none,
+                                fontSize: 11,
+                                height: 1,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    _AlertsCloseButton(onPressed: onClose),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                child,
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DismissibleAlertsOverlay extends StatefulWidget {
+  const _DismissibleAlertsOverlay({
+    required this.onDismiss,
+    required this.child,
+  });
+
+  final VoidCallback onDismiss;
+  final Widget child;
+
+  @override
+  State<_DismissibleAlertsOverlay> createState() =>
+      _DismissibleAlertsOverlayState();
+}
+
+class _DismissibleAlertsOverlayState extends State<_DismissibleAlertsOverlay> {
+  final _sheetKey = GlobalKey();
+
+  void _dismissOutsideSheet(PointerDownEvent event) {
+    final renderObject = _sheetKey.currentContext?.findRenderObject();
+    if (renderObject is! RenderBox) return;
+
+    final tapPosition = renderObject.globalToLocal(event.position);
+    if (!(Offset.zero & renderObject.size).contains(tapPosition)) {
+      widget.onDismiss();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      behavior: HitTestBehavior.translucent,
+      onPointerDown: _dismissOutsideSheet,
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: KeyedSubtree(key: _sheetKey, child: widget.child),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AlertsCloseButton extends StatelessWidget {
+  const _AlertsCloseButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final icon = Container(
+      width: 42,
+      height: 42,
+      decoration: const BoxDecoration(
+        color: Color(0xFFF0F5F3),
+        shape: BoxShape.circle,
+      ),
+      alignment: Alignment.center,
+      child: const Icon(
+        Icons.close_rounded,
+        color: Color(0xFF245F52),
+        size: 21,
+      ),
+    );
+    final narrow = MediaQuery.sizeOf(context).width < 560;
+    if (!narrow) {
+      return IconButton(
+        tooltip: AppLocalizations.of(context).close,
+        onPressed: onPressed,
+        padding: EdgeInsets.zero,
+        constraints: const BoxConstraints.tightFor(width: 48, height: 48),
+        icon: icon,
+      );
+    }
+
+    return Semantics(
+      button: true,
+      label: AppLocalizations.of(context).close,
+      onTap: onPressed,
+      child: Listener(
+        behavior: HitTestBehavior.opaque,
+        onPointerDown: (_) => onPressed(),
+        child: SizedBox(width: 48, height: 48, child: Center(child: icon)),
       ),
     );
   }
@@ -1643,45 +2015,71 @@ class _AlertRow extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
+    required this.tone,
     this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
+  final Color tone;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: _SoftCard(
-        onTap: onTap,
-        child: Row(
-          children: [
-            Icon(icon, color: const Color(0xFF1F7A64)),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(fontWeight: FontWeight.w900),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
+      child: Material(
+        color: const Color(0xFFF9FBFA),
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(18),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 74),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: const Color(0xFFE3ECE8)),
             ),
-            if (onTap != null) const Icon(Icons.chevron_right),
-          ],
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: tone.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  child: Icon(icon, color: tone, size: 21),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(fontWeight: FontWeight.w900),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          color: Color(0xFF68726F),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (onTap != null)
+                  Icon(Icons.arrow_forward_ios_rounded, color: tone, size: 16),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -3184,6 +3582,18 @@ String _openInvoicesLabel(AppLocalizations t) => _shortByLang(t, {
   'ru': 'Откройте счета.',
   'zh': '打开发票。',
 }, 'Open invoices.');
+
+String _noOverdueLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'No hay facturas vencidas.',
+  'pt': 'Sem faturas vencidas.',
+  'fr': 'Aucune facture en retard.',
+  'de': 'Keine überfälligen Rechnungen.',
+  'ar': 'لا توجد فواتير متأخرة.',
+  'hi': 'कोई अतिदेय इनवॉइस नहीं।',
+  'ja': '期限超過の請求書はありません。',
+  'ru': 'Нет просроченных счетов.',
+  'zh': '没有逾期发票。',
+}, 'No overdue invoices.');
 
 String _unpaidLabel(AppLocalizations t) => _shortByLang(t, {
   'es': 'sin pagar',
