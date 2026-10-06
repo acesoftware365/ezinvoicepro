@@ -805,5 +805,8 @@
   "proFeatureExportCsvDescription": "अपने इनवॉइस CSV में निर्यात करें।",
   "proFeaturePremiumTemplatesDescription": "प्रीमियम इनवॉइस टेम्पलेट अनलॉक करें।",
   "proFeatureDetailedTaxReportDescription": "विस्तृत कर विवरण रिपोर्ट देखें।",
-  "pdfShareText": "EzInvoice से इनवॉइस PDF"
+  "pdfShareText": "EzInvoice से इनवॉइस PDF",
+  "rewardedExportTitle": "इस रिपोर्ट को निर्यात करें",
+  "watchAd": "विज्ञापन देखें",
+  "rewardedAdCouldNotComplete": "विज्ञापन पूरा नहीं हो सका। कृपया कुछ देर बाद फिर प्रयास करें।"
 }

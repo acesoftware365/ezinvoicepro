@@ -3113,6 +3113,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invoice PDF from EzInvoice'**
   String get pdfShareText;
+
+  /// No description provided for @rewardedExportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export this report'**
+  String get rewardedExportTitle;
+
+  /// No description provided for @watchAd.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch ad'**
+  String get watchAd;
+
+  /// No description provided for @rewardedAdCouldNotComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'The ad could not be completed. Please try again in a moment.'**
+  String get rewardedAdCouldNotComplete;
 }
 
 class _AppLocalizationsDelegate

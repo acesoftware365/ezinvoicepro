@@ -1639,4 +1639,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get pdfShareText => 'EzInvoice の請求書 PDF';
+
+  @override
+  String get rewardedExportTitle => 'このレポートを書き出す';
+
+  @override
+  String get watchAd => '広告を見る';
+
+  @override
+  String get rewardedAdCouldNotComplete => '広告を完了できませんでした。しばらくしてからもう一度お試しください。';
 }

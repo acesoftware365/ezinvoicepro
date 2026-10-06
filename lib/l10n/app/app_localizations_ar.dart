@@ -1662,4 +1662,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pdfShareText => 'ملف PDF للفاتورة من EzInvoice';
+
+  @override
+  String get rewardedExportTitle => 'تصدير هذا التقرير';
+
+  @override
+  String get watchAd => 'مشاهدة إعلان';
+
+  @override
+  String get rewardedAdCouldNotComplete =>
+      'تعذر إكمال الإعلان. حاول مرة أخرى بعد قليل.';
 }

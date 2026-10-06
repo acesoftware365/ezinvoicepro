@@ -1673,4 +1673,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pdfShareText => 'PDF-счет от EzInvoice';
+
+  @override
+  String get rewardedExportTitle => 'Экспортировать этот отчёт';
+
+  @override
+  String get watchAd => 'Посмотреть рекламу';
+
+  @override
+  String get rewardedAdCouldNotComplete =>
+      'Не удалось завершить просмотр рекламы. Повторите попытку через некоторое время.';
 }

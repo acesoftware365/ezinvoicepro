@@ -1631,4 +1631,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pdfShareText => '来自 EzInvoice 的发票 PDF';
+
+  @override
+  String get rewardedExportTitle => '导出此报告';
+
+  @override
+  String get watchAd => '观看广告';
+
+  @override
+  String get rewardedAdCouldNotComplete => '无法完成广告。请稍后重试。';
 }

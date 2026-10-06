@@ -1667,4 +1667,14 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get pdfShareText => 'EzInvoice से इनवॉइस PDF';
+
+  @override
+  String get rewardedExportTitle => 'इस रिपोर्ट को निर्यात करें';
+
+  @override
+  String get watchAd => 'विज्ञापन देखें';
+
+  @override
+  String get rewardedAdCouldNotComplete =>
+      'विज्ञापन पूरा नहीं हो सका। कृपया कुछ देर बाद फिर प्रयास करें।';
 }

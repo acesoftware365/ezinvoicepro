@@ -805,5 +805,8 @@
   "proFeatureExportCsvDescription": "Экспортируйте счета в CSV.",
   "proFeaturePremiumTemplatesDescription": "Откройте премиум-шаблоны счетов.",
   "proFeatureDetailedTaxReportDescription": "Просматривайте подробные налоговые отчеты.",
-  "pdfShareText": "PDF-счет от EzInvoice"
+  "pdfShareText": "PDF-счет от EzInvoice",
+  "rewardedExportTitle": "Экспортировать этот отчёт",
+  "watchAd": "Посмотреть рекламу",
+  "rewardedAdCouldNotComplete": "Не удалось завершить просмотр рекламы. Повторите попытку через некоторое время."
 }

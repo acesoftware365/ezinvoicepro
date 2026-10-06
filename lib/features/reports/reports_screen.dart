@@ -1,5 +1,8 @@
 // lib/features/reports/reports_screen.dart
 
+import 'dart:async';
+
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
 import 'package:intl/intl.dart';
@@ -15,6 +18,8 @@ import 'package:ezinvoice/features/reports/reports_service.dart';
 import 'package:ezinvoice/features/reports/reports_export_service.dart';
 
 import '../paywall/paywall_screen.dart';
+
+enum _RewardedExportChoice { watchAd, upgrade }
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
@@ -1398,19 +1403,83 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  void _trackRewardedExport(String outcome) {
+    unawaited(
+      FirebaseAnalytics.instance.logEvent(
+        name: 'rewarded_report_export',
+        parameters: {'outcome': outcome},
+      ),
+    );
+  }
+
+  Future<_RewardedExportChoice?> _showRewardedExportOffer(AppLocalizations t) {
+    return showDialog<_RewardedExportChoice>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        icon: const Icon(
+          Icons.play_circle_outline_rounded,
+          color: _brandGreen,
+          size: 34,
+        ),
+        title: Text(t.rewardedExportTitle),
+        content: Text(t.watchAdToExportReport),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(t.notNow),
+          ),
+          OutlinedButton(
+            onPressed: () =>
+                Navigator.of(dialogContext).pop(_RewardedExportChoice.upgrade),
+            child: Text(t.upgradeToPro),
+          ),
+          FilledButton.icon(
+            onPressed: () =>
+                Navigator.of(dialogContext).pop(_RewardedExportChoice.watchAd),
+            icon: const Icon(Icons.ondemand_video_outlined),
+            label: Text(t.watchAd),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<bool> _ensureProOrRewardedReportExport() async {
     if (SubscriptionManager.instance.state.value.isPro) return true;
 
+    final t = AppLocalizations.of(context);
+    _trackRewardedExport('offer_shown');
+    final choice = await _showRewardedExportOffer(t);
+    if (!mounted) return false;
+
+    if (choice == _RewardedExportChoice.upgrade) {
+      _trackRewardedExport('upgrade_selected');
+      await Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
+      return false;
+    }
+
+    if (choice != _RewardedExportChoice.watchAd) {
+      _trackRewardedExport('offer_dismissed');
+      return false;
+    }
+
+    _trackRewardedExport('watch_selected');
     await AdsManager.instance.init();
     AdsManager.instance.loadRewarded();
     var rewarded = false;
-    final shown = await AdsManager.instance.showRewarded(
+    final completed = await AdsManager.instance.showRewarded(
       rewardType: RewardType.exportReportOnce,
       onReward: () => rewarded = true,
     );
-    if (shown && rewarded) return true;
+    if (completed && rewarded) {
+      _trackRewardedExport('completed');
+      return true;
+    }
 
-    _snack(AppLocalizations.of(context).watchAdToExportReport);
+    _trackRewardedExport('not_completed');
+    _snack(t.rewardedAdCouldNotComplete);
     return false;
   }
 

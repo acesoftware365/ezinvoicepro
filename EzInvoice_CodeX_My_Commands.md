@@ -1255,3 +1255,11 @@ The app should be reviewed in Apple's sandbox environment. If the products do no
 - Los diez idiomas compatibles (árabe, alemán, inglés, español, francés, hindi, japonés, portugués, ruso y chino) ahora cubren la experiencia completa, incluidos acceso, clientes, facturas, pagos, ajustes, planes y ayuda.
 - Reportes, exportaciones PDF/CSV/texto, estilos, mensajes Pro y documentos de privacidad/términos usan el idioma elegido.
 - Se añadió una prueba que comprueba que cada catálogo contiene todas las claves y que el contenido legal existe para cada idioma.
+
+## 2026-10-06 - Exportación con anuncio recompensado opcional
+
+- Versión fuente 1.0.115+140; etiquetas visibles sincronizadas.
+- Las exportaciones de reportes para el plan Free muestran una elección clara antes de cualquier anuncio: ver un anuncio para una exportación, actualizar a Pro o cancelar.
+- La exportación sólo continúa cuando la plataforma confirma la recompensa; se registran las decisiones y resultados anónimos del flujo para medir conversión.
+- La configuración Android ya no fija una ruta de Java de Windows; usa el JDK disponible en el equipo de compilación.
+- Se conserva el banner para usuarios Free y no se añaden interstitials durante la creación de facturas.

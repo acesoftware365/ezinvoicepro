@@ -805,5 +805,8 @@
   "proFeatureExportCsvDescription": "Export your invoices to CSV.",
   "proFeaturePremiumTemplatesDescription": "Unlock premium invoice templates.",
   "proFeatureDetailedTaxReportDescription": "See detailed tax breakdown reports.",
-  "pdfShareText": "Invoice PDF from EzInvoice"
+  "pdfShareText": "Invoice PDF from EzInvoice",
+  "rewardedExportTitle": "Export this report",
+  "watchAd": "Watch ad",
+  "rewardedAdCouldNotComplete": "The ad could not be completed. Please try again in a moment."
 }

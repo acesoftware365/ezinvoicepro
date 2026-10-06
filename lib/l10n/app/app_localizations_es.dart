@@ -1681,4 +1681,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get pdfShareText => 'PDF de factura de EzInvoice';
+
+  @override
+  String get rewardedExportTitle => 'Exportar este reporte';
+
+  @override
+  String get watchAd => 'Ver anuncio';
+
+  @override
+  String get rewardedAdCouldNotComplete =>
+      'No se pudo completar el anuncio. Inténtalo de nuevo en un momento.';
 }

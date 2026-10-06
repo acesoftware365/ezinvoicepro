@@ -805,5 +805,8 @@
   "proFeatureExportCsvDescription": "Exportieren Sie Ihre Rechnungen als CSV.",
   "proFeaturePremiumTemplatesDescription": "Schalten Sie Premium-Rechnungsvorlagen frei.",
   "proFeatureDetailedTaxReportDescription": "Sehen Sie detaillierte Steueraufschlüsselungen.",
-  "pdfShareText": "Rechnungs-PDF von EzInvoice"
+  "pdfShareText": "Rechnungs-PDF von EzInvoice",
+  "rewardedExportTitle": "Diesen Bericht exportieren",
+  "watchAd": "Anzeige ansehen",
+  "rewardedAdCouldNotComplete": "Die Anzeige konnte nicht abgeschlossen werden. Bitte versuchen Sie es gleich noch einmal."
 }

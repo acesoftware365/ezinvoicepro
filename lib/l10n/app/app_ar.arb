@@ -805,5 +805,8 @@
   "proFeatureExportCsvDescription": "صدّر فواتيرك إلى CSV.",
   "proFeaturePremiumTemplatesDescription": "افتح قوالب الفواتير المميزة.",
   "proFeatureDetailedTaxReportDescription": "اعرض تقارير تفصيلية للضرائب.",
-  "pdfShareText": "ملف PDF للفاتورة من EzInvoice"
+  "pdfShareText": "ملف PDF للفاتورة من EzInvoice",
+  "rewardedExportTitle": "تصدير هذا التقرير",
+  "watchAd": "مشاهدة إعلان",
+  "rewardedAdCouldNotComplete": "تعذر إكمال الإعلان. حاول مرة أخرى بعد قليل."
 }

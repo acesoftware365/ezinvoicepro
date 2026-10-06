@@ -805,5 +805,8 @@
   "proFeatureExportCsvDescription": "Exportez vos factures en CSV.",
   "proFeaturePremiumTemplatesDescription": "Débloquez des modèles de facture premium.",
   "proFeatureDetailedTaxReportDescription": "Consultez des rapports détaillés de taxes.",
-  "pdfShareText": "PDF de facture d’EzInvoice"
+  "pdfShareText": "PDF de facture d’EzInvoice",
+  "rewardedExportTitle": "Exporter ce rapport",
+  "watchAd": "Voir l’annonce",
+  "rewardedAdCouldNotComplete": "L’annonce n’a pas pu être terminée. Réessayez dans un instant."
 }

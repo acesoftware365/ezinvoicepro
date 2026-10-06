@@ -805,5 +805,8 @@
   "proFeatureExportCsvDescription": "将您的发票导出为 CSV。",
   "proFeaturePremiumTemplatesDescription": "解锁高级发票模板。",
   "proFeatureDetailedTaxReportDescription": "查看详细税务明细报告。",
-  "pdfShareText": "来自 EzInvoice 的发票 PDF"
+  "pdfShareText": "来自 EzInvoice 的发票 PDF",
+  "rewardedExportTitle": "导出此报告",
+  "watchAd": "观看广告",
+  "rewardedAdCouldNotComplete": "无法完成广告。请稍后重试。"
 }

@@ -805,5 +805,8 @@
   "proFeatureExportCsvDescription": "請求書を CSV にエクスポートします。",
   "proFeaturePremiumTemplatesDescription": "プレミアム請求書テンプレートを解除します。",
   "proFeatureDetailedTaxReportDescription": "詳細な税の内訳レポートを表示します。",
-  "pdfShareText": "EzInvoice の請求書 PDF"
+  "pdfShareText": "EzInvoice の請求書 PDF",
+  "rewardedExportTitle": "このレポートを書き出す",
+  "watchAd": "広告を見る",
+  "rewardedAdCouldNotComplete": "広告を完了できませんでした。しばらくしてからもう一度お試しください。"
 }
