@@ -329,7 +329,7 @@
   "sentLabel": "सेंट",
   "paidLabel": "पेड",
   "overdueLabel": "ओवरड्यू",
-  "reportCalculatedHint": "Firestore में आपके इनवॉइस से गणना की गई।",
+  "reportCalculatedHint": "आपके इनवॉइस से गणना की गई।",
   "exportPdfComingSoon": "PDF एक्सपोर्ट (जल्द)",
   "exportCsvComingSoon": "CSV एक्सपोर्ट (जल्द)",
   "unsentLabel": "अनसेंट",
@@ -337,7 +337,8 @@
   "deleteAccountWarning": "この操作を行うと、アカウントおよび関連するすべてのデータが完全に削除されます。",
   "deleteAccountButton": "アカウントを削除",
   "deleteAccountConfirmTitle": "削除の確認",
-  "deleteAccountConfirmMessage": "本当に削除しますか？この操作は元に戻せません。",
+  "deleteAccountConfirmMessage": "本当に削除しますか？この操作は元に戻せません。"
+,
   "servicePresetsTitle": "Service presets",
   "servicePresetsScreenTitle": "Service Presets",
   "servicePresetsAddNew": "Add new preset",
@@ -367,5 +368,14 @@
       "style": {},
       "palette": {}
     }
-  }
+  },
+  "profileSaved": "अपने आप सहेजा गया",
+  "profileSaveError": "सहेजा नहीं जा सका। आपके बदलाव अभी यहाँ मौजूद हैं।",
+  "profileRetry": "फिर कोशिश करें",
+  "profileAutosaveHint": "बदलाव अपने आप सहेजे जाते हैं और बंद करने पर बने रहते हैं।",
+  "profileLogo": "व्यवसाय का लोगो",
+  "profileDefaults": "इनवॉइस के डिफ़ॉल्ट",
+  "profileTaxInvalid": "कर दर जाँचें (0–100%)।",
+  "metricLoadError": "रिपोर्ट लोड नहीं हो सकी। फिर कोशिश करें।",
+  "totalInvoicedTitle": "कुल बिल राशि"
 }

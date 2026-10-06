@@ -730,7 +730,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get overdueLabel => 'ओवरड्यू';
 
   @override
-  String get reportCalculatedHint => 'Firestore में आपके इनवॉइस से गणना की गई।';
+  String get reportCalculatedHint => 'आपके इनवॉइस से गणना की गई।';
 
   @override
   String get exportPdfComingSoon => 'PDF एक्सपोर्ट (जल्द)';
@@ -829,4 +829,33 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get deleteAccountConfirmMessage => '本当に削除しますか？この操作は元に戻せません。';
+
+  @override
+  String get profileSaved => 'अपने आप सहेजा गया';
+
+  @override
+  String get profileSaveError =>
+      'सहेजा नहीं जा सका। आपके बदलाव अभी यहाँ मौजूद हैं।';
+
+  @override
+  String get profileRetry => 'फिर कोशिश करें';
+
+  @override
+  String get profileAutosaveHint =>
+      'बदलाव अपने आप सहेजे जाते हैं और बंद करने पर बने रहते हैं।';
+
+  @override
+  String get profileLogo => 'व्यवसाय का लोगो';
+
+  @override
+  String get profileDefaults => 'इनवॉइस के डिफ़ॉल्ट';
+
+  @override
+  String get profileTaxInvalid => 'कर दर जाँचें (0–100%)।';
+
+  @override
+  String get metricLoadError => 'रिपोर्ट लोड नहीं हो सकी। फिर कोशिश करें।';
+
+  @override
+  String get totalInvoicedTitle => 'कुल बिल राशि';
 }

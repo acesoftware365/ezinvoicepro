@@ -733,8 +733,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get overdueLabel => 'Просрочено';
 
   @override
-  String get reportCalculatedHint =>
-      'Рассчитано на основе ваших счетов в Firestore.';
+  String get reportCalculatedHint => 'Рассчитано на основе ваших счетов.';
 
   @override
   String get exportPdfComingSoon => 'Экспорт PDF (скоро)';
@@ -835,4 +834,34 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get deleteAccountConfirmMessage =>
       'Вы уверены? Это действие нельзя отменить.';
+
+  @override
+  String get profileSaved => 'Сохранено автоматически';
+
+  @override
+  String get profileSaveError =>
+      'Не удалось сохранить. Изменения остаются здесь.';
+
+  @override
+  String get profileRetry => 'Повторить';
+
+  @override
+  String get profileAutosaveHint =>
+      'Изменения сохраняются автоматически, в том числе при закрытии.';
+
+  @override
+  String get profileLogo => 'Логотип компании';
+
+  @override
+  String get profileDefaults => 'Настройки счёта';
+
+  @override
+  String get profileTaxInvalid => 'Проверьте налог (0–100 %).';
+
+  @override
+  String get metricLoadError =>
+      'Не удалось загрузить отчёт. Повторите попытку.';
+
+  @override
+  String get totalInvoicedTitle => 'Всего выставлено';
 }

@@ -736,8 +736,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get overdueLabel => 'Überfällig';
 
   @override
-  String get reportCalculatedHint =>
-      'Aus deinen Rechnungen in Firestore berechnet.';
+  String get reportCalculatedHint => 'Aus deinen Rechnungen berechnet.';
 
   @override
   String get exportPdfComingSoon => 'PDF exportieren (kommt bald)';
@@ -838,4 +837,34 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get deleteAccountConfirmMessage =>
       'Sind Sie sicher? Diese Aktion kann nicht rückgängig gemacht werden.';
+
+  @override
+  String get profileSaved => 'Automatisch gespeichert';
+
+  @override
+  String get profileSaveError =>
+      'Speichern fehlgeschlagen. Ihre Änderungen sind noch hier.';
+
+  @override
+  String get profileRetry => 'Erneut versuchen';
+
+  @override
+  String get profileAutosaveHint =>
+      'Änderungen werden automatisch gespeichert und beim Schließen beibehalten.';
+
+  @override
+  String get profileLogo => 'Firmenlogo';
+
+  @override
+  String get profileDefaults => 'Rechnungsvorgaben';
+
+  @override
+  String get profileTaxInvalid => 'Steuersatz prüfen (0–100 %).';
+
+  @override
+  String get metricLoadError =>
+      'Bericht konnte nicht geladen werden. Bitte erneut versuchen.';
+
+  @override
+  String get totalInvoicedTitle => 'Rechnungsbetrag gesamt';
 }

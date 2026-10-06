@@ -726,7 +726,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get overdueLabel => 'متأخرة';
 
   @override
-  String get reportCalculatedHint => 'تم الحساب من فواتيرك في Firestore.';
+  String get reportCalculatedHint => 'تم الحساب من فواتيرك.';
 
   @override
   String get exportPdfComingSoon => 'تصدير PDF (قريبًا)';
@@ -827,4 +827,32 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get deleteAccountConfirmMessage =>
       'هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get profileSaved => 'تم الحفظ تلقائيًا';
+
+  @override
+  String get profileSaveError => 'تعذر الحفظ. لا تزال تغييراتك موجودة هنا.';
+
+  @override
+  String get profileRetry => 'إعادة المحاولة';
+
+  @override
+  String get profileAutosaveHint =>
+      'تُحفظ التغييرات تلقائيًا وتبقى عند الإغلاق.';
+
+  @override
+  String get profileLogo => 'شعار الشركة';
+
+  @override
+  String get profileDefaults => 'إعدادات الفاتورة الافتراضية';
+
+  @override
+  String get profileTaxInvalid => 'تحقق من الضريبة (0–100٪).';
+
+  @override
+  String get metricLoadError => 'تعذر تحميل التقرير. حاول مرة أخرى.';
+
+  @override
+  String get totalInvoicedTitle => 'إجمالي الفواتير';
 }

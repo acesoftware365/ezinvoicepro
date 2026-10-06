@@ -718,7 +718,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get overdueLabel => '已逾期';
 
   @override
-  String get reportCalculatedHint => '根据 Firestore 中的发票计算。';
+  String get reportCalculatedHint => '根据您的发票计算。';
 
   @override
   String get exportPdfComingSoon => '导出 PDF（即将推出）';
@@ -817,4 +817,31 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deleteAccountConfirmMessage => '您确定吗？此操作无法撤销。';
+
+  @override
+  String get profileSaved => '已自动保存';
+
+  @override
+  String get profileSaveError => '无法保存。您的更改仍保留在此处。';
+
+  @override
+  String get profileRetry => '重试';
+
+  @override
+  String get profileAutosaveHint => '更改会自动保存，关闭后仍会保留。';
+
+  @override
+  String get profileLogo => '公司标志';
+
+  @override
+  String get profileDefaults => '发票默认设置';
+
+  @override
+  String get profileTaxInvalid => '请检查税率（0–100%）。';
+
+  @override
+  String get metricLoadError => '无法加载报告，请重试。';
+
+  @override
+  String get totalInvoicedTitle => '开票总额';
 }

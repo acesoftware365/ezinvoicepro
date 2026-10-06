@@ -728,8 +728,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get overdueLabel => 'Overdue';
 
   @override
-  String get reportCalculatedHint =>
-      'Calculated from your invoices in Firestore.';
+  String get reportCalculatedHint => 'Calculated from your invoices.';
 
   @override
   String get exportPdfComingSoon => 'Export PDF (coming soon)';
@@ -830,4 +829,32 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteAccountConfirmMessage =>
       'Are you sure? This action cannot be undone.';
+
+  @override
+  String get profileSaved => 'Saved automatically';
+
+  @override
+  String get profileSaveError => 'Could not save. Your changes are still here.';
+
+  @override
+  String get profileRetry => 'Retry';
+
+  @override
+  String get profileAutosaveHint =>
+      'Changes save automatically. Closing keeps your changes.';
+
+  @override
+  String get profileLogo => 'Business logo';
+
+  @override
+  String get profileDefaults => 'Invoice defaults';
+
+  @override
+  String get profileTaxInvalid => 'Check the tax rate (0–100%).';
+
+  @override
+  String get metricLoadError => 'Could not load this report. Try again.';
+
+  @override
+  String get totalInvoicedTitle => 'Total invoiced';
 }

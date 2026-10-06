@@ -15,7 +15,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  static const String _forcedVersionText = 'Version 1.0.52';
+  static const String _forcedVersionText = 'Version 1.0.108';
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -136,9 +136,9 @@ class _LoginScreenState extends State<LoginScreen> {
       await ref.set({
         'createdAt': FieldValue.serverTimestamp(),
         'email': user.email,
-        'plan': isDemoReview ? 'pro' : 'free',
-        'isPro': isDemoReview,
-        'proPlan': isDemoReview ? 'monthly' : 'none',
+        'plan': 'free',
+        'isPro': false,
+        'proPlan': 'none',
         'planUpdatedAt': FieldValue.serverTimestamp(),
         'freeMonthlyInvoiceLimit': 20,
         'freeInvoicesCreatedThisMonth': 0,
@@ -165,9 +165,9 @@ class _LoginScreenState extends State<LoginScreen> {
       'email': user.email,
       'lastLoginAt': FieldValue.serverTimestamp(),
       if (isDemoReview) ...{
-        'plan': 'pro',
-        'isPro': true,
-        'proPlan': 'monthly',
+        'plan': 'free',
+        'isPro': false,
+        'proPlan': 'none',
         'planUpdatedAt': FieldValue.serverTimestamp(),
       },
     }, SetOptions(merge: true));

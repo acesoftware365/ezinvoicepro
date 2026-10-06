@@ -97,7 +97,22 @@ class _NewClientScreenState extends State<NewClientScreen> {
       if (_isEdit) {
         await ClientsService.update(client);
       } else {
-        await ClientsService.add(client);
+        final id = await ClientsService.add(client);
+        if (mounted) {
+          Navigator.pop(
+            context,
+            Client(
+              id: id,
+              name: client.name,
+              email: client.email,
+              phoneE164: client.phoneE164,
+              phoneDisplay: client.phoneDisplay,
+              phoneIso: client.phoneIso,
+              notes: client.notes,
+            ),
+          );
+        }
+        return;
       }
 
       if (mounted) Navigator.pop(context);

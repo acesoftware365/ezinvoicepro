@@ -1431,7 +1431,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportCalculatedHint.
   ///
   /// In en, this message translates to:
-  /// **'Calculated from your invoices in Firestore.'**
+  /// **'Calculated from your invoices.'**
   String get reportCalculatedHint;
 
   /// No description provided for @exportPdfComingSoon.
@@ -1619,6 +1619,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure? This action cannot be undone.'**
   String get deleteAccountConfirmMessage;
+
+  /// No description provided for @profileSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved automatically'**
+  String get profileSaved;
+
+  /// No description provided for @profileSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save. Your changes are still here.'**
+  String get profileSaveError;
+
+  /// No description provided for @profileRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get profileRetry;
+
+  /// No description provided for @profileAutosaveHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes save automatically. Closing keeps your changes.'**
+  String get profileAutosaveHint;
+
+  /// No description provided for @profileLogo.
+  ///
+  /// In en, this message translates to:
+  /// **'Business logo'**
+  String get profileLogo;
+
+  /// No description provided for @profileDefaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice defaults'**
+  String get profileDefaults;
+
+  /// No description provided for @profileTaxInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the tax rate (0–100%).'**
+  String get profileTaxInvalid;
+
+  /// No description provided for @metricLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this report. Try again.'**
+  String get metricLoadError;
+
+  /// No description provided for @totalInvoicedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Total invoiced'**
+  String get totalInvoicedTitle;
 }
 
 class _AppLocalizationsDelegate

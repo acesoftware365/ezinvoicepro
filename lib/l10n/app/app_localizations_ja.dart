@@ -718,7 +718,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get overdueLabel => '期限超過';
 
   @override
-  String get reportCalculatedHint => 'Firestore の請求書から計算されました。';
+  String get reportCalculatedHint => '請求書から計算されます。';
 
   @override
   String get exportPdfComingSoon => 'PDF 出力（近日）';
@@ -819,4 +819,31 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get deleteAccountConfirmMessage =>
       'Are you sure? This action cannot be undone.';
+
+  @override
+  String get profileSaved => '自動保存しました';
+
+  @override
+  String get profileSaveError => '保存できませんでした。変更内容はここに保持されています。';
+
+  @override
+  String get profileRetry => '再試行';
+
+  @override
+  String get profileAutosaveHint => '変更は自動保存され、閉じても保持されます。';
+
+  @override
+  String get profileLogo => '会社のロゴ';
+
+  @override
+  String get profileDefaults => '請求書の初期設定';
+
+  @override
+  String get profileTaxInvalid => '税率を確認してください（0～100%）。';
+
+  @override
+  String get metricLoadError => 'レポートを読み込めませんでした。再試行してください。';
+
+  @override
+  String get totalInvoicedTitle => '請求総額';
 }

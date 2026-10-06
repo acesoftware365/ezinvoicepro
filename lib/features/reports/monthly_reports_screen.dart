@@ -97,8 +97,9 @@ class _MonthlyReportsScreenState extends State<MonthlyReportsScreen> {
       case 'EUR':
         return '€';
       case 'USD':
-      default:
         return '\$';
+      default:
+        return '$code ';
     }
   }
 

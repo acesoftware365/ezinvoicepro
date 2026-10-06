@@ -329,7 +329,7 @@
   "sentLabel": "Gesendet",
   "paidLabel": "Bezahlt",
   "overdueLabel": "Überfällig",
-  "reportCalculatedHint": "Aus deinen Rechnungen in Firestore berechnet.",
+  "reportCalculatedHint": "Aus deinen Rechnungen berechnet.",
   "exportPdfComingSoon": "PDF exportieren (kommt bald)",
   "exportCsvComingSoon": "CSV exportieren (kommt bald)",
   "unsentLabel": "Nicht gesendet",
@@ -337,7 +337,8 @@
   "deleteAccountWarning": "Diese Aktion löscht Ihr Konto und alle zugehörigen Daten dauerhaft.",
   "deleteAccountButton": "Konto löschen",
   "deleteAccountConfirmTitle": "Löschen bestätigen",
-  "deleteAccountConfirmMessage": "Sind Sie sicher? Diese Aktion kann nicht rückgängig gemacht werden.",
+  "deleteAccountConfirmMessage": "Sind Sie sicher? Diese Aktion kann nicht rückgängig gemacht werden."
+,
   "servicePresetsTitle": "Service presets",
   "servicePresetsScreenTitle": "Service Presets",
   "servicePresetsAddNew": "Add new preset",
@@ -367,5 +368,14 @@
       "style": {},
       "palette": {}
     }
-  }
+  },
+  "profileSaved": "Automatisch gespeichert",
+  "profileSaveError": "Speichern fehlgeschlagen. Ihre Änderungen sind noch hier.",
+  "profileRetry": "Erneut versuchen",
+  "profileAutosaveHint": "Änderungen werden automatisch gespeichert und beim Schließen beibehalten.",
+  "profileLogo": "Firmenlogo",
+  "profileDefaults": "Rechnungsvorgaben",
+  "profileTaxInvalid": "Steuersatz prüfen (0–100 %).",
+  "metricLoadError": "Bericht konnte nicht geladen werden. Bitte erneut versuchen.",
+  "totalInvoicedTitle": "Rechnungsbetrag gesamt"
 }

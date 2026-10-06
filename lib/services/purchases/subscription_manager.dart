@@ -43,11 +43,27 @@ class SubscriptionManager {
 
   final InAppPurchase _iap = InAppPurchase.instance;
 
-  // ✅ IDs sugeridos (crea los mismos en App Store Connect / Play Console)
+  // ✅ IDs de App Store Connect / Play Console.
   static const String kMonthlyId = 'com.ezinvoice.pro.monthly';
-  static const String kYearlyId = 'com.ezinvoice.pro.yearly';
+  static const String kAppleYearlyId = 'com.liisgo.ezinvoice.pro.yearly';
+  static const String kAppleYearlyFallbackId = 'com.ezinvoice.pro.yearly';
+  static const String kAndroidYearlyId = 'com.ezinvoice.pro.yearly';
 
-  final Set<String> _productIds = {kMonthlyId, kYearlyId};
+  static String get kYearlyId {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return kAndroidYearlyId;
+    }
+    return kAppleYearlyId;
+  }
+
+  Set<String> get _yearlyIds {
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return {kAppleYearlyId, kAppleYearlyFallbackId};
+    }
+    return {kYearlyId};
+  }
+
+  Set<String> get _productIds => {kMonthlyId, ..._yearlyIds};
 
   StreamSubscription<List<PurchaseDetails>>? _purchaseSub;
 
@@ -121,10 +137,19 @@ class SubscriptionManager {
       return;
     }
 
+    monthlyProduct = null;
+    yearlyProduct = null;
+    ProductDetails? fallbackYearlyProduct;
+
     for (final p in response.productDetails) {
       if (p.id == kMonthlyId) monthlyProduct = p;
-      if (p.id == kYearlyId) yearlyProduct = p;
+      if (p.id == kYearlyId) {
+        yearlyProduct = p;
+      } else if (_yearlyIds.contains(p.id)) {
+        fallbackYearlyProduct ??= p;
+      }
     }
+    yearlyProduct ??= fallbackYearlyProduct;
 
     state.value = state.value.copyWith(
       priceMonthly: monthlyProduct?.price,
@@ -188,7 +213,7 @@ class SubscriptionManager {
         if (purchase.productID == kMonthlyId) {
           isPro = true;
           plan = ProPlan.monthly;
-        } else if (purchase.productID == kYearlyId) {
+        } else if (_yearlyIds.contains(purchase.productID)) {
           isPro = true;
           plan = ProPlan.yearly;
         }

@@ -43,6 +43,53 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  static const _brandGreen = Color(0xFF1F7A64);
+  static const _pageBackground = Color(0xFFF5F7F8);
+
+  ThemeData _theme() {
+    final colors =
+        ColorScheme.fromSeed(
+          seedColor: _brandGreen,
+          brightness: Brightness.light,
+        ).copyWith(
+          primary: _brandGreen,
+          secondary: _brandGreen,
+          surface: Colors.white,
+          surfaceContainerLowest: Colors.white,
+          surfaceContainerLow: Colors.white,
+          surfaceContainer: Colors.white,
+          surfaceContainerHigh: Colors.white,
+          surfaceContainerHighest: Colors.white,
+        );
+
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: colors,
+      scaffoldBackgroundColor: _pageBackground,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+      ),
+      cardTheme: CardThemeData(
+        color: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+      dialogTheme: const DialogThemeData(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -58,6 +105,7 @@ class MyApp extends StatelessWidget {
               ];
         return MaterialApp(
           debugShowCheckedModeBanner: false,
+          theme: _theme(),
           locale: LocaleController.instance.locale,
           navigatorObservers: navigatorObservers,
 

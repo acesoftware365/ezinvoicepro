@@ -329,7 +329,7 @@
   "sentLabel": "Отправлено",
   "paidLabel": "Оплачено",
   "overdueLabel": "Просрочено",
-  "reportCalculatedHint": "Рассчитано на основе ваших счетов в Firestore.",
+  "reportCalculatedHint": "Рассчитано на основе ваших счетов.",
   "exportPdfComingSoon": "Экспорт PDF (скоро)",
   "exportCsvComingSoon": "Экспорт CSV (скоро)",
   "unsentLabel": "Не отправлено",
@@ -337,7 +337,8 @@
   "deleteAccountWarning": "Это действие навсегда удалит ваш аккаунт и все связанные данные.",
   "deleteAccountButton": "Удалить аккаунт",
   "deleteAccountConfirmTitle": "Подтвердить удаление",
-  "deleteAccountConfirmMessage": "Вы уверены? Это действие нельзя отменить.",
+  "deleteAccountConfirmMessage": "Вы уверены? Это действие нельзя отменить."
+,
   "servicePresetsTitle": "Service presets",
   "servicePresetsScreenTitle": "Service Presets",
   "servicePresetsAddNew": "Add new preset",
@@ -367,5 +368,14 @@
       "style": {},
       "palette": {}
     }
-  }
+  },
+  "profileSaved": "Сохранено автоматически",
+  "profileSaveError": "Не удалось сохранить. Изменения остаются здесь.",
+  "profileRetry": "Повторить",
+  "profileAutosaveHint": "Изменения сохраняются автоматически, в том числе при закрытии.",
+  "profileLogo": "Логотип компании",
+  "profileDefaults": "Настройки счёта",
+  "profileTaxInvalid": "Проверьте налог (0–100 %).",
+  "metricLoadError": "Не удалось загрузить отчёт. Повторите попытку.",
+  "totalInvoicedTitle": "Всего выставлено"
 }

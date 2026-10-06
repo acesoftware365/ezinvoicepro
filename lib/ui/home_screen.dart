@@ -24,10 +24,10 @@ import 'package:ezinvoice/features/reports/reports_screen.dart';
 import 'package:ezinvoice/services/purchases/subscription_manager.dart';
 
 const String _androidAppUrl =
-    'https://play.google.com/store/apps/details?id=com.liisgo.ezinvoice';
+    'https://play.google.com/store/apps/details?id=com.liisgo.ezinvoice&pcampaignid=web_share';
 
 const String _iosAppUrl =
-    'https://apps.apple.com/app/idXXXXXXXXXX'; // cuando lo tengas
+    'https://apps.apple.com/us/app/ezinvoice-pro/id6757661737';
 const String _websiteUrl = 'https://liisgo.com/#/apps/EzInvoice';
 
 class HomeScreen extends StatefulWidget {
@@ -38,7 +38,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const String _forcedVersionText = 'Version 1.0.52';
+  static const String _forcedVersionText = 'Version 1.0.108';
   // ---- Brand tokens ----
   static const Color brandGreen = Color(0xFF1F6E5C);
   static const Color pageBg = Color(0xFFF6F7F9);

@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
+import 'package:ezinvoice/features/privacy/privacy_screen.dart';
 import 'package:flutter/material.dart';
 import '../../services/purchases/subscription_manager.dart';
 
@@ -18,6 +19,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
   final _sub = SubscriptionManager.instance;
 
   bool _busy = false;
+  bool _acceptedLegal = false;
 
   // ✅ Brand color (EzInvoice green)
   static const Color brandGreen = Color(0xFF1F6E5C);
@@ -28,27 +30,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
   void initState() {
     super.initState();
 
-    // ✅ Asegura init + restore + productos (sin duplicar llamadas)
+    // ✅ Asegura init + productos (sin restore automatico)
     _safeInit();
-
-    // ✅ Auto-cierra cuando se activa Pro
-    _sub.state.addListener(_onStateChanged);
-  }
-
-  void _onStateChanged() {
-    final s = _sub.state.value;
-
-    if (s.isPro) {
-      if (mounted && _busy) setState(() => _busy = false);
-
-      if (widget.onClose != null) {
-        widget.onClose!.call();
-      } else {
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context);
-        }
-      }
-    }
   }
 
   Future<void> _safeInit() async {
@@ -80,6 +63,14 @@ class _PaywallScreenState extends State<PaywallScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
+  bool _requireLegalAgreement() {
+    if (_acceptedLegal) return true;
+    _showSnack(
+      'Please agree to the Terms & Conditions and Privacy Policy first.',
+    );
+    return false;
+  }
+
   String _platformStoreName() {
     if (Platform.isIOS) return 'App Store';
     if (Platform.isAndroid) return 'Google Play';
@@ -88,8 +79,6 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
   @override
   void dispose() {
-    // ✅ Limpieza listener
-    _sub.state.removeListener(_onStateChanged);
     super.dispose();
   }
 
@@ -139,12 +128,19 @@ class _PaywallScreenState extends State<PaywallScreen> {
       child: ValueListenableBuilder<SubscriptionState>(
         valueListenable: _sub.state,
         builder: (context, state, _) {
-          if (state.isPro) {
-            return _AlreadyProView(onClose: widget.onClose);
-          }
-
-          final monthlyPrice = state.priceMonthly ?? r'$3.99';
-          final yearlyPrice = state.priceYearly ?? r'$39.99';
+          final monthlyReady = _sub.monthlyProduct != null;
+          final yearlyReady = _sub.yearlyProduct != null;
+          final productsReady = monthlyReady || yearlyReady;
+          final currentPlan = state.plan;
+          final isCurrentMonthly =
+              state.isPro && currentPlan == ProPlan.monthly;
+          final isCurrentYearly = state.isPro && currentPlan == ProPlan.yearly;
+          final monthlyPrice = monthlyReady
+              ? (state.priceMonthly ?? r'$3.99')
+              : 'Loading...';
+          final yearlyPrice = yearlyReady
+              ? (state.priceYearly ?? r'$29.99')
+              : 'Loading...';
 
           return Scaffold(
             appBar: AppBar(
@@ -171,8 +167,10 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Beneficios (lista)
-                    const _BenefitsList(),
+                    _PlanStatusCard(state: state),
+                    const SizedBox(height: 16),
+
+                    _PlanComparisonCard(state: state),
 
                     const SizedBox(height: 16),
 
@@ -198,6 +196,22 @@ class _PaywallScreenState extends State<PaywallScreen> {
                         ),
                       ),
                     ],
+                    if (!productsReady || !monthlyReady || !yearlyReady) ...[
+                      _StoreProductsNotice(
+                        monthlyReady: monthlyReady,
+                        yearlyReady: yearlyReady,
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+
+                    _LegalAgreementCard(
+                      accepted: _acceptedLegal,
+                      onChanged: _busy
+                          ? null
+                          : (value) =>
+                                setState(() => _acceptedLegal = value ?? false),
+                    ),
+                    const SizedBox(height: 12),
 
                     // Planes
                     _PlanCard(
@@ -206,8 +220,16 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       tag: t.bestValueStar,
                       description: t.saveMoreYearly,
                       emphasized: true,
-                      enabled: !_busy,
+                      enabled:
+                          !_busy &&
+                          yearlyReady &&
+                          !isCurrentYearly &&
+                          _acceptedLegal,
+                      buttonText: isCurrentYearly
+                          ? 'Current plan'
+                          : t.continueWithPlan(t.proYearly),
                       onPressed: () => _runBusy(() async {
+                        if (!_requireLegalAgreement()) return;
                         await _sub.buyYearly();
                         _showSnack(t.processingPurchase);
                       }),
@@ -219,8 +241,16 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       tag: t.flexible,
                       description: t.cancelAnytime,
                       emphasized: false,
-                      enabled: !_busy,
+                      enabled:
+                          !_busy &&
+                          monthlyReady &&
+                          !isCurrentMonthly &&
+                          _acceptedLegal,
+                      buttonText: isCurrentMonthly
+                          ? 'Current plan'
+                          : t.continueWithPlan(t.proMonthly),
                       onPressed: () => _runBusy(() async {
+                        if (!_requireLegalAgreement()) return;
                         await _sub.buyMonthly();
                         _showSnack(t.processingPurchase);
                       }),
@@ -248,7 +278,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                           ? null
                           : (widget.onClose ?? () => Navigator.pop(context)),
                       child: Text(
-                        t.continueFreeWithAds,
+                        state.isPro ? t.continueText : t.continueFreeWithAds,
                         style: const TextStyle(
                           color: brandGreen,
                           fontWeight: FontWeight.w800,
@@ -271,81 +301,222 @@ class _PaywallScreenState extends State<PaywallScreen> {
   }
 }
 
-class _AlreadyProView extends StatelessWidget {
-  const _AlreadyProView({this.onClose});
+class _StoreProductsNotice extends StatelessWidget {
+  const _StoreProductsNotice({
+    required this.monthlyReady,
+    required this.yearlyReady,
+  });
 
-  final VoidCallback? onClose;
+  final bool monthlyReady;
+  final bool yearlyReady;
 
-  static const Color brandGreen = Color(0xFF1F6E5C);
+  static const Color cardBorder = Color(0xFFE6EAF0);
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
+    final loadedAny = monthlyReady || yearlyReady;
+    final message = loadedAny
+        ? 'One subscription product is still loading. You can continue with the available plan while App Store Connect finishes returning the other product.'
+        : 'Connecting to App Store subscription products. If this does not finish loading, confirm the subscriptions are Ready to Submit in App Store Connect.';
 
-    return Theme(
-      data: theme.copyWith(
-        colorScheme: cs.copyWith(primary: brandGreen, secondary: brandGreen),
-        appBarTheme: theme.appBarTheme.copyWith(
-          backgroundColor: brandGreen,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.white),
-          titleTextStyle: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w800,
-            fontSize: 18,
-          ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: brandGreen,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-          ),
-        ),
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: cardBorder),
       ),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: onClose ?? () => Navigator.pop(context),
-            tooltip: t.close,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2),
           ),
-        ),
-        body: SafeArea(
-          child: Center(
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(
+                color: Colors.black54,
+                fontSize: 13,
+                height: 1.3,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LegalAgreementCard extends StatelessWidget {
+  const _LegalAgreementCard({required this.accepted, required this.onChanged});
+
+  final bool accepted;
+  final ValueChanged<bool?>? onChanged;
+
+  static const Color brandGreen = Color(0xFF1F6E5C);
+  static const Color cardBorder = Color(0xFFE6EAF0);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: cardBorder),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Checkbox(
+            value: accepted,
+            onChanged: onChanged,
+            activeColor: brandGreen,
+            visualDensity: VisualDensity.compact,
+          ),
+          const SizedBox(width: 4),
+          Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+              padding: const EdgeInsets.only(top: 8),
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  const Icon(Icons.verified, size: 54, color: brandGreen),
-                  const SizedBox(height: 10),
-                  Text(
-                    t.alreadyProTitle,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
+                  const Text(
+                    'I agree to the ',
+                    style: TextStyle(
+                      color: Colors.black87,
+                      height: 1.3,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(t.alreadyProBody, textAlign: TextAlign.center),
-                  const SizedBox(height: 14),
-                  ElevatedButton(
-                    onPressed: onClose ?? () => Navigator.pop(context),
-                    child: Text(t.continueText),
+                  _InlineLegalButton(
+                    label: 'Terms & Conditions',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const TermsScreen()),
+                    ),
+                  ),
+                  const Text(
+                    ' and ',
+                    style: TextStyle(
+                      color: Colors.black87,
+                      height: 1.3,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  _InlineLegalButton(
+                    label: 'Privacy Policy',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const PrivacyScreen()),
+                    ),
+                  ),
+                  const Text(
+                    '.',
+                    style: TextStyle(
+                      color: Colors.black87,
+                      height: 1.3,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InlineLegalButton extends StatelessWidget {
+  const _InlineLegalButton({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Text(
+        label,
+        style: const TextStyle(
+          color: Color(0xFF1F6E5C),
+          height: 1.3,
+          fontWeight: FontWeight.w900,
+          decoration: TextDecoration.underline,
         ),
+      ),
+    );
+  }
+}
+
+class _PlanStatusCard extends StatelessWidget {
+  const _PlanStatusCard({required this.state});
+
+  final SubscriptionState state;
+
+  static const Color brandGreen = Color(0xFF1F6E5C);
+  static const Color cardBorder = Color(0xFFE6EAF0);
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final title = state.isPro ? 'Current plan' : 'Current plan: Free';
+    final body = state.isPro
+        ? 'You already have Ez Invoice Pro. You can review both subscription options below.'
+        : 'Free includes ads and limited usage. Pro removes ads and unlocks unlimited invoices, reports, premium templates, exports, and cloud backup.';
+    final planLabel = switch (state.plan) {
+      ProPlan.yearly => t.proYearly,
+      ProPlan.monthly => t.proMonthly,
+      ProPlan.none => 'Free',
+    };
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: cardBorder),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            state.isPro ? Icons.verified_outlined : Icons.lock_open_outlined,
+            color: state.isPro ? brandGreen : Colors.black54,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '$title • $planLabel',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  body,
+                  style: const TextStyle(
+                    color: Colors.black54,
+                    height: 1.3,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -427,24 +598,18 @@ class _HeaderCard extends StatelessWidget {
   }
 }
 
-class _BenefitsList extends StatelessWidget {
-  const _BenefitsList();
+class _PlanComparisonCard extends StatelessWidget {
+  const _PlanComparisonCard({required this.state});
 
+  final SubscriptionState state;
+
+  static const Color brandGreen = Color(0xFF1F6E5C);
   static const Color cardBorder = Color(0xFFE6EAF0);
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-
-    final items = <_BenefitItem>[
-      _BenefitItem(icon: Icons.do_not_disturb_on, text: t.benefitNoAds),
-      _BenefitItem(icon: Icons.receipt_long, text: t.benefitUnlimitedInvoices),
-      _BenefitItem(icon: Icons.palette, text: t.benefitPremiumTemplates),
-      _BenefitItem(icon: Icons.picture_as_pdf, text: t.benefitNoWatermarkPdf),
-      _BenefitItem(icon: Icons.bar_chart, text: t.benefitTaxReports),
-      _BenefitItem(icon: Icons.table_view, text: t.benefitExport),
-      _BenefitItem(icon: Icons.cloud_done, text: t.benefitCloudBackup),
-    ];
+    final current = state.isPro ? t.proBadge : 'FREE';
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -456,28 +621,83 @@ class _BenefitsList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            t.includesInPro,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+          Row(
+            children: [
+              const Icon(Icons.workspace_premium_outlined, color: brandGreen),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Free vs ${t.proBadge}',
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEAF5F1),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  current,
+                  style: const TextStyle(
+                    color: brandGreen,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 10),
-          ...items.map(
-            (e) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Row(
+          const SizedBox(height: 14),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final freeColumn = _ComparisonColumn(
+                title: 'FREE',
+                items: const [
+                  'Ads included',
+                  'Limited invoices each month',
+                  'Basic invoice style',
+                  'Basic reports',
+                  'PDF includes EzInvoice branding',
+                ],
+              );
+              final proColumn = _ComparisonColumn(
+                title: t.proBadge,
+                accent: true,
+                items: [
+                  t.benefitNoAds,
+                  t.benefitUnlimitedInvoices,
+                  t.benefitTaxReports,
+                  t.benefitPremiumTemplates,
+                  t.benefitNoWatermarkPdf,
+                  t.benefitExport,
+                  t.benefitCloudBackup,
+                ],
+              );
+
+              if (constraints.maxWidth < 360) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [freeColumn, const SizedBox(height: 12), proColumn],
+                );
+              }
+
+              return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(e.icon, size: 20, color: Colors.black87),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      e.text,
-                      style: const TextStyle(fontSize: 14, height: 1.25),
-                    ),
-                  ),
+                  Expanded(child: freeColumn),
+                  const SizedBox(width: 12),
+                  Expanded(child: proColumn),
                 ],
-              ),
-            ),
+              );
+            },
           ),
         ],
       ),
@@ -485,10 +705,60 @@ class _BenefitsList extends StatelessWidget {
   }
 }
 
-class _BenefitItem {
-  final IconData icon;
-  final String text;
-  const _BenefitItem({required this.icon, required this.text});
+class _ComparisonColumn extends StatelessWidget {
+  const _ComparisonColumn({
+    required this.title,
+    required this.items,
+    this.accent = false,
+  });
+
+  final String title;
+  final List<String> items;
+  final bool accent;
+
+  static const Color brandGreen = Color(0xFF1F6E5C);
+
+  @override
+  Widget build(BuildContext context) {
+    final titleColor = accent ? brandGreen : Colors.black87;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            color: titleColor,
+            fontSize: 13,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        const SizedBox(height: 8),
+        for (final item in items)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 7),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.check_circle, size: 15, color: brandGreen),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    item,
+                    style: const TextStyle(
+                      color: Colors.black54,
+                      fontSize: 12,
+                      height: 1.25,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
 }
 
 class _PlanCard extends StatelessWidget {
@@ -499,6 +769,7 @@ class _PlanCard extends StatelessWidget {
     required this.description,
     required this.emphasized,
     required this.enabled,
+    required this.buttonText,
     required this.onPressed,
   });
 
@@ -508,6 +779,7 @@ class _PlanCard extends StatelessWidget {
   final String description;
   final bool emphasized;
   final bool enabled;
+  final String buttonText;
   final VoidCallback onPressed;
 
   static const Color brandGreen = Color(0xFF1F6E5C);
@@ -515,8 +787,6 @@ class _PlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
-
     final borderColor = emphasized ? brandGreen : cardBorder;
     final bg = emphasized ? const Color(0xFFE6F3EF) : Colors.white;
 
@@ -581,7 +851,7 @@ class _PlanCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: Text(t.continueWithPlan(title)),
+              child: Text(buttonText),
             ),
           ),
         ],

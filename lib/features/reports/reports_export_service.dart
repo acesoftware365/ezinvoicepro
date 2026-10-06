@@ -1,5 +1,6 @@
 // lib/features/reports/reports_export_service.dart
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
@@ -7,6 +8,7 @@ import 'dart:typed_data';
 import 'package:ezinvoice/features/reports/report_summary.dart';
 import 'package:ezinvoice/features/reports/reports_service.dart';
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
+import 'package:ezinvoice/models/business_profile.dart';
 import 'package:ezinvoice/models/invoice.dart';
 import 'package:ezinvoice/repositories/business_profile_repository.dart';
 import 'package:ezinvoice/services/purchases/feature_gate.dart';
@@ -32,6 +34,7 @@ class ReportsExportService {
 
     /// ✅ FIX iOS Share: pásalo desde el screen (context: context)
     BuildContext? context,
+    Rect? sharePositionOrigin,
   }) async {
     final title = byMonth
         ? 'Report_${_monthName(month ?? 1)}_$year'
@@ -66,9 +69,42 @@ class ReportsExportService {
 
     await _shareXFilesSafe(
       context: context,
+      sharePositionOrigin: sharePositionOrigin,
       files: [XFile(file.path, mimeType: 'application/pdf')],
       text: 'PDF Report: $title',
       subject: title,
+    );
+  }
+
+  /// Builds the same bytes that the PDF export action shares, for the in-app
+  /// preview. Keeping this in the export service prevents the preview and file
+  /// from drifting apart visually.
+  static Future<Uint8List> buildPdfPreviewBytes({
+    required bool byMonth,
+    required int year,
+    int? month,
+    BuildContext? context,
+  }) async {
+    final title = byMonth
+        ? 'Report_${_monthName(month ?? 1)}_$year'
+        : 'Report_Year_$year';
+    final invoices = byMonth
+        ? await ReportsService.loadMonthlyInvoices(
+            year: year,
+            month: month ?? DateTime.now().month,
+          )
+        : await ReportsService.loadYearlyInvoices(year: year);
+    final report = ReportsService.computeReport(invoices);
+
+    return _buildPdfBytes(
+      title: title,
+      report: report,
+      invoices: invoices,
+      byMonth: byMonth,
+      year: year,
+      month: month,
+      isFree: !FeatureGate.allowed(ProFeature.removePdfBranding),
+      context: context,
     );
   }
 
@@ -84,6 +120,7 @@ class ReportsExportService {
 
     /// ✅ FIX iOS Share
     BuildContext? context,
+    Rect? sharePositionOrigin,
   }) async {
     final title = byMonth
         ? 'Report_${_monthName(month ?? 1)}_$year'
@@ -114,6 +151,7 @@ class ReportsExportService {
     // ✅ para que salgan más apps, usemos text/plain
     await _shareXFilesSafe(
       context: context,
+      sharePositionOrigin: sharePositionOrigin,
       files: [XFile(file.path, mimeType: 'text/plain', name: '$title.csv')],
       text: 'CSV Report: $title',
       subject: title,
@@ -128,6 +166,7 @@ class ReportsExportService {
 
     /// ✅ FIX iOS Share (para Share.share también es buena práctica)
     BuildContext? context,
+    Rect? sharePositionOrigin,
   }) async {
     final title = byMonth
         ? 'Report | ${_monthName(month ?? 1)} $year'
@@ -146,7 +185,14 @@ class ReportsExportService {
     final text = _buildSummaryText(title: title, r: r, isFree: isFree);
 
     // Share.share no pide origin, pero igual lo dejamos simple.
-    await Share.share(text, subject: title);
+    await Share.share(
+      text,
+      subject: title,
+      sharePositionOrigin: _shareOriginFromContext(
+        context,
+        preferredOrigin: sharePositionOrigin,
+      ),
+    );
   }
 
   /// 3) "Print CSV" -> generate a PDF table and share (then user can Print)
@@ -157,6 +203,7 @@ class ReportsExportService {
 
     /// ✅ FIX iOS Share
     BuildContext? context,
+    Rect? sharePositionOrigin,
   }) async {
     final title = byMonth
         ? 'Report_${_monthName(month ?? 1)}_${year}_PRINT'
@@ -191,6 +238,7 @@ class ReportsExportService {
 
     await _shareXFilesSafe(
       context: context,
+      sharePositionOrigin: sharePositionOrigin,
       files: [XFile(file.path, mimeType: 'application/pdf')],
       text: 'Print: $title',
       subject: title,
@@ -199,48 +247,61 @@ class ReportsExportService {
 
   static Future<void> _shareXFilesSafe({
     required BuildContext? context,
+    Rect? sharePositionOrigin,
     required List<XFile> files,
     String? text,
     String? subject,
-  }) async {
-    try {
-      final origin = _shareOriginFromContext(context);
+  }) {
+    final origin = _shareOriginFromContext(
+      context,
+      preferredOrigin: sharePositionOrigin,
+    );
 
-      await Share.shareXFiles(
-        files,
-        text: text,
-        subject: subject,
-        // ✅ FIX: requerido para evitar crash/error en iPad y algunos casos iPhone
-        sharePositionOrigin: origin,
-      );
-    } catch (e) {
-      // Fallback sin origin (por si context es null / renderBox null / etc.)
-      debugPrint('❌ shareXFiles error: $e');
-      await Share.shareXFiles(files, text: text, subject: subject);
-    }
+    // iPad requires a non-empty source rect. Do not retry without it.
+    return Share.shareXFiles(
+      files,
+      text: text,
+      subject: subject,
+      sharePositionOrigin: origin,
+    );
   }
 
-  static Rect _shareOriginFromContext(BuildContext? context) {
-    try {
-      if (context == null) {
-        return const Rect.fromLTWH(0, 0, 1, 1);
-      }
-      final renderObject = context.findRenderObject();
-      final box = renderObject is RenderBox ? renderObject : null;
-      if (box == null || !box.hasSize) {
-        return const Rect.fromLTWH(0, 0, 1, 1);
-      }
-      final offset = box.localToGlobal(Offset.zero);
-      final rect = offset & box.size;
+  static Rect _shareOriginFromContext(
+    BuildContext? context, {
+    Rect? preferredOrigin,
+  }) {
+    if (_isUsableOrigin(preferredOrigin)) return preferredOrigin!;
 
-      // Asegura que no sea 0,0,0,0
-      if (rect.width <= 0 || rect.height <= 0) {
-        return const Rect.fromLTWH(0, 0, 1, 1);
+    try {
+      final renderObject = context?.findRenderObject();
+      final box = renderObject is RenderBox ? renderObject : null;
+      if (box != null && box.hasSize) {
+        final rect = box.localToGlobal(Offset.zero) & box.size;
+        if (_isUsableOrigin(rect)) return rect;
       }
-      return rect;
+
+      final viewSize = MediaQuery.maybeOf(context!)?.size;
+      if (viewSize != null && viewSize.width > 2 && viewSize.height > 2) {
+        return Rect.fromCenter(
+          center: viewSize.center(Offset.zero),
+          width: 1,
+          height: 1,
+        );
+      }
     } catch (_) {
-      return const Rect.fromLTWH(0, 0, 1, 1);
+      // The final non-zero origin below is safe for the native share sheet.
     }
+    return const Rect.fromLTWH(1, 1, 1, 1);
+  }
+
+  static bool _isUsableOrigin(Rect? rect) {
+    return rect != null &&
+        rect.left.isFinite &&
+        rect.top.isFinite &&
+        rect.width.isFinite &&
+        rect.height.isFinite &&
+        rect.width > 0 &&
+        rect.height > 0;
   }
 
   // =========================
@@ -258,6 +319,7 @@ class ReportsExportService {
     required BuildContext? context,
   }) async {
     final bp = await BusinessProfileRepository().load();
+    final logo = await _loadReportLogo(bp);
     final isProTemplates = FeatureGate.allowed(ProFeature.premiumTemplates);
     final paletteId = isProTemplates
         ? AppThemePresets.normalizePalette(bp.reportPaletteId)
@@ -289,7 +351,7 @@ class ReportsExportService {
       ..sort((a, b) => a.createdAtMs.compareTo(b.createdAtMs));
 
     final pieSvg = _pieSvg(
-      sales: report.totalSales,
+      sales: report.sales,
       tax: report.totalTax,
       tip: report.totalTip,
       size: 140,
@@ -308,6 +370,7 @@ class ReportsExportService {
         build: (context) => [
           _buildReportHeader(
             businessName: bp.businessName,
+            logo: logo,
             headerTitle: headerTitle,
             dateStr: dateStr,
             style: style,
@@ -350,8 +413,8 @@ class ReportsExportService {
                               children: [
                                 _legendRow(
                                   color: chart.sales,
-                                  label: 'Total Sales',
-                                  value: report.totalSales,
+                                  label: 'Sales',
+                                  value: report.sales,
                                 ),
                                 _legendRow(
                                   color: chart.tax,
@@ -367,8 +430,8 @@ class ReportsExportService {
                                 pw.Divider(color: style.border),
                                 _legendRow(
                                   color: style.primary,
-                                  label: 'Net',
-                                  value: report.net,
+                                  label: 'Total invoiced',
+                                  value: report.totalInvoiced,
                                   bold: true,
                                 ),
                               ],
@@ -443,8 +506,8 @@ class ReportsExportService {
                       layoutId: reportLayout,
                     ),
                     _tableRow([
-                      'Total Sales',
-                      _money(report.totalSales),
+                      'Sales',
+                      _money(report.sales),
                     ], layoutId: reportLayout),
                     _tableRow([
                       'Total Tax',
@@ -455,7 +518,7 @@ class ReportsExportService {
                       _money(report.totalTip),
                     ], layoutId: reportLayout),
                     _tableRow(
-                      ['Net', _money(report.net)],
+                      ['Total invoiced', _money(report.totalInvoiced)],
                       bold: true,
                       layoutId: reportLayout,
                     ),
@@ -546,6 +609,7 @@ class ReportsExportService {
     required BuildContext? context,
   }) async {
     final bp = await BusinessProfileRepository().load();
+    final logo = await _loadReportLogo(bp);
     final isProTemplates = FeatureGate.allowed(ProFeature.premiumTemplates);
     final paletteId = isProTemplates
         ? AppThemePresets.normalizePalette(bp.reportPaletteId)
@@ -583,6 +647,7 @@ class ReportsExportService {
         build: (_) => [
           _buildReportHeader(
             businessName: bp.businessName,
+            logo: logo,
             headerTitle: headerTitle,
             dateStr: _fmtDate(DateTime.now()),
             style: style,
@@ -622,8 +687,8 @@ class ReportsExportService {
                       layoutId: reportLayout,
                     ),
                     _tableRow([
-                      'Total Sales',
-                      _money(report.totalSales),
+                      'Sales',
+                      _money(report.sales),
                     ], layoutId: reportLayout),
                     _tableRow([
                       'Total Tax',
@@ -634,7 +699,7 @@ class ReportsExportService {
                       _money(report.totalTip),
                     ], layoutId: reportLayout),
                     _tableRow(
-                      ['Net', _money(report.net)],
+                      ['Total invoiced', _money(report.totalInvoiced)],
                       bold: true,
                       layoutId: reportLayout,
                     ),
@@ -733,10 +798,10 @@ class ReportsExportService {
     b.writeln('Overdue,${report.overdueCount}');
     b.writeln('');
 
-    b.writeln('Total Sales,${report.totalSales.toStringAsFixed(2)}');
+    b.writeln('Sales,${report.sales.toStringAsFixed(2)}');
     b.writeln('Total Tax,${report.totalTax.toStringAsFixed(2)}');
     b.writeln('Total Tip,${report.totalTip.toStringAsFixed(2)}');
-    b.writeln('Net,${report.net.toStringAsFixed(2)}');
+    b.writeln('Total invoiced,${report.totalInvoiced.toStringAsFixed(2)}');
     b.writeln('');
 
     b.writeln('Invoice No,Client,Date,Status,Total,Tax,Tip,Subtotal,Due Date');
@@ -777,10 +842,10 @@ class ReportsExportService {
       'Paid: ${r.paidCount}',
       'Overdue: ${r.overdueCount}',
       '',
-      'Total Sales: ${_money(r.totalSales)}',
+      'Sales: ${_money(r.sales)}',
       'Total Tax: ${_money(r.totalTax)}',
       'Total Tip: ${_money(r.totalTip)}',
-      'Net: ${_money(r.net)}',
+      'Total invoiced: ${_money(r.totalInvoiced)}',
     ];
     return lines.join('\n');
   }
@@ -1048,15 +1113,39 @@ class ReportsExportService {
     }
   }
 
+  static Future<pw.MemoryImage?> _loadReportLogo(
+    BusinessProfile profile,
+  ) async {
+    Uint8List? bytes;
+    try {
+      final encoded = profile.logoDataBase64?.trim() ?? '';
+      if (encoded.isNotEmpty) {
+        bytes = base64Decode(encoded);
+      } else {
+        final path = profile.logoFilePath?.trim() ?? '';
+        if (path.isNotEmpty) {
+          final file = File(path);
+          if (await file.exists()) bytes = await file.readAsBytes();
+        }
+      }
+    } catch (_) {
+      bytes = null;
+    }
+
+    if (bytes == null || bytes.isEmpty) return null;
+    return pw.MemoryImage(bytes);
+  }
+
   static pw.Widget _buildReportHeader({
     required String businessName,
+    pw.ImageProvider? logo,
     required String headerTitle,
     required String dateStr,
     required _ReportPdfStyle style,
     required String layoutId,
   }) {
     final name = businessName.trim().isEmpty ? 'Business' : businessName.trim();
-    final left = pw.Column(
+    final businessDetails = pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         pw.Text(
@@ -1070,6 +1159,26 @@ class ReportsExportService {
         ),
       ],
     );
+    final left = logo == null
+        ? businessDetails
+        : pw.Row(
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            children: [
+              pw.Container(
+                width: 44,
+                height: 44,
+                padding: const pw.EdgeInsets.all(4),
+                decoration: pw.BoxDecoration(
+                  color: PdfColors.white,
+                  border: pw.Border.all(color: style.border, width: 0.8),
+                  borderRadius: pw.BorderRadius.circular(5),
+                ),
+                child: pw.Image(logo, fit: pw.BoxFit.contain),
+              ),
+              pw.SizedBox(width: 9),
+              businessDetails,
+            ],
+          );
     final right = pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.end,
       children: [

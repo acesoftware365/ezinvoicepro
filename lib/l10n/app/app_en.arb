@@ -329,7 +329,7 @@
   "sentLabel": "Sent",
   "paidLabel": "Paid",
   "overdueLabel": "Overdue",
-  "reportCalculatedHint": "Calculated from your invoices in Firestore.",
+  "reportCalculatedHint": "Calculated from your invoices.",
   "exportPdfComingSoon": "Export PDF (coming soon)",
   "exportCsvComingSoon": "Export CSV (coming soon)",
   "unsentLabel": "Unsent",
@@ -369,8 +369,14 @@
   "deleteAccountWarning": "This action will permanently delete your account and all associated data.",
   "deleteAccountButton": "Delete Account",
   "deleteAccountConfirmTitle": "Confirm Deletion",
-  "deleteAccountConfirmMessage": "Are you sure? This action cannot be undone."
-
-
-
+  "deleteAccountConfirmMessage": "Are you sure? This action cannot be undone.",
+  "profileSaved": "Saved automatically",
+  "profileSaveError": "Could not save. Your changes are still here.",
+  "profileRetry": "Retry",
+  "profileAutosaveHint": "Changes save automatically. Closing keeps your changes.",
+  "profileLogo": "Business logo",
+  "profileDefaults": "Invoice defaults",
+  "profileTaxInvalid": "Check the tax rate (0–100%).",
+  "metricLoadError": "Could not load this report. Try again.",
+  "totalInvoicedTitle": "Total invoiced"
 }

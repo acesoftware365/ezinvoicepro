@@ -52,7 +52,10 @@ class ReportsService {
     final to = monthEndExclusive(m);
 
     final q = _invoicesCol(uid)
-        .where('createdAtMs', isGreaterThanOrEqualTo: from.millisecondsSinceEpoch)
+        .where(
+          'createdAtMs',
+          isGreaterThanOrEqualTo: from.millisecondsSinceEpoch,
+        )
         .where('createdAtMs', isLessThan: to.millisecondsSinceEpoch);
 
     return q.snapshots().map((snap) {
@@ -65,16 +68,17 @@ class ReportsService {
   // ✅ STREAM: Yearly report  (ESTE ES EL QUE TE FALTA)
   // =========================
 
-  static Stream<ReportResult> streamYearlyReport({
-    required int year,
-  }) {
+  static Stream<ReportResult> streamYearlyReport({required int year}) {
     final uid = _uidOrThrow();
 
     final from = DateTime(year, 1, 1);
     final to = DateTime(year + 1, 1, 1);
 
     final q = _invoicesCol(uid)
-        .where('createdAtMs', isGreaterThanOrEqualTo: from.millisecondsSinceEpoch)
+        .where(
+          'createdAtMs',
+          isGreaterThanOrEqualTo: from.millisecondsSinceEpoch,
+        )
         .where('createdAtMs', isLessThan: to.millisecondsSinceEpoch);
 
     return q.snapshots().map((snap) {
@@ -98,23 +102,27 @@ class ReportsService {
     final to = monthEndExclusive(m);
 
     final snap = await _invoicesCol(uid)
-        .where('createdAtMs', isGreaterThanOrEqualTo: from.millisecondsSinceEpoch)
+        .where(
+          'createdAtMs',
+          isGreaterThanOrEqualTo: from.millisecondsSinceEpoch,
+        )
         .where('createdAtMs', isLessThan: to.millisecondsSinceEpoch)
         .get();
 
     return snap.docs.map(_toInvoice).toList();
   }
 
-  static Future<List<Invoice>> loadYearlyInvoices({
-    required int year,
-  }) async {
+  static Future<List<Invoice>> loadYearlyInvoices({required int year}) async {
     final uid = _uidOrThrow();
 
     final from = DateTime(year, 1, 1);
     final to = DateTime(year + 1, 1, 1);
 
     final snap = await _invoicesCol(uid)
-        .where('createdAtMs', isGreaterThanOrEqualTo: from.millisecondsSinceEpoch)
+        .where(
+          'createdAtMs',
+          isGreaterThanOrEqualTo: from.millisecondsSinceEpoch,
+        )
         .where('createdAtMs', isLessThan: to.millisecondsSinceEpoch)
         .get();
 
@@ -165,10 +173,10 @@ class ReportsService {
   static ReportResult computeReport(List<Invoice> invoices) {
     final invoicesCount = invoices.length;
 
-    double totalSales = 0;
+    double sales = 0;
     double totalTax = 0;
     double totalTip = 0;
-    double net = 0;
+    double totalInvoiced = 0;
 
     int unsentCount = 0;
     int sentCount = 0;
@@ -176,13 +184,17 @@ class ReportsService {
     int overdueCount = 0;
 
     final now = DateTime.now();
-    final today0 = DateTime(now.year, now.month, now.day).millisecondsSinceEpoch;
+    final today0 = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).millisecondsSinceEpoch;
 
     for (final inv in invoices) {
-      totalSales += inv.total;
+      sales += inv.subtotal;
       totalTax += inv.taxAmount;
       totalTip += inv.tip;
-      net += inv.subtotal;
+      totalInvoiced += inv.total;
 
       if (inv.isPaid) {
         paidCount += 1;
@@ -203,10 +215,10 @@ class ReportsService {
 
     return ReportResult(
       invoicesCount: invoicesCount,
-      totalSales: totalSales,
+      sales: sales,
       totalTax: totalTax,
       totalTip: totalTip,
-      net: net,
+      totalInvoiced: totalInvoiced,
       unsentCount: unsentCount,
       sentCount: sentCount,
       paidCount: paidCount,

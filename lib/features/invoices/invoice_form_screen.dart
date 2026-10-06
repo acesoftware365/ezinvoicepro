@@ -1,12 +1,11 @@
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:ezinvoice/repositories/business_profile_repository.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
 
 import 'package:ezinvoice/models/invoice.dart';
 import 'package:ezinvoice/models/client.dart';
 import 'package:ezinvoice/services/clients/clients_service.dart';
+import 'package:ezinvoice/ui/clients/client_form_screen.dart';
 import 'package:ezinvoice/services/invoices/invoices_service.dart';
 
 import 'package:ezinvoice/services/plan/plan_guard.dart';
@@ -57,6 +56,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
   bool _saving = false;
   bool _loading = true;
+  bool _editingTaxRate = false;
 
   String _clientId = '';
   int _createdAtMs = DateTime.now().millisecondsSinceEpoch;
@@ -102,13 +102,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
   double get _totalValue => _subtotalValue + _taxAmount + _tipFinal;
 
-  bool _isValidEmail(String v) {
-    final value = v.trim();
-    if (value.isEmpty) return true;
-    final re = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]{2,}$');
-    return re.hasMatch(value);
-  }
-
   void _snack(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
@@ -129,10 +122,14 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   Future<void> _savePresetFromText(String text) async {
     final v = text.trim();
     if (v.isEmpty) return;
+    if (_presets.any((preset) => preset.toLowerCase() == v.toLowerCase())) {
+      _snack('Already saved: $v');
+      return;
+    }
     try {
       await _bpRepo.addPreset(v);
       await _refreshPresets();
-      _snack('Saved as preset: $v');
+      _snack('Saved service: $v');
     } catch (e) {
       _snack('Error saving preset: $e');
     }
@@ -145,7 +142,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     if (!mounted) return;
 
     if (_presets.isEmpty) {
-      _snack('No service presets saved yet.');
+      _snack('No saved services yet. Type one above, then save it for later.');
       return;
     }
 
@@ -308,12 +305,24 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     );
 
     if (picked == null) return;
+    _applyClient(picked);
+  }
 
+  void _applyClient(_PickedClient client) {
     setState(() {
-      _clientId = picked.clientId;
-      _clientName.text = picked.name;
-      _clientEmail.text = picked.email;
-      _clientPhone.text = picked.phone;
+      _clientId = client.clientId;
+      _clientName.text = client.name;
+      _clientEmail.text = client.email;
+      _clientPhone.text = client.phone;
+    });
+  }
+
+  void _clearClient() {
+    setState(() {
+      _clientId = '';
+      _clientName.clear();
+      _clientEmail.clear();
+      _clientPhone.clear();
     });
   }
 
@@ -447,6 +456,11 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
       _snack(t.addAtLeastOneItem);
       return;
     }
+    if (_clientName.text.trim().isEmpty) {
+      _snack(t.clientNameRequired);
+      await _pickClient();
+      return;
+    }
     if (!_formKey.currentState!.validate()) return;
 
     // ✅ EXTRA SEGURIDAD: antes de guardar NEW invoice también valida
@@ -572,24 +586,6 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(_isEdit ? t.editInvoiceTitle : t.newInvoiceTitle),
-          actions: [
-            TextButton.icon(
-              onPressed: _saving ? null : _pickClient,
-              icon: const Icon(
-                Icons.person_search,
-                color: Colors.white,
-                size: 18,
-              ),
-              label: Text(
-                t.pickClient,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
-            const SizedBox(width: 6),
-          ],
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: brandGreen,
@@ -603,132 +599,53 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
               final w = c.maxWidth;
               final isSmall = w < 360;
               final pad = isSmall ? 12.0 : 16.0;
-              final twoCols = w >= 520;
+              final textScale = MediaQuery.textScalerOf(context).scale(16) / 16;
+              final amountTextScale = textScale.clamp(1.0, 1.7).toDouble();
+              // The amount inputs can share a row as soon as their *usable*
+              // width can keep the label, icon, and value comfortably legible.
+              // Larger text returns to one column instead of squeezing controls.
+              final itemContentWidth = w - (pad * 2) - 28;
+              final minAmountFieldWidth = 108.0 * amountTextScale;
+              final useTwoColumnLineAmounts =
+                  itemContentWidth >= (minAmountFieldWidth * 2) + 12;
+              final wideLayoutMinWidth =
+                  840.0 * (textScale > 1 ? textScale * 0.9 : 1);
+              final useWideInvoiceLayout = w >= wideLayoutMinWidth;
 
               return Form(
                 key: _formKey,
                 child: ListView(
                   padding: EdgeInsets.fromLTRB(pad, 12, pad, 24),
                   children: [
-                    _card(
-                      child: Column(
+                    if (useWideInvoiceLayout)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextFormField(
-                            controller: _invoiceNumber,
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              labelText: t.invoiceAutoNumberLabel,
-                              prefixIcon: const Icon(
-                                Icons.receipt_long_outlined,
-                              ),
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.always,
-                            ),
+                          Expanded(
+                            flex: 4,
+                            child: _invoiceDetailsCard(t, isPaid: isPaid),
                           ),
-                          const SizedBox(height: 10),
-                          _infoRow(
-                            icon: Icons.calendar_month_outlined,
-                            title: t.invoiceDateLabel(
-                              _formatDate(_createdAtMs),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-
-                          InkWell(
-                            onTap: _pickDueDate,
-                            borderRadius: BorderRadius.circular(14),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 12,
-                                horizontal: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: brandGreenSoft,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                  color: brandGreen.withOpacity(0.18),
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.event_available,
-                                    size: 18,
-                                    color: brandGreen,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      'Due Date: ${_dueAtMs == null ? '-' : _formatDate(_dueAtMs!)}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  const Icon(
-                                    Icons.chevron_right,
-                                    color: brandGreen,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          if (_isEdit) ...[
-                            const SizedBox(height: 12),
-                            _paymentCard(isPaid: isPaid),
-                          ],
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-                    _sectionTitle(t.pickClient),
-                    const SizedBox(height: 8),
-
-                    _card(
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: _clientName,
-                            decoration: InputDecoration(
-                              labelText: t.clientNameLabel,
-                              prefixIcon: const Icon(Icons.person_outline),
-                            ),
-                            validator: (v) => (v ?? '').trim().isEmpty
-                                ? t.clientNameRequired
-                                : null,
-                          ),
-                          const SizedBox(height: 10),
-                          TextFormField(
-                            controller: _clientEmail,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                              labelText: t.clientEmailOptionalLabel,
-                              prefixIcon: const Icon(Icons.email_outlined),
-                            ),
-                            validator: (v) {
-                              final value = (v ?? '').trim();
-                              if (value.isEmpty) return null;
-                              if (!_isValidEmail(value))
-                                return t.invalidEmailFormat;
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 10),
-                          TextFormField(
-                            controller: _clientPhone,
-                            keyboardType: TextInputType.phone,
-                            decoration: InputDecoration(
-                              labelText: t.clientPhoneOptionalLabel,
-                              prefixIcon: const Icon(Icons.phone_outlined),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            flex: 5,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _sectionTitle(t.pickClient),
+                                const SizedBox(height: 8),
+                                _clientCard(t),
+                              ],
                             ),
                           ),
                         ],
-                      ),
-                    ),
+                      )
+                    else ...[
+                      _invoiceDetailsCard(t, isPaid: isPaid),
+                      const SizedBox(height: 12),
+                      _sectionTitle(t.pickClient),
+                      const SizedBox(height: 8),
+                      _clientCard(t),
+                    ],
 
                     const SizedBox(height: 14),
                     _sectionTitle(t.itemsTitle),
@@ -744,9 +661,8 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                           child: Column(
                             children: [
                               // ✅ Description + presets + typing
-                              _PresetDescriptionField(
+                              _ItemDescriptionField(
                                 label: t.descriptionLabel,
-                                presets: _presets,
                                 initial: item.description,
                                 onChanged: (v) {
                                   _items[i] = InvoiceItem(
@@ -758,39 +674,34 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                                   setState(() {});
                                 },
                                 validatorMsg: t.requiredField,
+                                onSavePreset: item.description.trim().isEmpty
+                                    ? null
+                                    : () =>
+                                          _savePresetFromText(item.description),
                               ),
 
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 12),
 
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: OutlinedButton.icon(
-                                      onPressed: () => _selectPresetForItem(i),
-                                      icon: const Icon(
-                                        Icons.playlist_add_check_outlined,
-                                        size: 18,
-                                      ),
-                                      label: const Text('Select preset'),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton.icon(
+                                  key: ValueKey('choose-saved-service-$i'),
+                                  onPressed: () => _selectPresetForItem(i),
+                                  icon: const Icon(
+                                    Icons.playlist_add_check_outlined,
+                                    size: 18,
+                                  ),
+                                  label: const Text('Choose saved service'),
+                                  style: OutlinedButton.styleFrom(
+                                    minimumSize: const Size.fromHeight(48),
+                                    textStyle: const TextStyle(
+                                      fontWeight: FontWeight.w800,
                                     ),
                                   ),
-                                  const SizedBox(width: 10),
-                                  TextButton.icon(
-                                    onPressed: item.description.trim().isEmpty
-                                        ? null
-                                        : () => _savePresetFromText(
-                                            item.description,
-                                          ),
-                                    icon: const Icon(
-                                      Icons.bookmark_add_outlined,
-                                      size: 18,
-                                    ),
-                                    label: const Text('Save preset'),
-                                  ),
-                                ],
+                                ),
                               ),
 
-                              const SizedBox(height: 6),
+                              const SizedBox(height: 12),
 
                               InkWell(
                                 onTap: () => _pickItemDate(i),
@@ -838,7 +749,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
                               const SizedBox(height: 10),
 
-                              if (twoCols) ...[
+                              if (useTwoColumnLineAmounts) ...[
                                 Row(
                                   children: [
                                     Expanded(
@@ -898,74 +809,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                     _sectionTitle('Tax & Tip'),
                     const SizedBox(height: 8),
 
-                    _card(
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: _taxRate,
-                            keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true,
-                            ),
-                            decoration: InputDecoration(
-                              labelText: t.taxDefaultOwnerLabel,
-                              prefixIcon: const Icon(Icons.percent),
-                            ),
-                            onChanged: (_) => setState(() {}),
-                          ),
-                          const SizedBox(height: 12),
-
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ChoiceChip(
-                                  label: Text(t.tipPercentChip),
-                                  selected: _tipIsPercent,
-                                  onSelected: (_) =>
-                                      setState(() => _tipIsPercent = true),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: ChoiceChip(
-                                  label: Text(t.tipAmountChip),
-                                  selected: !_tipIsPercent,
-                                  onSelected: (_) =>
-                                      setState(() => _tipIsPercent = false),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-
-                          if (_tipIsPercent)
-                            TextFormField(
-                              controller: _tipPercent,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                    decimal: true,
-                                  ),
-                              decoration: InputDecoration(
-                                labelText: t.tipPercentLabel,
-                                prefixIcon: const Icon(Icons.percent),
-                              ),
-                              onChanged: (_) => setState(() {}),
-                            )
-                          else
-                            TextFormField(
-                              controller: _tipAmount,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                    decimal: true,
-                                  ),
-                              decoration: InputDecoration(
-                                labelText: t.tipAmountLabel,
-                                prefixIcon: const Icon(Icons.attach_money),
-                              ),
-                              onChanged: (_) => setState(() {}),
-                            ),
-                        ],
-                      ),
-                    ),
+                    _card(child: _taxAndTipControls(t)),
 
                     const SizedBox(height: 12),
                     _sectionTitle(t.messageOptionalLabel),
@@ -1038,6 +882,145 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
             },
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _invoiceDetailsCard(AppLocalizations t, {required bool isPaid}) {
+    return _card(
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _invoiceNumber,
+            readOnly: true,
+            decoration: InputDecoration(
+              labelText: t.invoiceAutoNumberLabel,
+              prefixIcon: const Icon(Icons.receipt_long_outlined),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+            ),
+          ),
+          const SizedBox(height: 10),
+          _infoRow(
+            icon: Icons.calendar_month_outlined,
+            title: t.invoiceDateLabel(_formatDate(_createdAtMs)),
+          ),
+          const SizedBox(height: 10),
+          InkWell(
+            onTap: _pickDueDate,
+            borderRadius: BorderRadius.circular(14),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+              decoration: BoxDecoration(
+                color: brandGreenSoft,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: brandGreen.withOpacity(0.18)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.event_available,
+                    size: 18,
+                    color: brandGreen,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Due Date: ${_dueAtMs == null ? '-' : _formatDate(_dueAtMs!)}',
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right, color: brandGreen),
+                ],
+              ),
+            ),
+          ),
+          if (_isEdit) ...[
+            const SizedBox(height: 12),
+            _paymentCard(isPaid: isPaid),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _clientCard(AppLocalizations t) {
+    final hasClient = _clientName.text.trim().isNotEmpty;
+    final detail = [
+      _clientEmail.text.trim(),
+      _clientPhone.text.trim(),
+    ].where((value) => value.isNotEmpty).join(' • ');
+
+    if (!hasClient) {
+      return _card(
+        child: FilledButton.icon(
+          key: const ValueKey('choose-client'),
+          onPressed: _saving ? null : _pickClient,
+          icon: const Icon(Icons.person_add_alt_1_outlined),
+          label: Text(t.pickClient),
+          style: FilledButton.styleFrom(
+            minimumSize: const Size.fromHeight(54),
+            backgroundColor: brandGreen,
+            foregroundColor: Colors.white,
+            textStyle: const TextStyle(fontWeight: FontWeight.w900),
+          ),
+        ),
+      );
+    }
+
+    return _card(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: brandGreenSoft,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(Icons.person_outline, color: brandGreen),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _clientName.text.trim(),
+                  style: const TextStyle(fontWeight: FontWeight.w900),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (detail.isNotEmpty) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    detail,
+                    style: TextStyle(color: Colors.black.withOpacity(0.62)),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ],
+            ),
+          ),
+          PopupMenuButton<String>(
+            tooltip: t.pickClient,
+            onSelected: (value) {
+              if (value == 'change') {
+                _pickClient();
+              } else {
+                _clearClient();
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(value: 'change', child: Text(t.pickClient)),
+              const PopupMenuItem(value: 'clear', child: Text('Remove client')),
+            ],
+            icon: const Icon(Icons.more_horiz),
+          ),
+        ],
       ),
     );
   }
@@ -1172,13 +1155,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     int itemDateMs,
     AppLocalizations t,
   ) {
-    return TextFormField(
-      initialValue: item.qty.toString(),
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: t.qtyLabel,
-        prefixIcon: const Icon(Icons.numbers),
-      ),
+    return _OverwriteNumberField(
+      value: item.qty.toString(),
+      label: t.qtyLabel,
+      icon: Icons.numbers,
       onChanged: (v) {
         final qty = _toDouble(v);
         _items[i] = InvoiceItem(
@@ -1192,19 +1172,267 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     );
   }
 
+  Widget _taxAndTipControls(AppLocalizations t) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textScale = MediaQuery.textScalerOf(context).scale(16) / 16;
+        final useTwoColumns = constraints.maxWidth >= 760 * textScale;
+        final tax = _taxRateControl(t);
+        final tip = _tipEditor(t);
+
+        if (useTwoColumns) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: tax),
+              const SizedBox(width: 16),
+              Expanded(flex: 2, child: tip),
+            ],
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [tax, const SizedBox(height: 12), tip],
+        );
+      },
+    );
+  }
+
+  Widget _tipEditor(AppLocalizations t) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textScale = MediaQuery.textScalerOf(context).scale(16) / 16;
+        // The amount stays left and the short Tip % / Tip $ selector stays
+        // right as soon as both controls remain legible. This uses the local
+        // card width rather than waiting for a device-wide "tablet" layout.
+        final minimumInputWidth = 120.0 * textScale;
+        final minimumSelectorWidth = 128.0 * textScale;
+        final useInlineControls =
+            constraints.maxWidth >=
+            minimumInputWidth + minimumSelectorWidth + 10;
+        final selector = _tipModeControl(t);
+        final value = _tipValueInput(t);
+
+        if (!useInlineControls) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [selector, const SizedBox(height: 10), value],
+          );
+        }
+
+        final selectorWidth = (constraints.maxWidth * 0.42)
+            .clamp(minimumSelectorWidth, 220.0 * textScale)
+            .toDouble();
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(child: value),
+            const SizedBox(width: 10),
+            SizedBox(width: selectorWidth, child: selector),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _tipModeControl(AppLocalizations t) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          t.tipTitle,
+          style: TextStyle(
+            color: Colors.black.withValues(alpha: 0.62),
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: pageBg,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              _tipModeButton(
+                label: t.tipPercentChip,
+                selected: _tipIsPercent,
+                onTap: () => setState(() => _tipIsPercent = true),
+              ),
+              _tipModeButton(
+                label: t.tipAmountChip,
+                selected: !_tipIsPercent,
+                onTap: () => setState(() => _tipIsPercent = false),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _tipModeButton({
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: Semantics(
+        button: true,
+        selected: selected,
+        label: label,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(9),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+            decoration: BoxDecoration(
+              color: selected
+                  ? brandGreen.withValues(alpha: 0.14)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(9),
+              border: Border.all(
+                color: selected
+                    ? brandGreen.withValues(alpha: 0.36)
+                    : Colors.transparent,
+              ),
+            ),
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: selected
+                    ? brandGreen
+                    : Colors.black.withValues(alpha: 0.62),
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _tipValueInput(AppLocalizations t) {
+    if (_tipIsPercent) {
+      return _ClearOnFirstFocusField(
+        key: const ValueKey('tip-percent-input'),
+        controller: _tipPercent,
+        label: t.tipPercentLabel,
+        icon: Icons.percent,
+        onChanged: () => setState(() {}),
+      );
+    }
+
+    return _ClearOnFirstFocusField(
+      key: const ValueKey('tip-amount-input'),
+      controller: _tipAmount,
+      label: t.tipAmountLabel,
+      icon: Icons.attach_money,
+      onChanged: () => setState(() {}),
+    );
+  }
+
+  Widget _taxRateControl(AppLocalizations t) {
+    final taxValue = '${_taxRateValue.toStringAsFixed(2)}%';
+
+    if (!_editingTaxRate) {
+      return InputDecorator(
+        decoration: InputDecoration(
+          labelText: t.taxDefaultOwnerLabel,
+          prefixIcon: const Icon(Icons.percent),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                taxValue,
+                style: const TextStyle(fontWeight: FontWeight.w800),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            TextButton.icon(
+              key: const ValueKey('edit-tax-rate'),
+              onPressed: () => setState(() => _editingTaxRate = true),
+              icon: const Icon(Icons.edit_outlined, size: 18),
+              label: const Text('Edit'),
+              style: TextButton.styleFrom(
+                foregroundColor: brandGreen,
+                textStyle: const TextStyle(fontWeight: FontWeight.w800),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textScale = MediaQuery.textScalerOf(context).scale(16) / 16;
+        final showInlineAction = constraints.maxWidth >= 270 * textScale;
+        final editor = TextFormField(
+          controller: _taxRate,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            labelText: t.taxDefaultOwnerLabel,
+            prefixIcon: const Icon(Icons.percent),
+          ),
+          onChanged: (_) => setState(() {}),
+        );
+        final doneButton = OutlinedButton.icon(
+          key: const ValueKey('done-editing-tax-rate'),
+          onPressed: () => setState(() => _editingTaxRate = false),
+          icon: const Icon(Icons.check, size: 18),
+          label: const Text('Done'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: brandGreen,
+            minimumSize: const Size(0, 48),
+            textStyle: const TextStyle(fontWeight: FontWeight.w800),
+          ),
+        );
+
+        if (showInlineAction) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: editor),
+              const SizedBox(width: 8),
+              doneButton,
+            ],
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            editor,
+            const SizedBox(height: 8),
+            Align(alignment: Alignment.centerRight, child: doneButton),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _priceField(
     int i,
     InvoiceItem item,
     int itemDateMs,
     AppLocalizations t,
   ) {
-    return TextFormField(
-      initialValue: item.price.toStringAsFixed(2),
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: t.priceLabel,
-        prefixIcon: const Icon(Icons.attach_money),
-      ),
+    return _OverwriteNumberField(
+      value: item.price.toStringAsFixed(2),
+      label: t.priceLabel,
+      icon: Icons.attach_money,
       onChanged: (v) {
         final price = _toDouble(v);
         _items[i] = InvoiceItem(
@@ -1304,6 +1532,147 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   }
 }
 
+/// Clears a numeric default on first tap so the next number replaces it.
+class _OverwriteNumberField extends StatefulWidget {
+  const _OverwriteNumberField({
+    required this.value,
+    required this.label,
+    required this.icon,
+    required this.onChanged,
+  });
+
+  final String value;
+  final String label;
+  final IconData icon;
+  final ValueChanged<String> onChanged;
+
+  @override
+  State<_OverwriteNumberField> createState() => _OverwriteNumberFieldState();
+}
+
+class _OverwriteNumberFieldState extends State<_OverwriteNumberField> {
+  late final TextEditingController _controller;
+  late final FocusNode _focusNode;
+  bool _clearedForThisFocus = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.value);
+    _focusNode = FocusNode()..addListener(_handleFocusChange);
+  }
+
+  @override
+  void didUpdateWidget(covariant _OverwriteNumberField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!_focusNode.hasFocus &&
+        oldWidget.value != widget.value &&
+        _controller.text != widget.value) {
+      _controller.text = widget.value;
+    }
+  }
+
+  void _handleFocusChange() {
+    if (!_focusNode.hasFocus) _clearedForThisFocus = false;
+  }
+
+  void _clearOnFirstTap() {
+    if (_clearedForThisFocus) return;
+    _clearedForThisFocus = true;
+    _controller.clear();
+    widget.onChanged('');
+  }
+
+  @override
+  void dispose() {
+    _focusNode
+      ..removeListener(_handleFocusChange)
+      ..dispose();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: _controller,
+      focusNode: _focusNode,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      textInputAction: TextInputAction.next,
+      onTap: _clearOnFirstTap,
+      decoration: InputDecoration(
+        labelText: widget.label,
+        prefixIcon: Icon(widget.icon),
+      ),
+      onChanged: widget.onChanged,
+    );
+  }
+}
+
+class _ClearOnFirstFocusField extends StatefulWidget {
+  const _ClearOnFirstFocusField({
+    super.key,
+    required this.controller,
+    required this.label,
+    required this.icon,
+    required this.onChanged,
+  });
+
+  final TextEditingController controller;
+  final String label;
+  final IconData icon;
+  final VoidCallback onChanged;
+
+  @override
+  State<_ClearOnFirstFocusField> createState() =>
+      _ClearOnFirstFocusFieldState();
+}
+
+class _ClearOnFirstFocusFieldState extends State<_ClearOnFirstFocusField> {
+  late final FocusNode _focusNode;
+  bool _clearedForThisFocus = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode()..addListener(_handleFocusChanged);
+  }
+
+  @override
+  void dispose() {
+    _focusNode
+      ..removeListener(_handleFocusChanged)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _handleFocusChanged() {
+    if (!_focusNode.hasFocus) _clearedForThisFocus = false;
+  }
+
+  void _clearOnFirstTap() {
+    if (_clearedForThisFocus) return;
+    _clearedForThisFocus = true;
+    widget.controller.clear();
+    widget.onChanged();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: widget.controller,
+      focusNode: _focusNode,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      decoration: InputDecoration(
+        labelText: widget.label,
+        prefixIcon: Icon(widget.icon),
+      ),
+      onTap: _clearOnFirstTap,
+      onChanged: (_) => widget.onChanged(),
+    );
+  }
+}
+
 class _ServicePresetPickerSheet extends StatefulWidget {
   const _ServicePresetPickerSheet({required this.presets});
 
@@ -1369,7 +1738,7 @@ class _ServicePresetPickerSheetState extends State<_ServicePresetPickerSheet> {
                       const SizedBox(width: 12),
                       const Expanded(
                         child: Text(
-                          'Select service preset',
+                          'Choose saved service',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
@@ -1380,10 +1749,9 @@ class _ServicePresetPickerSheetState extends State<_ServicePresetPickerSheet> {
                   ),
                   const SizedBox(height: 14),
                   TextField(
-                    autofocus: true,
                     onChanged: (value) => setState(() => _query = value),
                     decoration: const InputDecoration(
-                      labelText: 'Search presets',
+                      labelText: 'Search saved services',
                       prefixIcon: Icon(Icons.search),
                     ),
                   ),
@@ -1392,7 +1760,7 @@ class _ServicePresetPickerSheetState extends State<_ServicePresetPickerSheet> {
                     child: filtered.isEmpty
                         ? const Center(
                             child: Text(
-                              'No presets found',
+                              'No saved services found',
                               style: TextStyle(fontWeight: FontWeight.w700),
                             ),
                           )
@@ -1441,28 +1809,27 @@ class _ServicePresetPickerSheetState extends State<_ServicePresetPickerSheet> {
   }
 }
 
-/// ✅ Autocomplete + free typing
-class _PresetDescriptionField extends StatefulWidget {
+/// Free typing stays separate from choosing a saved service.
+class _ItemDescriptionField extends StatefulWidget {
   final String label;
-  final List<String> presets;
   final String initial;
   final ValueChanged<String> onChanged;
   final String validatorMsg;
+  final VoidCallback? onSavePreset;
 
-  const _PresetDescriptionField({
+  const _ItemDescriptionField({
     required this.label,
-    required this.presets,
     required this.initial,
     required this.onChanged,
     required this.validatorMsg,
+    required this.onSavePreset,
   });
 
   @override
-  State<_PresetDescriptionField> createState() =>
-      _PresetDescriptionFieldState();
+  State<_ItemDescriptionField> createState() => _ItemDescriptionFieldState();
 }
 
-class _PresetDescriptionFieldState extends State<_PresetDescriptionField> {
+class _ItemDescriptionFieldState extends State<_ItemDescriptionField> {
   late final TextEditingController _ctrl;
 
   @override
@@ -1473,7 +1840,7 @@ class _PresetDescriptionFieldState extends State<_PresetDescriptionField> {
   }
 
   @override
-  void didUpdateWidget(covariant _PresetDescriptionField oldWidget) {
+  void didUpdateWidget(covariant _ItemDescriptionField oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initial != widget.initial && _ctrl.text != widget.initial) {
       _ctrl.text = widget.initial;
@@ -1491,37 +1858,19 @@ class _PresetDescriptionFieldState extends State<_PresetDescriptionField> {
 
   @override
   Widget build(BuildContext context) {
-    return Autocomplete<String>(
-      optionsBuilder: (text) {
-        final q = text.text.trim().toLowerCase();
-        if (q.isEmpty) return widget.presets;
-        return widget.presets.where((s) => s.toLowerCase().contains(q));
-      },
-      onSelected: (v) {
-        _ctrl.text = v;
-        _ctrl.selection = TextSelection.fromPosition(
-          TextPosition(offset: _ctrl.text.length),
-        );
-      },
-      fieldViewBuilder: (context, textCtrl, focusNode, onFieldSubmitted) {
-        // mantén el controller principal
-        textCtrl.value = _ctrl.value;
-
-        textCtrl.addListener(() {
-          if (_ctrl.text != textCtrl.text) _ctrl.value = textCtrl.value;
-        });
-
-        return TextFormField(
-          controller: textCtrl,
-          focusNode: focusNode,
-          decoration: InputDecoration(
-            labelText: widget.label,
-            prefixIcon: const Icon(Icons.subject_outlined),
-          ),
-          validator: (v) =>
-              (v ?? '').trim().isEmpty ? widget.validatorMsg : null,
-        );
-      },
+    return TextFormField(
+      controller: _ctrl,
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        labelText: widget.label,
+        prefixIcon: const Icon(Icons.subject_outlined),
+        suffixIcon: IconButton(
+          tooltip: 'Save service for later',
+          onPressed: widget.onSavePreset,
+          icon: const Icon(Icons.bookmark_add_outlined),
+        ),
+      ),
+      validator: (v) => (v ?? '').trim().isEmpty ? widget.validatorMsg : null,
     );
   }
 }
@@ -1537,52 +1886,20 @@ class _ClientPickerSheet extends StatefulWidget {
 }
 
 class _ClientPickerSheetState extends State<_ClientPickerSheet> {
-  int _tab = 0;
-
-  bool _contactsLoading = false;
-  List<Contact> _contacts = [];
-
   String _q = '';
-
   static const brandGreen = Color(0xFF1F6E5C);
 
-  void _snack(BuildContext context, String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-  }
-
-  Future<void> _loadContacts() async {
-    setState(() => _contactsLoading = true);
-    try {
-      final ok = await FlutterContacts.requestPermission(readonly: true);
-      if (!ok) {
-        _snack(context, AppLocalizations.of(context).permissionDeniedContacts);
-        return;
-      }
-
-      final list = await FlutterContacts.getContacts(withProperties: true);
-
-      if (list.isEmpty) {
-        _snack(context, AppLocalizations.of(context).noContactsFound);
-      }
-
-      setState(() => _contacts = list);
-    } catch (e) {
-      _snack(context, AppLocalizations.of(context).contactsError(e.toString()));
-    } finally {
-      if (mounted) setState(() => _contactsLoading = false);
-    }
+  Future<void> _createClient() async {
+    final created = await Navigator.of(
+      context,
+    ).push<Client>(MaterialPageRoute(builder: (_) => const NewClientScreen()));
+    if (created == null || !mounted) return;
+    Navigator.pop(context, _PickedClient.fromClient(created));
   }
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-
-    final filteredContacts = _contacts.where((c) {
-      if (_q.trim().isEmpty) return true;
-      final name = c.displayName.toLowerCase();
-      final q = _q.toLowerCase();
-      return name.contains(q);
-    }).toList();
 
     return SafeArea(
       child: Container(
@@ -1593,7 +1910,9 @@ class _ClientPickerSheetState extends State<_ClientPickerSheet> {
         ),
         child: DraggableScrollableSheet(
           expand: false,
-          initialChildSize: 0.90,
+          initialChildSize: 0.80,
+          minChildSize: 0.45,
+          maxChildSize: 0.94,
           builder: (_, controller) => Column(
             children: [
               const SizedBox(height: 10),
@@ -1613,7 +1932,7 @@ class _ClientPickerSheetState extends State<_ClientPickerSheet> {
                   children: [
                     Expanded(
                       child: Text(
-                        t.pickClient,
+                        'Add a client',
                         style: const TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 16,
@@ -1632,10 +1951,26 @@ class _ClientPickerSheetState extends State<_ClientPickerSheet> {
 
               Padding(
                 padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+                child: FilledButton.icon(
+                  key: const ValueKey('new-client'),
+                  onPressed: _createClient,
+                  icon: const Icon(Icons.person_add_alt_1_outlined),
+                  label: Text(t.newClientTitle),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(54),
+                    backgroundColor: brandGreen,
+                    foregroundColor: Colors.white,
+                    textStyle: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
                 child: TextField(
                   onChanged: (v) => setState(() => _q = v),
                   decoration: InputDecoration(
-                    hintText: 'Search…',
+                    hintText: 'Search saved clients',
                     prefixIcon: const Icon(Icons.search),
                     filled: true,
                     fillColor: Colors.black.withOpacity(0.04),
@@ -1646,195 +1981,79 @@ class _ClientPickerSheetState extends State<_ClientPickerSheet> {
                   ),
                 ),
               ),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.04),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _tabBtn(
-                          text: t.savedTab,
-                          selected: _tab == 0,
-                          onTap: () => setState(() => _tab = 0),
-                        ),
-                      ),
-                      Expanded(
-                        child: _tabBtn(
-                          text: t.contactsTab,
-                          selected: _tab == 1,
-                          onTap: () async {
-                            setState(() => _tab = 1);
-                            if (_contacts.isEmpty && !_contactsLoading) {
-                              await _loadContacts();
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
+              const SizedBox(height: 8),
               Expanded(
-                child: _tab == 0
-                    ? StreamBuilder<List<Client>>(
-                        stream: ClientsService.streamClients(),
-                        builder: (context, s) {
-                          final items = (s.data ?? [])
-                              .where(
-                                (c) => _q.trim().isEmpty
-                                    ? true
-                                    : c.name.toLowerCase().contains(
-                                        _q.toLowerCase(),
-                                      ),
-                              )
-                              .toList();
-
-                          if (items.isEmpty) {
-                            return Center(child: Text(t.noSavedClients));
-                          }
-
-                          return ListView.separated(
-                            controller: controller,
-                            itemCount: items.length,
-                            separatorBuilder: (_, __) => Divider(
-                              height: 0,
-                              color: Colors.black.withOpacity(0.06),
-                            ),
-                            itemBuilder: (_, i) {
-                              final c = items[i];
-                              final sub = [
-                                c.email,
-                                c.phoneDisplay,
-                              ].where((e) => e.trim().isNotEmpty).join(' • ');
-
-                              return ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: brandGreen.withOpacity(0.10),
-                                  foregroundColor: brandGreen,
-                                  child: const Icon(Icons.person_outline),
-                                ),
-                                title: Text(
-                                  c.name,
+                child: StreamBuilder<List<Client>>(
+                  stream: ClientsService.streamClients(),
+                  builder: (context, s) {
+                    final clients = (s.data ?? [])
+                        .where(
+                          (client) =>
+                              _q.trim().isEmpty ||
+                              client.name.toLowerCase().contains(
+                                _q.toLowerCase(),
+                              ),
+                        )
+                        .toList();
+                    if (clients.isEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Text(
+                            _q.trim().isEmpty
+                                ? 'Create your first client to reuse it in future invoices.'
+                                : t.noResultsForFilters,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    }
+                    return ListView.separated(
+                      controller: controller,
+                      itemCount: clients.length,
+                      separatorBuilder: (_, __) => Divider(
+                        height: 0,
+                        color: Colors.black.withOpacity(0.06),
+                      ),
+                      itemBuilder: (_, index) {
+                        final client = clients[index];
+                        final detail = [
+                          client.email,
+                          client.phoneDisplay,
+                        ].where((value) => value.trim().isNotEmpty).join(' • ');
+                        return ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 4,
+                          ),
+                          leading: CircleAvatar(
+                            backgroundColor: brandGreen.withOpacity(0.10),
+                            foregroundColor: brandGreen,
+                            child: const Icon(Icons.person_outline),
+                          ),
+                          title: Text(
+                            client.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: detail.isEmpty
+                              ? null
+                              : Text(
+                                  detail,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                subtitle: sub.isEmpty
-                                    ? null
-                                    : Text(
-                                        sub,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                onTap: () => Navigator.pop(
-                                  context,
-                                  _PickedClient(
-                                    clientId: c.id,
-                                    name: c.name,
-                                    email: c.email,
-                                    phone: c.phoneE164.trim().isNotEmpty
-                                        ? c.phoneE164
-                                        : c.phoneDisplay,
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      )
-                    : _contactsLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : ListView.separated(
-                        controller: controller,
-                        itemCount: filteredContacts.length,
-                        separatorBuilder: (_, __) => Divider(
-                          height: 0,
-                          color: Colors.black.withOpacity(0.06),
-                        ),
-                        itemBuilder: (_, i) {
-                          final c = filteredContacts[i];
-
-                          final name = c.displayName.trim();
-                          final email = c.emails.isNotEmpty
-                              ? c.emails.first.address
-                              : '';
-                          final phone = c.phones.isNotEmpty
-                              ? c.phones.first.number
-                              : '';
-
-                          final title = name.isEmpty ? t.noName : name;
-                          final sub = [
-                            email,
-                            phone,
-                          ].where((e) => e.trim().isNotEmpty).join(' • ');
-
-                          return ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: brandGreen.withOpacity(0.10),
-                              foregroundColor: brandGreen,
-                              child: const Icon(Icons.contact_phone_outlined),
-                            ),
-                            title: Text(
-                              title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            subtitle: sub.isEmpty
-                                ? null
-                                : Text(
-                                    sub,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                            onTap: () => Navigator.pop(
-                              context,
-                              _PickedClient(
-                                clientId: '',
-                                name: title == t.noName ? '' : title,
-                                email: email,
-                                phone: phone,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                          onTap: () => Navigator.pop(
+                            context,
+                            _PickedClient.fromClient(client),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _tabBtn({
-    required String text,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: selected ? brandGreen : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: selected ? Colors.white : Colors.black.withOpacity(0.70),
-              fontWeight: FontWeight.w900,
-            ),
           ),
         ),
       ),
@@ -1854,6 +2073,15 @@ class _PickedClient {
     required this.email,
     required this.phone,
   });
+
+  factory _PickedClient.fromClient(Client client) => _PickedClient(
+    clientId: client.id,
+    name: client.name,
+    email: client.email,
+    phone: client.phoneE164.trim().isNotEmpty
+        ? client.phoneE164
+        : client.phoneDisplay,
+  );
 }
 
 // =========================

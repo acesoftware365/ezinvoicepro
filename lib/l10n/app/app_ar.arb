@@ -329,7 +329,7 @@
   "sentLabel": "مرسلة",
   "paidLabel": "مدفوعة",
   "overdueLabel": "متأخرة",
-  "reportCalculatedHint": "تم الحساب من فواتيرك في Firestore.",
+  "reportCalculatedHint": "تم الحساب من فواتيرك.",
   "exportPdfComingSoon": "تصدير PDF (قريبًا)",
   "exportCsvComingSoon": "تصدير CSV (قريبًا)",
   "unsentLabel": "غير مرسلة",
@@ -337,7 +337,8 @@
   "deleteAccountWarning": "سيؤدي هذا الإجراء إلى حذف حسابك وجميع البيانات المرتبطة به نهائيًا.",
   "deleteAccountButton": "حذف الحساب",
   "deleteAccountConfirmTitle": "تأكيد الحذف",
-  "deleteAccountConfirmMessage": "هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء.",
+  "deleteAccountConfirmMessage": "هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء."
+,
   "servicePresetsTitle": "Service presets",
   "servicePresetsScreenTitle": "Service Presets",
   "servicePresetsAddNew": "Add new preset",
@@ -367,5 +368,14 @@
       "style": {},
       "palette": {}
     }
-  }
+  },
+  "profileSaved": "تم الحفظ تلقائيًا",
+  "profileSaveError": "تعذر الحفظ. لا تزال تغييراتك موجودة هنا.",
+  "profileRetry": "إعادة المحاولة",
+  "profileAutosaveHint": "تُحفظ التغييرات تلقائيًا وتبقى عند الإغلاق.",
+  "profileLogo": "شعار الشركة",
+  "profileDefaults": "إعدادات الفاتورة الافتراضية",
+  "profileTaxInvalid": "تحقق من الضريبة (0–100٪).",
+  "metricLoadError": "تعذر تحميل التقرير. حاول مرة أخرى.",
+  "totalInvoicedTitle": "إجمالي الفواتير"
 }

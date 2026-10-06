@@ -1,798 +1,807 @@
-// lib/ui/business/business_profile_screen.dart
-
-import 'dart:io';
+import 'dart:async';
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
-import 'package:ezinvoice/models/business_profile.dart';
 import 'package:ezinvoice/repositories/business_profile_repository.dart';
 import 'package:ezinvoice/utils/logo_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'profile_autosave.dart';
 
 class BusinessProfileScreen extends StatefulWidget {
-  const BusinessProfileScreen({super.key});
+  const BusinessProfileScreen({super.key, this.repository});
+  final BusinessProfileRepository? repository;
 
   @override
   State<BusinessProfileScreen> createState() => _BusinessProfileScreenState();
 }
 
-class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
-  static const brandGreen = Color(0xFF1F7A63);
-  static const brandGreenSoft = Color(0xFFE7F3EF);
-  static const pageBg = Color(0xFFF5F6F8);
-  static const ink = Color(0xFF202124);
-  static const muted = Color(0xFF74787D);
-
-  final _repo = BusinessProfileRepository();
-  final _formKey = GlobalKey<FormState>();
-
+class _BusinessProfileScreenState extends State<BusinessProfileScreen>
+    with WidgetsBindingObserver {
+  static const green = Color(0xFF1F7A63);
+  late final BusinessProfileRepository _repo;
+  late final ProfileAutosave _autosave;
+  final Map<String, TextEditingController> _fields = {
+    for (final key in [
+      'businessName',
+      'ownerName',
+      'phone',
+      'email',
+      'address',
+      'footerNote',
+      'defaultTaxRate',
+    ])
+      key: TextEditingController(),
+  };
+  final _editorTick = ValueNotifier<int>(0);
   bool _loading = true;
-  BusinessProfile _profile = const BusinessProfile();
-
-  final _businessName = TextEditingController();
-  final _ownerName = TextEditingController();
-  final _phone = TextEditingController();
-  final _email = TextEditingController();
-  final _address = TextEditingController();
-  final _taxRate = TextEditingController();
-  final _footer = TextEditingController();
-  final _presetCtrl = TextEditingController();
-
+  bool _loadFailed = false;
+  bool _logoBusy = false;
+  bool _invalidTax = false;
+  String _currency = 'USD';
+  String? _logoData;
   List<String> _presets = [];
-  String _currencyCode = 'USD';
 
   @override
   void initState() {
     super.initState();
-    _load();
+    _repo = widget.repository ?? BusinessProfileRepository();
+    _autosave = ProfileAutosave(_repo.updateFields)..addListener(_refresh);
+    WidgetsBinding.instance.addObserver(this);
+    unawaited(_load());
+  }
+
+  void _refresh() {
+    if (mounted) {
+      setState(() {});
+      _editorTick.value++;
+    }
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _loadFailed = false;
+    });
+    try {
+      final profile = await _repo.load();
+      if (!mounted) return;
+      final map = profile.toMap();
+      for (final entry in _fields.entries) {
+        entry.value.text = entry.key == 'defaultTaxRate'
+            ? profile.defaultTaxRate.toStringAsFixed(2)
+            : (map[entry.key] ?? '').toString();
+      }
+      _currency = profile.currencyCode;
+      _presets = profile.servicePresets.toList();
+      _logoData = profile.logoDataBase64;
+      if ((_logoData ?? '').isEmpty && profile.logoFilePath != null) {
+        final file = File(profile.logoFilePath!);
+        if (await file.exists()) {
+          _logoData = base64Encode(await file.readAsBytes());
+        }
+      }
+      if (!mounted) return;
+      setState(() => _loading = false);
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _loadFailed = true;
+        });
+      }
+    }
+  }
+
+  void _changed(String key, String value) {
+    if (key == 'defaultTaxRate') {
+      final number = double.tryParse(
+        value.trim().replaceAll(',', '.').replaceAll('%', ''),
+      );
+      _invalidTax =
+          number == null || !number.isFinite || number < 0 || number > 100;
+      if (_invalidTax) {
+        _refresh();
+        return;
+      }
+      _autosave.change({key: number});
+    } else {
+      _autosave.change({key: value});
+    }
+    _refresh();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) unawaited(_autosave.flush());
   }
 
   @override
   void dispose() {
-    _businessName.dispose();
-    _ownerName.dispose();
-    _phone.dispose();
-    _email.dispose();
-    _address.dispose();
-    _taxRate.dispose();
-    _footer.dispose();
-    _presetCtrl.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    _autosave.removeListener(_refresh);
+    _autosave.dispose();
+    _editorTick.dispose();
+    for (final controller in _fields.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
-  Future<void> _load() async {
-    var p = await _repo.load();
-    p = await _restoreLogoFileIfNeeded(p);
-    _profile = p;
-
-    _businessName.text = p.businessName;
-    _ownerName.text = p.ownerName;
-    _phone.text = p.phone;
-    _email.text = p.email;
-    _address.text = p.address;
-    _taxRate.text = p.defaultTaxRate.toStringAsFixed(2);
-    _currencyCode = p.currencyCode;
-    _footer.text = p.footerNote;
-    _presets = p.servicePresets.toList();
-
-    if (!mounted) return;
-    setState(() => _loading = false);
-  }
-
-  Future<BusinessProfile> _restoreLogoFileIfNeeded(
-    BusinessProfile profile,
-  ) async {
-    final path = profile.logoFilePath;
-    final hasLocalLogo =
-        path != null && path.isNotEmpty && File(path).existsSync();
-    if (hasLocalLogo || (profile.logoDataBase64 ?? '').trim().isEmpty) {
-      return profile;
-    }
-
-    final restoredPath = await LogoStorage.restoreLogoFileFromBase64(
-      profile.logoDataBase64,
-    );
-    if (restoredPath == null) return profile;
-
-    final restored = profile.copyWith(logoFilePath: restoredPath);
-    await _repo.save(restored);
-    return restored;
-  }
-
-  Future<String?> _logoDataForSave() async {
-    final currentData = (_profile.logoDataBase64 ?? '').trim();
-    if (currentData.isNotEmpty) return currentData;
-
-    final path = _profile.logoFilePath;
-    if (path == null || path.isEmpty) return null;
-
-    final file = File(path);
-    if (!await file.exists()) return null;
-    return base64Encode(await file.readAsBytes());
-  }
-
-  double _parseTax(String v) {
-    final raw = v.trim().replaceAll('%', '');
-    final n = double.tryParse(raw) ?? 0.0;
-    if (n < 0) return 0.0;
-    if (n > 100) return 100.0;
-    return n;
-  }
-
   Future<void> _pickLogo() async {
-    final picker = ImagePicker();
-    final x = await picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 512,
-      maxHeight: 512,
-      imageQuality: 80,
-    );
-    if (x == null) return;
-
-    final source = File(x.path);
-    final savedPath = await LogoStorage.saveLogoFile(source);
-    final logoDataBase64 = base64Encode(await source.readAsBytes());
-
-    if (_profile.logoFilePath != null && _profile.logoFilePath != savedPath) {
-      await LogoStorage.deleteLogoIfExists(_profile.logoFilePath);
-    }
-
-    if (!mounted) return;
-    setState(() {
-      _profile = _profile.copyWith(
-        logoFilePath: savedPath,
-        logoDataBase64: logoDataBase64,
-      );
-    });
-  }
-
-  Future<void> _removeLogo() async {
-    await LogoStorage.deleteLogoIfExists(_profile.logoFilePath);
-    if (!mounted) return;
-    setState(() {
-      _profile = _profile.copyWith(logoFilePath: null, logoDataBase64: null);
-    });
-  }
-
-  Future<void> _showPresetDialog({String? current}) async {
-    var draft = current ?? '';
-    final value = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(current == null ? 'Add service' : 'Edit service'),
-        content: TextFormField(
-          initialValue: draft,
-          autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Service name',
-            prefixIcon: Icon(Icons.design_services_outlined),
-          ),
-          onChanged: (value) => draft = value,
-          onFieldSubmitted: (v) => Navigator.of(dialogContext).pop(v.trim()),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(draft.trim()),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-
-    if (value == null || value.trim().isEmpty) return;
-
-    final next = _presets
-        .where((p) => current == null || p != current)
-        .map((p) => p.trim())
-        .where((p) => p.isNotEmpty)
-        .toSet();
-    next.add(value.trim());
-    final sorted = next.toList()..sort((a, b) => a.compareTo(b));
-
-    final previous = _presets.toList();
-    setState(() => _presets = sorted);
-
+    setState(() => _logoBusy = true);
     try {
-      await _repo.setPresets(sorted);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(current == null ? 'Service added' : 'Service updated'),
-        ),
+      final image = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 80,
       );
+      if (image == null || !mounted) return;
+      final bytes = await File(image.path).readAsBytes();
+      final path = await LogoStorage.saveLogoBytes(bytes);
+      if (!mounted) return;
+      setState(() => _logoData = base64Encode(bytes));
+      _autosave.change({'logoFilePath': path, 'logoDataBase64': _logoData});
+      unawaited(_autosave.flush());
     } catch (_) {
-      if (!mounted) return;
-      setState(() => _presets = previous);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).genericError)),
-      );
-    }
-  }
-
-  Future<void> _removePreset(String text) async {
-    final prev = _presets.toList();
-    setState(() {
-      _presets = _presets
-          .where((e) => e.trim().toLowerCase() != text.trim().toLowerCase())
-          .toList();
-    });
-
-    try {
-      await _repo.setPresets(_presets);
-    } catch (_) {
-      if (!mounted) return;
-      setState(() => _presets = prev);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).genericError)),
-      );
-    }
-  }
-
-  Future<void> _save() async {
-    final t = AppLocalizations.of(context);
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-
-    final p = _profile.copyWith(
-      businessName: _businessName.text.trim(),
-      ownerName: _ownerName.text.trim(),
-      phone: _phone.text.trim(),
-      email: _email.text.trim(),
-      address: _address.text.trim(),
-      currencyCode: _currencyCode,
-      defaultTaxRate: _parseTax(_taxRate.text),
-      footerNote: _footer.text.trim(),
-      servicePresets: _presets,
-      logoDataBase64: await _logoDataForSave(),
-    );
-
-    setState(() => _loading = true);
-    await _repo.save(p);
-
-    if (!mounted) return;
-    setState(() {
-      _profile = p;
-      _loading = false;
-    });
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(t.businessSavedSuccess)));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
-    final logoPath = _profile.logoFilePath;
-    final hasLogo =
-        logoPath != null && logoPath.isNotEmpty && File(logoPath).existsSync();
-    final isTablet = MediaQuery.sizeOf(context).width >= 760;
-
-    final theme = Theme.of(context);
-    return Theme(
-      data: theme.copyWith(
-        scaffoldBackgroundColor: pageBg,
-        colorScheme: theme.colorScheme.copyWith(
-          primary: brandGreen,
-          secondary: brandGreen,
-          surface: Colors.white,
-        ),
-        inputDecorationTheme: theme.inputDecorationTheme.copyWith(
-          filled: true,
-          fillColor: Colors.white,
-          isDense: true,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: Colors.black.withValues(alpha: 0.07)),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: Colors.black.withValues(alpha: 0.08)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: brandGreen, width: 1.5),
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 14,
-          ),
-        ),
-      ),
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: pageBg,
-          foregroundColor: ink,
-          elevation: 0,
-          surfaceTintColor: Colors.transparent,
-          title: Text(
-            t.businessProfileTitle,
-            style: const TextStyle(color: ink, fontWeight: FontWeight.w900),
-          ),
-          actions: [
-            IconButton.filledTonal(
-              tooltip: t.save,
-              onPressed: _loading ? null : _save,
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: brandGreen,
-              ),
-              icon: _loading
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.save_outlined),
-            ),
-            const SizedBox(width: 12),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          elevation: 10,
-          backgroundColor: brandGreen,
-          foregroundColor: Colors.white,
-          shape: const CircleBorder(),
-          onPressed: _loading ? null : () => _showPresetDialog(),
-          child: const Icon(Icons.add),
-        ),
-        body: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : SafeArea(
-                child: Form(
-                  key: _formKey,
-                  child: CustomScrollView(
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    slivers: [
-                      SliverPadding(
-                        padding: EdgeInsets.fromLTRB(
-                          isTablet ? 24 : 16,
-                          8,
-                          isTablet ? 24 : 16,
-                          96,
-                        ),
-                        sliver: SliverToBoxAdapter(
-                          child: isTablet
-                              ? _tabletLayout(t, hasLogo, logoPath)
-                              : _phoneLayout(t, hasLogo, logoPath),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-      ),
-    );
-  }
-
-  Widget _phoneLayout(AppLocalizations t, bool hasLogo, String? logoPath) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _logoCard(t, hasLogo, logoPath, large: true),
-        const SizedBox(height: 16),
-        _businessInfoCard(t),
-        const SizedBox(height: 16),
-        _phoneSettingsLayout(t),
-        const SizedBox(height: 16),
-        _footerCard(t),
-        const SizedBox(height: 16),
-        _presetsCard(t),
-      ],
-    );
-  }
-
-  Widget _phoneSettingsLayout(AppLocalizations t) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final canUseTwoColumns = constraints.maxWidth >= 430;
-        if (!canUseTwoColumns) {
-          return Column(
-            children: [
-              _settingsCard(t, currencyOnly: true),
-              const SizedBox(height: 12),
-              _settingsCard(t, taxOnly: true),
-            ],
-          );
-        }
-
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(child: _settingsCard(t, currencyOnly: true)),
-            const SizedBox(width: 12),
-            Expanded(child: _settingsCard(t, taxOnly: true)),
-          ],
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context).genericError)),
         );
-      },
-    );
+      }
+    } finally {
+      if (mounted) setState(() => _logoBusy = false);
+    }
   }
 
-  Widget _tabletLayout(AppLocalizations t, bool hasLogo, String? logoPath) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(width: 320, child: _logoCard(t, hasLogo, logoPath)),
-            const SizedBox(width: 20),
-            Expanded(child: _businessInfoCard(t)),
-          ],
-        ),
-        const SizedBox(height: 18),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(child: _settingsCard(t, currencyOnly: true)),
-            const SizedBox(width: 16),
-            Expanded(child: _settingsCard(t, taxOnly: true)),
-          ],
-        ),
-        const SizedBox(height: 18),
-        _footerCard(t),
-        const SizedBox(height: 18),
-        _presetsCard(t),
-      ],
-    );
+  void _removeLogo() {
+    setState(() => _logoData = null);
+    _autosave.change({'logoFilePath': null, 'logoDataBase64': null});
+    unawaited(_autosave.flush());
   }
 
-  Widget _logoCard(
-    AppLocalizations t,
-    bool hasLogo,
-    String? logoPath, {
-    bool large = false,
-  }) {
-    return _card(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              const Expanded(child: _CardTitle('Business Logo')),
-              if (hasLogo)
-                PopupMenuButton<String>(
-                  tooltip: 'Logo options',
-                  icon: const Icon(Icons.more_horiz),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  onSelected: (value) {
-                    if (value == 'change') _pickLogo();
-                    if (value == 'remove') _removeLogo();
-                  },
-                  itemBuilder: (_) => const [
-                    PopupMenuItem(
-                      value: 'change',
-                      child: _MenuRow(
-                        icon: Icons.image_outlined,
-                        label: 'Change Logo',
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'remove',
-                      child: _MenuRow(
-                        icon: Icons.delete_outline,
-                        label: 'Remove Logo',
-                        danger: true,
-                      ),
-                    ),
-                  ],
-                ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Container(
-            width: large ? 128 : 118,
-            height: large ? 128 : 118,
-            decoration: BoxDecoration(
-              color: brandGreenSoft,
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: brandGreen.withValues(alpha: 0.18)),
+  void _savePresets() {
+    final values = _presets
+        .map((v) => v.trim())
+        .where((v) => v.isNotEmpty)
+        .toSet()
+        .toList();
+    _autosave.change({'servicePresets': values});
+    _refresh();
+  }
+
+  Future<void> _editService([int? index]) async {
+    final t = AppLocalizations.of(context);
+    int? target = index;
+    final controller = TextEditingController(
+      text: index == null ? '' : _presets[index],
+    );
+    await _edit(
+      t.servicePresetsTitle,
+      (context) => TextField(
+        key: const ValueKey('service-editor'),
+        controller: controller,
+        minLines: 1,
+        maxLines: 4,
+        decoration: InputDecoration(labelText: t.addServiceLabel),
+        onChanged: (value) {
+          if (target == null) {
+            if (value.trim().isEmpty) return;
+            target = _presets.length;
+            _presets.add(value);
+          } else {
+            _presets[target!] = value;
+          }
+          _savePresets();
+        },
+      ),
+    );
+    // Dispose only after the closing route's animation releases the field.
+    Future<void>.delayed(const Duration(milliseconds: 400), controller.dispose);
+    if (mounted) setState(() => _presets.removeWhere((s) => s.trim().isEmpty));
+  }
+
+  Future<void> _edit(String title, WidgetBuilder content) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      useRootNavigator: true,
+      useSafeArea: true,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      constraints: const BoxConstraints(maxWidth: 640),
+      builder: (sheetContext) => AnimatedBuilder(
+        animation: Listenable.merge([_autosave, _editorTick]),
+        builder: (context, _) {
+          final t = AppLocalizations.of(context);
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.viewInsetsOf(context).bottom,
             ),
-            clipBehavior: Clip.antiAlias,
-            child: hasLogo
-                ? Image.file(File(logoPath!), fit: BoxFit.cover)
-                : const Icon(
-                    Icons.storefront_outlined,
-                    color: brandGreen,
-                    size: 52,
-                  ),
-          ),
-          const SizedBox(height: 18),
-          FilledButton.tonalIcon(
-            onPressed: _pickLogo,
-            icon: const Icon(Icons.upload_outlined),
-            label: Text(t.uploadLogo),
-            style: FilledButton.styleFrom(
-              backgroundColor: brandGreenSoft,
-              foregroundColor: brandGreen,
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(999),
-              ),
-              textStyle: const TextStyle(fontWeight: FontWeight.w900),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _businessInfoCard(AppLocalizations t) {
-    return _card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _CardTitle(t.businessInfoSection),
-          const SizedBox(height: 16),
-          _field(
-            controller: _businessName,
-            label: t.businessNameLabel,
-            icon: Icons.business_outlined,
-            validator: (v) =>
-                (v == null || v.trim().isEmpty) ? t.requiredField : null,
-          ),
-          _field(
-            controller: _ownerName,
-            label: t.ownerNameLabel,
-            icon: Icons.person_outline,
-          ),
-          _field(
-            controller: _phone,
-            label: t.phoneLabel,
-            icon: Icons.phone_outlined,
-            keyboardType: TextInputType.phone,
-          ),
-          _field(
-            controller: _email,
-            label: t.email,
-            icon: Icons.email_outlined,
-            keyboardType: TextInputType.emailAddress,
-          ),
-          _field(
-            controller: _address,
-            label: t.addressLabel,
-            icon: Icons.location_on_outlined,
-            maxLines: 2,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _settingsCard(
-    AppLocalizations t, {
-    bool currencyOnly = false,
-    bool taxOnly = false,
-  }) {
-    return _card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _CardTitle(currencyOnly ? t.currencyLabel : t.taxDefaultLabel),
-          const SizedBox(height: 14),
-          if (!taxOnly) _currencyDropdown(t),
-          if (!currencyOnly) _taxField(t),
-        ],
-      ),
-    );
-  }
-
-  Widget _footerCard(AppLocalizations t) {
-    return _card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _CardTitle(t.footerNoteLabel),
-          const SizedBox(height: 14),
-          _field(
-            controller: _footer,
-            label: 'Thank you for your business.',
-            icon: Icons.notes_outlined,
-            maxLines: 4,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _presetsCard(AppLocalizations t) {
-    return _card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(child: _CardTitle(t.servicePresetsTitle)),
-              IconButton.filledTonal(
-                tooltip: t.servicePresetsAddButton,
-                onPressed: () => _showPresetDialog(),
-                style: IconButton.styleFrom(
-                  backgroundColor: brandGreenSoft,
-                  foregroundColor: brandGreen,
-                ),
-                icon: const Icon(Icons.add),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            t.servicePresetsHint,
-            style: const TextStyle(color: muted, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 12),
-          if (_presets.isEmpty)
-            Text(
-              t.noPresetsYet,
-              style: const TextStyle(color: muted, fontWeight: FontWeight.w700),
-            )
-          else
-            Column(
-              children: [
-                for (final preset in _presets)
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    minLeadingWidth: 0,
-                    leading: const Icon(
-                      Icons.design_services_outlined,
-                      color: brandGreen,
+            child: SafeArea(
+              top: false,
+              child: LayoutBuilder(
+                builder: (context, limits) {
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: limits.maxHeight * .94,
                     ),
-                    title: Text(
-                      preset,
-                      style: const TextStyle(fontWeight: FontWeight.w800),
-                    ),
-                    trailing: Row(
+                    child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        IconButton(
-                          tooltip: t.edit,
-                          onPressed: () => _showPresetDialog(current: preset),
-                          icon: const Icon(Icons.edit_outlined),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  title,
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                              ),
+                              IconButton(
+                                iconSize: 28,
+                                constraints: const BoxConstraints(
+                                  minWidth: 52,
+                                  minHeight: 52,
+                                ),
+                                key: const ValueKey('close-editor'),
+                                tooltip: t.close,
+                                onPressed: () => Navigator.pop(sheetContext),
+                                icon: const Icon(Icons.close),
+                              ),
+                            ],
+                          ),
                         ),
-                        IconButton(
-                          tooltip: t.delete,
-                          onPressed: () => _removePreset(preset),
-                          icon: const Icon(
-                            Icons.delete_outline,
-                            color: Colors.red,
+                        Flexible(
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  t.profileAutosaveHint,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                const SizedBox(height: 16),
+                                content(context),
+                                const SizedBox(height: 12),
+                                _status(t),
+                              ],
+                            ),
                           ),
                         ),
                       ],
                     ),
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      ),
+    );
+    unawaited(_autosave.flush());
+    _refresh();
+  }
+
+  Widget _status(AppLocalizations t) {
+    final error = _autosave.hasError;
+    final label = _invalidTax
+        ? t.profileTaxInvalid
+        : error
+        ? t.profileSaveError
+        : _autosave.hasPending
+        ? t.saving
+        : t.profileSaved;
+    return Semantics(
+      liveRegion: true,
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 8,
+        runSpacing: 4,
+        children: [
+          Icon(
+            _invalidTax || error
+                ? Icons.error_outline
+                : _autosave.hasPending
+                ? Icons.cloud_upload_outlined
+                : Icons.cloud_done_outlined,
+            size: 20,
+            color: _invalidTax || error ? Colors.deepOrange : green,
+          ),
+          Text(label, key: const ValueKey('save-status')),
+          if (error)
+            TextButton(onPressed: _autosave.flush, child: Text(t.profileRetry)),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 16,
+                runSpacing: 8,
+                children: [
+                  Text(
+                    t.businessProfileTitle,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  if (!_loading && !_loadFailed) _status(t),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _loadFailed
+                  ? Center(
+                      child: FilledButton.icon(
+                        onPressed: _load,
+                        icon: const Icon(Icons.refresh),
+                        label: Text(t.profileRetry),
+                      ),
+                    )
+                  : LayoutBuilder(
+                      builder: (context, constraints) {
+                        final scaled =
+                            MediaQuery.textScalerOf(context).scale(16) / 16;
+                        final twoColumns =
+                            constraints.maxWidth >= 760 && scaled <= 1.3;
+                        final main = Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _businessCard(t),
+                            const SizedBox(height: 16),
+                            _presetsCard(t),
+                          ],
+                        );
+                        final secondary = Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _logoCard(t),
+                            const SizedBox(height: 16),
+                            _defaultsCard(t),
+                            const SizedBox(height: 16),
+                            _footerCard(t),
+                          ],
+                        );
+                        return SingleChildScrollView(
+                          key: const PageStorageKey('business-profile-scroll'),
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                          child: Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 1120),
+                              child: twoColumns
+                                  ? Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(flex: 3, child: main),
+                                        const SizedBox(width: 20),
+                                        Expanded(flex: 2, child: secondary),
+                                      ],
+                                    )
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        _businessCard(t),
+                                        const SizedBox(height: 16),
+                                        _logoCard(t),
+                                        const SizedBox(height: 16),
+                                        _defaultsCard(t),
+                                        const SizedBox(height: 16),
+                                        _footerCard(t),
+                                        const SizedBox(height: 16),
+                                        _presetsCard(t),
+                                      ],
+                                    ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _card(
+    String title,
+    Widget child, {
+    VoidCallback? edit,
+    String? editLabel,
+    String? id,
+  }) {
+    final t = AppLocalizations.of(context);
+    return Card(
+      margin: EdgeInsets.zero,
+      elevation: 0,
+      color: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                if (edit != null)
+                  TextButton.icon(
+                    style: TextButton.styleFrom(
+                      minimumSize: const Size(52, 52),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      iconSize: 28,
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      backgroundColor: green.withValues(alpha: .08),
+                    ),
+                    key: id == null ? null : ValueKey<String>(id),
+                    onPressed: edit,
+                    icon: Icon(
+                      editLabel == null ? Icons.edit_outlined : Icons.add,
+                      size: 28,
+                    ),
+                    label: Text(editLabel ?? t.edit),
                   ),
               ],
             ),
-        ],
+            const SizedBox(height: 12),
+            child,
+          ],
+        ),
       ),
     );
   }
 
-  Widget _card({required Widget child}) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 24,
-            offset: const Offset(0, 10),
-            color: Colors.black.withValues(alpha: 0.05),
+  Widget _value(String label, String value) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: Theme.of(context).textTheme.labelMedium),
+        const SizedBox(height: 3),
+        Text(
+          value.trim().isEmpty ? '—' : value,
+          softWrap: true,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      ],
+    ),
+  );
+
+  Widget _businessCard(AppLocalizations t) => _card(
+    t.businessInfoSection,
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _value(t.businessNameLabel, _fields['businessName']!.text),
+        _value(t.ownerNameLabel, _fields['ownerName']!.text),
+        _value(t.phoneLabel, _fields['phone']!.text),
+        _value(t.email, _fields['email']!.text),
+        _value(t.addressLabel, _fields['address']!.text),
+      ],
+    ),
+    id: 'edit-business',
+    edit: () => _edit(
+      t.businessInfoSection,
+      (_) => Column(
+        children: [
+          _field('businessName', t.businessNameLabel),
+          _field('ownerName', t.ownerNameLabel),
+          _field('phone', t.phoneLabel, type: TextInputType.phone),
+          _field('email', t.email, type: TextInputType.emailAddress),
+          _field('address', t.addressLabel, multiline: true),
+        ],
+      ),
+    ),
+  );
+
+  Widget _logoCard(AppLocalizations t) {
+    Widget preview = const Icon(
+      Icons.storefront_outlined,
+      size: 40,
+      color: green,
+    );
+    if ((_logoData ?? '').isNotEmpty) {
+      try {
+        preview = Image.memory(
+          base64Decode(_logoData!),
+          fit: BoxFit.contain,
+          errorBuilder: (_, _, _) => const Icon(Icons.broken_image_outlined),
+        );
+      } catch (_) {
+        /* Placeholder for a malformed stored image. */
+      }
+    }
+    return _card(
+      t.profileLogo,
+      Wrap(
+        spacing: 16,
+        runSpacing: 20,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: green.withValues(alpha: .08),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: preview,
+          ),
+          Wrap(
+            spacing: 16,
+            runSpacing: 16,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              TextButton.icon(
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(52, 52),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  iconSize: 28,
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  backgroundColor: green.withValues(alpha: .08),
+                ),
+                onPressed: _logoBusy ? null : _pickLogo,
+                icon: const Icon(Icons.upload_outlined),
+                label: Text(t.uploadLogo),
+              ),
+              if ((_logoData ?? '').isNotEmpty)
+                TextButton.icon(
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(52, 52),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    iconSize: 28,
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    backgroundColor: green.withValues(alpha: .08),
+                  ),
+                  onPressed: _logoBusy ? null : _removeLogo,
+                  icon: const Icon(Icons.delete_outline),
+                  label: Text(t.delete),
+                ),
+            ],
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
-      child: child,
     );
   }
 
-  Widget _currencyDropdown(AppLocalizations t) {
-    return DropdownButtonFormField<String>(
-      key: ValueKey('currency_$_currencyCode'),
-      initialValue: _currencyCode,
-      isExpanded: true,
-      decoration: InputDecoration(
-        labelText: t.currencyLabel,
-        prefixIcon: const Icon(Icons.attach_money, color: brandGreen),
-      ),
-      selectedItemBuilder: (_) => const [
-        Text('USD', overflow: TextOverflow.ellipsis),
-        Text('DOP', overflow: TextOverflow.ellipsis),
-        Text('EUR', overflow: TextOverflow.ellipsis),
-      ],
-      items: const [
-        DropdownMenuItem(value: 'USD', child: Text('USD - \$')),
-        DropdownMenuItem(value: 'DOP', child: Text('DOP - RD\$')),
-        DropdownMenuItem(value: 'EUR', child: Text('EUR - €')),
-      ],
-      onChanged: (v) => setState(() => _currencyCode = v ?? 'USD'),
-    );
-  }
-
-  Widget _taxField(AppLocalizations t) {
-    return _field(
-      controller: _taxRate,
-      label: t.taxDefaultLabel,
-      icon: Icons.percent,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      validator: (v) {
-        final raw = (v ?? '').replaceAll('%', '').trim();
-        final n = double.tryParse(raw);
-        if (n == null) return t.invalidNumber;
-        if (n < 0 || n > 100) return t.range0to100;
-        return null;
-      },
-    );
-  }
-
-  Widget _field({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType? keyboardType,
-    String? Function(String?)? validator,
-    int maxLines = 1,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        validator: validator,
-        maxLines: maxLines,
-        decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
-      ),
-    );
-  }
-}
-
-class _CardTitle extends StatelessWidget {
-  const _CardTitle(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        color: _BusinessProfileScreenState.ink,
-        fontSize: 16,
-        fontWeight: FontWeight.w900,
-      ),
-    );
-  }
-}
-
-class _MenuRow extends StatelessWidget {
-  const _MenuRow({
-    required this.icon,
-    required this.label,
-    this.danger = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final bool danger;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = danger ? Colors.red : _BusinessProfileScreenState.ink;
-    return Row(
+  Widget _defaultsCard(AppLocalizations t) => _card(
+    t.profileDefaults,
+    Wrap(
+      spacing: 32,
+      runSpacing: 8,
       children: [
-        Icon(icon, size: 18, color: color),
-        const SizedBox(width: 10),
-        Text(
-          label,
-          style: TextStyle(color: color, fontWeight: FontWeight.w800),
-        ),
+        _value(t.currencyLabel, _currency),
+        _value(t.taxDefaultLabel, '${_fields['defaultTaxRate']!.text}%'),
       ],
-    );
-  }
+    ),
+    id: 'edit-defaults',
+    edit: () => _edit(
+      t.profileDefaults,
+      (context) => Column(
+        children: [
+          DropdownButtonFormField<String>(
+            initialValue: _currency,
+            isExpanded: true,
+            decoration: InputDecoration(labelText: t.currencyLabel),
+            items: {
+              // Common choices first; remaining currencies ordered by code.
+              ...['USD', 'EUR', 'DOP', 'CAD', 'MXN', 'GBP'],
+              ...[
+                'AED',
+                'ARS',
+                'AUD',
+                'BDT',
+                'BGN',
+                'BHD',
+                'BOB',
+                'BRL',
+                'CHF',
+                'CLP',
+                'CNY',
+                'COP',
+                'CRC',
+                'CZK',
+                'DKK',
+                'EGP',
+                'GTQ',
+                'HKD',
+                'HNL',
+                'HUF',
+                'IDR',
+                'ILS',
+                'INR',
+                'ISK',
+                'JMD',
+                'JPY',
+                'KES',
+                'KRW',
+                'KWD',
+                'MAD',
+                'MYR',
+                'NGN',
+                'NIO',
+                'NOK',
+                'NZD',
+                'PAB',
+                'PEN',
+                'PHP',
+                'PKR',
+                'PLN',
+                'PYG',
+                'QAR',
+                'RON',
+                'SAR',
+                'SEK',
+                'SGD',
+                'THB',
+                'TRY',
+                'TTD',
+                'TWD',
+                'UAH',
+                'UYU',
+                'VND',
+                'ZAR',
+              ],
+              _currency,
+            }.map((v) => DropdownMenuItem(value: v, child: Text(v))).toList(),
+            onChanged: (value) {
+              if (value != null) {
+                _currency = value;
+                _autosave.change({'currencyCode': value});
+              }
+            },
+          ),
+          const SizedBox(height: 16),
+          _field(
+            'defaultTaxRate',
+            t.taxDefaultLabel,
+            type: const TextInputType.numberWithOptions(decimal: true),
+          ),
+        ],
+      ),
+    ),
+  );
+
+  Widget _footerCard(AppLocalizations t) => _card(
+    t.footerNoteLabel,
+    Text(
+      _fields['footerNote']!.text.isEmpty ? '—' : _fields['footerNote']!.text,
+    ),
+    id: 'edit-footer',
+    edit: () => _edit(
+      t.footerNoteLabel,
+      (_) => _field('footerNote', t.footerNoteLabel, multiline: true),
+    ),
+  );
+
+  Widget _presetsCard(AppLocalizations t) => _card(
+    t.servicePresetsTitle,
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (_presets.isEmpty) Text(t.noPresetsYet),
+        for (var i = 0; i < _presets.length; i++)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                Text(_presets[i], style: Theme.of(context).textTheme.bodyLarge),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      iconSize: 28,
+                      constraints: const BoxConstraints(
+                        minWidth: 52,
+                        minHeight: 52,
+                      ),
+                      tooltip: t.edit,
+                      onPressed: () => _editService(i),
+                      icon: const Icon(Icons.edit_outlined),
+                    ),
+                    IconButton(
+                      iconSize: 28,
+                      constraints: const BoxConstraints(
+                        minWidth: 52,
+                        minHeight: 52,
+                      ),
+                      tooltip: t.delete,
+                      onPressed: () {
+                        _presets.removeAt(i);
+                        _savePresets();
+                      },
+                      icon: const Icon(Icons.delete_outline),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+      ],
+    ),
+    id: 'add-service',
+    editLabel: t.servicePresetsAddButton,
+    edit: () => _editService(),
+  );
+
+  Widget _field(
+    String key,
+    String label, {
+    TextInputType? type,
+    bool multiline = false,
+  }) => Padding(
+    padding: const EdgeInsets.only(bottom: 16),
+    child: TextField(
+      key: ValueKey('field-$key'),
+      controller: _fields[key],
+      keyboardType:
+          type ?? (multiline ? TextInputType.multiline : TextInputType.text),
+      minLines: 1,
+      maxLines: multiline ? 6 : 1,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+        errorText: key == 'defaultTaxRate' && _invalidTax
+            ? AppLocalizations.of(context).range0to100
+            : null,
+      ),
+      onChanged: (value) => _changed(key, value),
+    ),
+  );
 }

@@ -245,7 +245,7 @@
   "sentLabel": "Envoyées",
   "paidLabel": "Payées",
   "overdueLabel": "En retard",
-  "reportCalculatedHint": "Calculé à partir de vos factures dans Firestore.",
+  "reportCalculatedHint": "Calculé à partir de vos factures.",
   "exportPdfComingSoon": "Exporter PDF (bientôt)",
   "exportCsvComingSoon": "Exporter CSV (bientôt)",
   "unsentLabel": "Non envoyées",
@@ -253,7 +253,8 @@
   "deleteAccountWarning": "Cette action supprimera définitivement votre compte et toutes les données associées.",
   "deleteAccountButton": "Supprimer le compte",
   "deleteAccountConfirmTitle": "Confirmer la suppression",
-  "deleteAccountConfirmMessage": "Êtes-vous sûr ? Cette action est irréversible.",
+  "deleteAccountConfirmMessage": "Êtes-vous sûr ? Cette action est irréversible."
+,
   "servicePresetsTitle": "Service presets",
   "servicePresetsScreenTitle": "Service Presets",
   "servicePresetsAddNew": "Add new preset",
@@ -283,5 +284,14 @@
       "style": {},
       "palette": {}
     }
-  }
+  },
+  "profileSaved": "Enregistré automatiquement",
+  "profileSaveError": "Échec de l’enregistrement. Vos modifications sont conservées ici.",
+  "profileRetry": "Réessayer",
+  "profileAutosaveHint": "Les modifications sont enregistrées automatiquement, même à la fermeture.",
+  "profileLogo": "Logo de l’entreprise",
+  "profileDefaults": "Valeurs de facturation",
+  "profileTaxInvalid": "Vérifiez la taxe (0–100 %).",
+  "metricLoadError": "Impossible de charger ce rapport. Réessayez.",
+  "totalInvoicedTitle": "Total facturé"
 }

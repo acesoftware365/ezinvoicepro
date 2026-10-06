@@ -24,9 +24,19 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
 
   final _search = TextEditingController();
   final _searchFocus = FocusNode();
+  late final Stream<List<Invoice>> _invoicesStream;
   String _query = '';
+  bool _searchOpen = false;
   _InvoiceFilter _filter = _InvoiceFilter.all;
   bool _deletingInvoice = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Keep one subscription for the screen. Replacing the stream on every
+    // keystroke briefly rebuilt the loader and removed the search field.
+    _invoicesStream = InvoicesService.streamInvoices();
+  }
 
   @override
   void dispose() {
@@ -95,6 +105,32 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
       context,
       MaterialPageRoute(builder: (_) => InvoiceFormScreen(invoice: invoice)),
     );
+  }
+
+  void _toggleSearch() {
+    if (_searchOpen) {
+      _closeSearch();
+    } else {
+      _openSearch();
+    }
+  }
+
+  void _openSearch() {
+    if (_searchOpen) return;
+    setState(() => _searchOpen = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _searchOpen) _searchFocus.requestFocus();
+    });
+  }
+
+  void _closeSearch() {
+    if (!_searchOpen) return;
+    _search.clear();
+    _searchFocus.unfocus();
+    setState(() {
+      _query = '';
+      _searchOpen = false;
+    });
   }
 
   Future<void> _confirmDelete(BuildContext context, Invoice inv) async {
@@ -333,7 +369,6 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
@@ -355,181 +390,206 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
         ),
       ),
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        floatingActionButton: FloatingActionButton.extended(
           elevation: 10,
           backgroundColor: brandGreen,
           foregroundColor: Colors.white,
-          shape: const CircleBorder(),
+          icon: const Icon(Icons.add_rounded),
+          label: Text(
+            t.newInvoiceTitle,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
           onPressed: () => _openForm(context),
-          child: const Icon(Icons.add),
         ),
         body: SafeArea(
-          child: StreamBuilder<List<Invoice>>(
-            stream: InvoicesService.streamInvoices(),
-            builder: (context, snap) {
-              if (snap.hasError) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.error_outline,
-                          size: 48,
-                          color: Colors.red,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final useWideRows = constraints.maxWidth >= 560;
+              final showInlineNarrowSearch = _searchOpen && !useWideRows;
+              return StreamBuilder<List<Invoice>>(
+                stream: _invoicesStream,
+                builder: (context, snap) {
+                  if (snap.hasError) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              size: 48,
+                              color: Colors.red,
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Error loading invoices',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              snap.error.toString(),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(color: Colors.black54),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Error loading invoices',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          snap.error.toString(),
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(color: Colors.black54),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }
-              if (snap.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
+                      ),
+                    );
+                  }
+                  if (snap.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-              final all = snap.data ?? const <Invoice>[];
-              final list = all
-                  .where(_matchesSearch)
-                  .where(_matchesFilter)
-                  .toList();
+                  final all = snap.data ?? const <Invoice>[];
+                  final list = all
+                      .where(_matchesSearch)
+                      .where(_matchesFilter)
+                      .toList();
+                  final totalInvoiced = all.fold<double>(
+                    0,
+                    (total, invoice) => total + invoice.total,
+                  );
+                  final outstanding = all
+                      .where((invoice) => !invoice.isPaid)
+                      .fold<double>(
+                        0,
+                        (total, invoice) => total + invoice.total,
+                      );
+                  final paid = all
+                      .where((invoice) => invoice.isPaid)
+                      .fold<double>(
+                        0,
+                        (total, invoice) => total + invoice.total,
+                      );
 
-              return CustomScrollView(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                slivers: [
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    sliver: SliverToBoxAdapter(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                  return CustomScrollView(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    slivers: [
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
+                        sliver: SliverToBoxAdapter(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: Text(
-                                  t.invoicesTitle,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineMedium
-                                      ?.copyWith(
-                                        color: ink,
-                                        fontWeight: FontWeight.w900,
-                                        letterSpacing: 0,
+                              Listener(
+                                behavior: HitTestBehavior.translucent,
+                                // Device Hub can offset a portrait mouse click by a
+                                // few pixels. The title and summary form one generous
+                                // raw-pointer target, without intercepting filters.
+                                onPointerDown: !useWideRows && !_searchOpen
+                                    ? (_) => _openSearch()
+                                    : null,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: showInlineNarrowSearch
+                                                ? _buildSearchField(
+                                                    t,
+                                                    showQueryClear: false,
+                                                  )
+                                                : Text(
+                                                    t.invoicesTitle,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .headlineMedium
+                                                        ?.copyWith(
+                                                          color: ink,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          letterSpacing: 0,
+                                                        ),
+                                                  ),
+                                          ),
+                                          _buildSearchAction(
+                                            t,
+                                            useWideRows: useWideRows,
+                                          ),
+                                        ],
                                       ),
+                                      const SizedBox(height: 14),
+                                      _InvoiceSummaryBar(
+                                        invoiceCount: all.length,
+                                        totalInvoiced: totalInvoiced,
+                                        outstanding: outstanding,
+                                        paid: paid,
+                                        money: _fmtMoney,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              IconButton.filledTonal(
-                                tooltip: _invoiceSearchLabel(t),
-                                onPressed: () => _searchFocus.requestFocus(),
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: brandGreen,
-                                ),
-                                icon: const Icon(Icons.search),
+                              if (_searchOpen && useWideRows) ...[
+                                const SizedBox(height: 14),
+                                _buildSearchField(t, showQueryClear: true),
+                              ],
+                              const SizedBox(height: 14),
+                              _StatusFilterBar(
+                                selected: _filter,
+                                onChanged: (next) =>
+                                    setState(() => _filter = next),
                               ),
+                              const SizedBox(height: 14),
                             ],
                           ),
-                          const SizedBox(height: 14),
-                          TextField(
-                            controller: _search,
-                            focusNode: _searchFocus,
-                            onChanged: (value) =>
-                                setState(() => _query = value),
-                            textInputAction: TextInputAction.search,
-                            decoration: InputDecoration(
-                              hintText: _invoiceSearchLabel(t),
-                              prefixIcon: const Icon(
-                                Icons.search,
-                                color: brandGreen,
-                              ),
-                              suffixIcon: _query.trim().isEmpty
-                                  ? null
-                                  : IconButton(
-                                      tooltip: t.clear,
-                                      onPressed: () {
-                                        _search.clear();
-                                        setState(() => _query = '');
-                                      },
-                                      icon: const Icon(Icons.close),
-                                    ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          _StatusFilterBar(
-                            selected: _filter,
-                            onChanged: (next) => setState(() => _filter = next),
-                          ),
-                          const SizedBox(height: 12),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (list.isEmpty)
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Text(
-                            all.isEmpty
-                                ? t.noInvoicesYet
-                                : t.noResultsForFilters,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: muted,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
                         ),
                       ),
-                    )
-                  else
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
-                      sliver: SliverList.separated(
-                        itemCount: list.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                        itemBuilder: (context, i) {
-                          final inv = list[i];
-                          return _InvoiceCompactCard(
-                            invoice: inv,
-                            statusText: _statusLabel(t, inv),
-                            statusColor: _statusColor(inv),
-                            dateText: _fmtDateMs(inv.createdAtMs),
-                            amountText: '\$${_fmtMoney(inv.total)}',
-                            onTap: () => _openForm(context, invoice: inv),
-                            onViewPdf: () => _shareInvoicePdf(context, inv),
-                            onSendInvoice: inv.isSent
-                                ? () => _markUnsent(context, inv)
-                                : () => _markSent(context, inv),
-                            onMarkPaid: inv.isPaid
-                                ? () => _markUnpaid(context, inv)
-                                : () => _markPaid(context, inv),
-                            onReceiptPdf: inv.isPaid
-                                ? () => _shareReceiptPdf(context, inv)
-                                : null,
-                            onEdit: () => _openForm(context, invoice: inv),
-                            onDelete: () => _confirmDelete(context, inv),
-                          );
-                        },
-                      ),
-                    ),
-                ],
+                      if (list.isEmpty)
+                        SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: _InvoicesEmptyState(
+                            message: all.isEmpty
+                                ? t.noInvoicesYet
+                                : t.noResultsForFilters,
+                          ),
+                        )
+                      else
+                        SliverPadding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 112),
+                          sliver: SliverList.separated(
+                            itemCount: list.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: 10),
+                            itemBuilder: (context, i) {
+                              final inv = list[i];
+                              return _InvoiceCompactCard(
+                                invoice: inv,
+                                statusText: _statusLabel(t, inv),
+                                statusColor: _statusColor(inv),
+                                dateText: _fmtDateMs(inv.createdAtMs),
+                                amountText: '\$${_fmtMoney(inv.total)}',
+                                wide: useWideRows,
+                                onTap: () => _openForm(context, invoice: inv),
+                                onViewPdf: () => _shareInvoicePdf(context, inv),
+                                onSendInvoice: inv.isSent
+                                    ? () => _markUnsent(context, inv)
+                                    : () => _markSent(context, inv),
+                                onMarkPaid: inv.isPaid
+                                    ? () => _markUnpaid(context, inv)
+                                    : () => _markPaid(context, inv),
+                                onReceiptPdf: inv.isPaid
+                                    ? () => _shareReceiptPdf(context, inv)
+                                    : null,
+                                onEdit: () => _openForm(context, invoice: inv),
+                                onDelete: () => _confirmDelete(context, inv),
+                              );
+                            },
+                          ),
+                        ),
+                    ],
+                  );
+                },
               );
             },
           ),
@@ -537,9 +597,285 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
       ),
     );
   }
+
+  Widget _buildSearchAction(AppLocalizations t, {required bool useWideRows}) {
+    final isClosing = _searchOpen;
+    final tooltip = isClosing ? t.clear : _invoiceSearchLabel(t);
+    final icon = Icon(
+      isClosing ? Icons.close_rounded : Icons.search_rounded,
+      color: brandGreen,
+    );
+
+    if (useWideRows) {
+      return IconButton.filledTonal(
+        tooltip: tooltip,
+        onPressed: _toggleSearch,
+        style: IconButton.styleFrom(
+          minimumSize: const Size(56, 56),
+          backgroundColor: brandGreen.withValues(alpha: 0.1),
+          foregroundColor: brandGreen,
+        ),
+        icon: icon,
+      );
+    }
+
+    return Semantics(
+      button: true,
+      label: tooltip,
+      onTap: _toggleSearch,
+      child: Listener(
+        behavior: HitTestBehavior.opaque,
+        onPointerDown: (_) {
+          if (isClosing) {
+            _closeSearch();
+          } else {
+            _openSearch();
+          }
+        },
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: brandGreen.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          alignment: Alignment.center,
+          child: icon,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchField(AppLocalizations t, {required bool showQueryClear}) {
+    return TextField(
+      controller: _search,
+      focusNode: _searchFocus,
+      onChanged: (value) => setState(() => _query = value),
+      textInputAction: TextInputAction.search,
+      decoration: _searchDecoration(t, showQueryClear: showQueryClear),
+    );
+  }
+
+  InputDecoration _searchDecoration(
+    AppLocalizations t, {
+    required bool showQueryClear,
+  }) {
+    OutlineInputBorder border(Color color, [double width = 1]) {
+      return OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: color, width: width),
+      );
+    }
+
+    return InputDecoration(
+      hintText: _invoiceSearchLabel(t),
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(vertical: 15),
+      prefixIcon: const Icon(Icons.search_rounded, color: brandGreen),
+      suffixIcon: showQueryClear && _query.trim().isNotEmpty
+          ? IconButton(
+              tooltip: t.clear,
+              onPressed: () {
+                _search.clear();
+                setState(() => _query = '');
+              },
+              icon: const Icon(Icons.close_rounded),
+            )
+          : null,
+      border: border(Colors.black.withValues(alpha: 0.08)),
+      enabledBorder: border(Colors.black.withValues(alpha: 0.08)),
+      focusedBorder: border(brandGreen, 1.5),
+    );
+  }
 }
 
 enum _InvoiceFilter { all, unsent, sent, paid, overdue }
+
+class _InvoiceSummaryBar extends StatelessWidget {
+  const _InvoiceSummaryBar({
+    required this.invoiceCount,
+    required this.totalInvoiced,
+    required this.outstanding,
+    required this.paid,
+    required this.money,
+  });
+
+  final int invoiceCount;
+  final double totalInvoiced;
+  final double outstanding;
+  final double paid;
+  final String Function(double) money;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 22,
+            offset: const Offset(0, 8),
+            color: Colors.black.withValues(alpha: 0.035),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _InvoiceSummaryMetric(
+              icon: Icons.receipt_long_outlined,
+              label: t.invoicesTitle,
+              value: '$invoiceCount',
+              color: _InvoicesScreenState.brandGreen,
+            ),
+          ),
+          _SummaryDivider(),
+          Expanded(
+            child: _InvoiceSummaryMetric(
+              icon: Icons.schedule_outlined,
+              label: _openTotalLabel(t),
+              value: '\$${money(outstanding)}',
+              color: Colors.orange.shade800,
+            ),
+          ),
+          _SummaryDivider(),
+          Expanded(
+            child: _InvoiceSummaryMetric(
+              icon: Icons.check_circle_outline_rounded,
+              label: t.paidLabel,
+              value: '\$${money(paid)}',
+              color: Colors.green.shade700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SummaryDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 38,
+      width: 1,
+      color: Colors.black.withValues(alpha: 0.07),
+    );
+  }
+}
+
+class _InvoiceSummaryMetric extends StatelessWidget {
+  const _InvoiceSummaryMetric({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 14, color: color),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: _InvoicesScreenState.muted,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: _InvoicesScreenState.ink,
+              fontSize: 15,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.25,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InvoicesEmptyState extends StatelessWidget {
+  const _InvoicesEmptyState({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(32, 12, 32, 112),
+        child: Container(
+          width: 360,
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  color: _InvoicesScreenState.brandGreen.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.receipt_long_outlined,
+                  color: _InvoicesScreenState.brandGreen,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: _InvoicesScreenState.ink,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _StatusFilterBar extends StatelessWidget {
   const _StatusFilterBar({required this.selected, required this.onChanged});
@@ -558,20 +894,17 @@ class _StatusFilterBar extends StatelessWidget {
       (_InvoiceFilter.overdue, t.overdueLabel),
     ];
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          for (final item in items) ...[
-            _FilterChipPill(
-              label: item.$2,
-              selected: selected == item.$1,
-              onTap: () => onChanged(item.$1),
-            ),
-            const SizedBox(width: 8),
-          ],
-        ],
-      ),
+    return Wrap(
+      spacing: 6,
+      runSpacing: 8,
+      children: [
+        for (final item in items)
+          _FilterChipPill(
+            label: item.$2,
+            selected: selected == item.$1,
+            onTap: () => onChanged(item.$1),
+          ),
+      ],
     );
   }
 }
@@ -594,7 +927,7 @@ class _FilterChipPill extends StatelessWidget {
       borderRadius: BorderRadius.circular(999),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 160),
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
           color: selected ? _InvoicesScreenState.brandGreen : Colors.white,
           borderRadius: BorderRadius.circular(999),
@@ -605,9 +938,9 @@ class _FilterChipPill extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              blurRadius: selected ? 16 : 10,
-              offset: const Offset(0, 6),
-              color: Colors.black.withValues(alpha: selected ? 0.08 : 0.035),
+              blurRadius: selected ? 14 : 8,
+              offset: const Offset(0, 4),
+              color: Colors.black.withValues(alpha: selected ? 0.075 : 0.025),
             ),
           ],
         ),
@@ -615,7 +948,7 @@ class _FilterChipPill extends StatelessWidget {
           label,
           style: TextStyle(
             color: selected ? Colors.white : _InvoicesScreenState.ink,
-            fontSize: 13,
+            fontSize: 12,
             fontWeight: FontWeight.w900,
           ),
         ),
@@ -631,6 +964,7 @@ class _InvoiceCompactCard extends StatelessWidget {
     required this.statusColor,
     required this.dateText,
     required this.amountText,
+    required this.wide,
     required this.onTap,
     required this.onViewPdf,
     required this.onSendInvoice,
@@ -645,6 +979,7 @@ class _InvoiceCompactCard extends StatelessWidget {
   final Color statusColor;
   final String dateText;
   final String amountText;
+  final bool wide;
   final VoidCallback onTap;
   final VoidCallback onViewPdf;
   final VoidCallback onSendInvoice;
@@ -659,6 +994,9 @@ class _InvoiceCompactCard extends StatelessWidget {
     final client = invoice.clientName.trim().isEmpty
         ? '-'
         : invoice.clientName.trim();
+    final invoiceNumber = invoice.invoiceNumber.trim().isEmpty
+        ? t.invoicesTitle
+        : invoice.invoiceNumber.trim();
 
     return Material(
       color: Colors.transparent,
@@ -679,141 +1017,220 @@ class _InvoiceCompactCard extends StatelessWidget {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(14, 13, 8, 13),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    _StatusBadge(label: statusText, color: statusColor),
-                    const Spacer(),
-                    Text(
-                      amountText,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: _InvoicesScreenState.ink,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    const SizedBox(width: 2),
-                    PopupMenuButton<String>(
-                      tooltip: _actionsLabel(t),
-                      icon: const Icon(
-                        Icons.more_vert,
-                        color: _InvoicesScreenState.ink,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      onSelected: (value) {
-                        if (value == 'view_pdf') onViewPdf();
-                        if (value == 'send') onSendInvoice();
-                        if (value == 'paid') onMarkPaid();
-                        if (value == 'receipt') onReceiptPdf?.call();
-                        if (value == 'edit') onEdit();
-                        if (value == 'delete') onDelete();
-                      },
-                      itemBuilder: (_) => [
-                        PopupMenuItem(
-                          value: 'view_pdf',
-                          child: _InvoiceMenuRow(
-                            icon: Icons.picture_as_pdf_outlined,
-                            label: t.sendPdf,
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'send',
-                          child: _InvoiceMenuRow(
-                            icon: invoice.isSent
-                                ? Icons.undo_outlined
-                                : Icons.send_outlined,
-                            label: invoice.isSent ? _unsendLabel(t) : t.sendPdf,
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'paid',
-                          child: _InvoiceMenuRow(
-                            icon: invoice.isPaid
-                                ? Icons.undo_outlined
-                                : Icons.check_circle_outline,
-                            label: invoice.isPaid
-                                ? _markUnpaidLabel(t)
-                                : _markPaidLabel(t),
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'receipt',
-                          enabled: onReceiptPdf != null,
-                          child: _InvoiceMenuRow(
-                            icon: Icons.receipt_long_outlined,
-                            label: _receiptPdfLabel(t),
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'edit',
-                          child: _InvoiceMenuRow(
-                            icon: Icons.edit_outlined,
-                            label: t.edit,
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'delete',
-                          child: _InvoiceMenuRow(
-                            icon: Icons.delete_outline,
-                            label: t.delete,
-                            danger: true,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 7),
-                Text(
-                  invoice.invoiceNumber.trim().isEmpty
-                      ? t.invoicesTitle
-                      : invoice.invoiceNumber.trim(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: _InvoicesScreenState.ink,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        client,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: _InvoicesScreenState.ink,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      dateText,
-                      style: const TextStyle(
-                        color: _InvoicesScreenState.muted,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+            padding: EdgeInsets.fromLTRB(14, wide ? 12 : 13, 8, wide ? 12 : 13),
+            child: wide
+                ? _wideContent(context, t, client, invoiceNumber)
+                : _narrowContent(context, t, client, invoiceNumber),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _narrowContent(
+    BuildContext context,
+    AppLocalizations t,
+    String client,
+    String invoiceNumber,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _StatusBadge(label: statusText, color: statusColor),
+            const Spacer(),
+            Text(
+              amountText,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: _InvoicesScreenState.ink,
+                fontSize: 17,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(width: 2),
+            _actionsMenu(t),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          invoiceNumber,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: _InvoicesScreenState.ink,
+            fontSize: 15,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                client,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: _InvoicesScreenState.ink,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              dateText,
+              style: const TextStyle(
+                color: _InvoicesScreenState.muted,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _wideContent(
+    BuildContext context,
+    AppLocalizations t,
+    String client,
+    String invoiceNumber,
+  ) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 88,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: _StatusBadge(label: statusText, color: statusColor),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          flex: 3,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                invoiceNumber,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: _InvoicesScreenState.ink,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                client,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: _InvoicesScreenState.muted,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 14),
+        SizedBox(
+          width: 88,
+          child: Text(
+            dateText,
+            textAlign: TextAlign.right,
+            style: const TextStyle(
+              color: _InvoicesScreenState.muted,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        const SizedBox(width: 14),
+        SizedBox(
+          width: 92,
+          child: Text(
+            amountText,
+            textAlign: TextAlign.right,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: _InvoicesScreenState.ink,
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ),
+        const SizedBox(width: 4),
+        _actionsMenu(t),
+      ],
+    );
+  }
+
+  Widget _actionsMenu(AppLocalizations t) {
+    return PopupMenuButton<String>(
+      tooltip: _actionsLabel(t),
+      icon: const Icon(Icons.more_vert, color: _InvoicesScreenState.ink),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      onSelected: (value) {
+        if (value == 'view_pdf') onViewPdf();
+        if (value == 'send') onSendInvoice();
+        if (value == 'paid') onMarkPaid();
+        if (value == 'receipt') onReceiptPdf?.call();
+        if (value == 'edit') onEdit();
+        if (value == 'delete') onDelete();
+      },
+      itemBuilder: (_) => [
+        PopupMenuItem(
+          value: 'view_pdf',
+          child: _InvoiceMenuRow(
+            icon: Icons.picture_as_pdf_outlined,
+            label: t.sendPdf,
+          ),
+        ),
+        PopupMenuItem(
+          value: 'send',
+          child: _InvoiceMenuRow(
+            icon: invoice.isSent ? Icons.undo_outlined : Icons.send_outlined,
+            label: invoice.isSent ? _unsendLabel(t) : t.sendPdf,
+          ),
+        ),
+        PopupMenuItem(
+          value: 'paid',
+          child: _InvoiceMenuRow(
+            icon: invoice.isPaid
+                ? Icons.undo_outlined
+                : Icons.check_circle_outline,
+            label: invoice.isPaid ? _markUnpaidLabel(t) : _markPaidLabel(t),
+          ),
+        ),
+        PopupMenuItem(
+          value: 'receipt',
+          enabled: onReceiptPdf != null,
+          child: _InvoiceMenuRow(
+            icon: Icons.receipt_long_outlined,
+            label: _receiptPdfLabel(t),
+          ),
+        ),
+        PopupMenuItem(
+          value: 'edit',
+          child: _InvoiceMenuRow(icon: Icons.edit_outlined, label: t.edit),
+        ),
+        PopupMenuItem(
+          value: 'delete',
+          child: _InvoiceMenuRow(
+            icon: Icons.delete_outline,
+            label: t.delete,
+            danger: true,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -1166,3 +1583,15 @@ String _confirmLabel(AppLocalizations t) => _invShort(t, {
   'ru': 'Подтвердить',
   'zh': '确认',
 }, 'Confirm');
+
+String _openTotalLabel(AppLocalizations t) => _invShort(t, {
+  'es': 'Por cobrar',
+  'pt': 'Em aberto',
+  'fr': 'À recevoir',
+  'de': 'Offen',
+  'ar': 'مستحق',
+  'hi': 'बकाया',
+  'ja': '未回収',
+  'ru': 'К получению',
+  'zh': '待收款',
+}, 'Open total');

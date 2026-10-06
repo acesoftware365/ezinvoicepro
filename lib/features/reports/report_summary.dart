@@ -30,10 +30,10 @@ class ReportSummary {
 class ReportResult {
   final int invoicesCount;
 
-  final double totalSales; // sum(total)
+  final double sales; // sum(subtotal: items and services)
   final double totalTax; // sum(taxAmount)
   final double totalTip; // sum(tip)
-  final double net; // sum(subtotal)
+  final double totalInvoiced; // sum(total: sales + tax + tip)
 
   final int unsentCount;
   final int sentCount;
@@ -42,10 +42,10 @@ class ReportResult {
 
   const ReportResult({
     required this.invoicesCount,
-    required this.totalSales,
+    required this.sales,
     required this.totalTax,
     required this.totalTip,
-    required this.net,
+    required this.totalInvoiced,
     required this.unsentCount,
     required this.sentCount,
     required this.paidCount,
@@ -54,10 +54,10 @@ class ReportResult {
 
   static const empty = ReportResult(
     invoicesCount: 0,
-    totalSales: 0,
+    sales: 0,
     totalTax: 0,
     totalTip: 0,
-    net: 0,
+    totalInvoiced: 0,
     unsentCount: 0,
     sentCount: 0,
     paidCount: 0,

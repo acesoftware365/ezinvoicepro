@@ -20,12 +20,13 @@ class ClientsService {
     });
   }
 
-  static Future<void> add(Client c) async {
-    await _col().add({
+  static Future<String> add(Client c) async {
+    final document = await _col().add({
       ...c.toMap(),
       'createdAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
     });
+    return document.id;
   }
 
   static Future<void> update(Client c) async {

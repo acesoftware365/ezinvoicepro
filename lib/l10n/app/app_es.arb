@@ -245,7 +245,7 @@
   "sentLabel": "Enviadas",
   "paidLabel": "Pagadas",
   "overdueLabel": "Vencidas",
-  "reportCalculatedHint": "Calculado desde tus facturas en Firestore.",
+  "reportCalculatedHint": "Calculado desde tus facturas.",
   "exportPdfComingSoon": "Exportar PDF (pronto)",
   "exportCsvComingSoon": "Exportar CSV (pronto)",
   "unsentLabel": "No enviadas",
@@ -283,6 +283,14 @@
   "deleteAccountWarning": "Esta acción eliminará permanentemente tu cuenta y todos los datos asociados.",
   "deleteAccountButton": "Eliminar cuenta",
   "deleteAccountConfirmTitle": "Confirmar eliminación",
-  "deleteAccountConfirmMessage": "¿Estás seguro? Esta acción no se puede deshacer."
-
+  "deleteAccountConfirmMessage": "¿Estás seguro? Esta acción no se puede deshacer.",
+  "profileSaved": "Guardado automáticamente",
+  "profileSaveError": "No se pudo guardar. Tus cambios siguen aquí.",
+  "profileRetry": "Reintentar",
+  "profileAutosaveHint": "Los cambios se guardan automáticamente y se conservan al cerrar.",
+  "profileLogo": "Logo del negocio",
+  "profileDefaults": "Valores de factura",
+  "profileTaxInvalid": "Revisa el impuesto (0–100 %).",
+  "metricLoadError": "No se pudo cargar el reporte. Inténtalo de nuevo.",
+  "totalInvoicedTitle": "Total facturado"
 }

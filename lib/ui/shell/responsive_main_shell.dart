@@ -1,6 +1,11 @@
+import 'dart:math' as math;
+import 'package:ezinvoice/ui/dashboard/metric_detail_screen.dart';
+import 'package:ezinvoice/ui/dashboard/dashboard_cards.dart';
+import 'package:ezinvoice/features/invoices/invoice_form_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ezinvoice/features/invoices/invoices_screen.dart';
 import 'package:ezinvoice/features/paywall/paywall_screen.dart';
+import 'package:ezinvoice/features/about/about_screen.dart';
 import 'package:ezinvoice/features/privacy/delete_account_screen.dart';
 import 'package:ezinvoice/features/privacy/privacy_screen.dart';
 import 'package:ezinvoice/features/reports/reports_screen.dart';
@@ -9,12 +14,14 @@ import 'package:ezinvoice/models/business_profile.dart';
 import 'package:ezinvoice/models/invoice.dart';
 import 'package:ezinvoice/repositories/business_profile_repository.dart';
 import 'package:ezinvoice/services/invoices/invoices_service.dart';
+import 'package:ezinvoice/services/navigation/quick_access_service.dart';
 import 'package:ezinvoice/services/purchases/subscription_manager.dart';
 import 'package:ezinvoice/settings/language_settings_screen.dart';
 import 'package:ezinvoice/ui/business/business_profile_screen.dart';
 import 'package:ezinvoice/ui/clients/clients_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ResponsiveMainShell extends StatefulWidget {
@@ -29,14 +36,24 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
   static const _pageBg = Color(0xFFF5F7F8);
   static const _businessReminderPref = 'business_profile_reminder_day';
 
+  final _businessProfileKey = GlobalKey();
   int _index = 0;
   final _businessRepo = BusinessProfileRepository();
   bool _businessReminderScheduled = false;
   bool _businessIncomplete = false;
+  List<int> _quickAccess = List<int>.from(QuickAccessService.defaultOrder);
+
+  @override
+  void initState() {
+    super.initState();
+    _loadQuickAccess();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final isTablet = MediaQuery.sizeOf(context).width >= 900;
+    final size = MediaQuery.sizeOf(context);
+    final isTablet = size.shortestSide >= 700;
+    final isPhoneLandscape = !isTablet && size.width > size.height;
     final t = AppLocalizations.of(context);
 
     return StreamBuilder<BusinessProfile>(
@@ -51,23 +68,28 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
           return Theme(
             data: _theme(context),
             child: Scaffold(
+              resizeToAvoidBottomInset: false,
               backgroundColor: _pageBg,
               body: Row(
                 children: [
                   _Sidebar(
                     selectedIndex: _index,
                     businessIncomplete: businessIncomplete,
-                    onSelected: (i) => setState(() => _index = i),
+                    onSelected: _go,
                   ),
                   Expanded(
                     child: IndexedStack(
                       index: _index,
                       children: [
-                        _DashboardScreen(onNavigate: _go),
+                        _DashboardScreen(
+                          onNavigate: _go,
+                          onActionUsed: _recordUsage,
+                          quickAccess: _quickAccess,
+                        ),
                         const ClientsScreen(),
                         const InvoicesScreen(),
                         const ReportsScreen(),
-                        const BusinessProfileScreen(),
+                        BusinessProfileScreen(key: _businessProfileKey),
                         const _SettingsHubScreen(),
                       ],
                     ),
@@ -81,54 +103,87 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
         return Theme(
           data: _theme(context),
           child: Scaffold(
+            resizeToAvoidBottomInset: false,
             backgroundColor: _pageBg,
-            body: IndexedStack(
-              index: _index.clamp(0, 4),
-              children: [
-                _DashboardScreen(onNavigate: _go),
-                const ClientsScreen(),
-                const InvoicesScreen(),
-                const ReportsScreen(),
-                const BusinessProfileScreen(),
-              ],
-            ),
-            bottomNavigationBar: NavigationBar(
-              selectedIndex: _index.clamp(0, 4),
-              onDestinationSelected: (i) => setState(() => _index = i),
-              destinations: [
-                NavigationDestination(
-                  icon: const Icon(Icons.home_outlined),
-                  selectedIcon: const Icon(Icons.home),
-                  label: t.home,
-                ),
-                NavigationDestination(
-                  icon: const Icon(Icons.people_alt_outlined),
-                  selectedIcon: const Icon(Icons.people_alt),
-                  label: t.clients,
-                ),
-                NavigationDestination(
-                  icon: const Icon(Icons.receipt_long_outlined),
-                  selectedIcon: const Icon(Icons.receipt_long),
-                  label: t.invoices,
-                ),
-                NavigationDestination(
-                  icon: const Icon(Icons.bar_chart_outlined),
-                  selectedIcon: const Icon(Icons.bar_chart),
-                  label: t.reports,
-                ),
-                NavigationDestination(
-                  icon: _BusinessNavIcon(
-                    icon: Icons.business_center_outlined,
-                    showBadge: businessIncomplete,
+            body: isPhoneLandscape
+                ? Row(
+                    children: [
+                      _PhoneLandscapeRail(
+                        selectedIndex: _index.clamp(0, 4),
+                        businessIncomplete: businessIncomplete,
+                        onSelected: _go,
+                      ),
+                      Expanded(
+                        child: IndexedStack(
+                          index: _index.clamp(0, 4),
+                          children: [
+                            _DashboardScreen(
+                              onNavigate: _go,
+                              onActionUsed: _recordUsage,
+                              quickAccess: _quickAccess,
+                            ),
+                            const ClientsScreen(),
+                            const InvoicesScreen(),
+                            const ReportsScreen(),
+                            BusinessProfileScreen(key: _businessProfileKey),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                : IndexedStack(
+                    index: _index.clamp(0, 4),
+                    children: [
+                      _DashboardScreen(
+                        onNavigate: _go,
+                        onActionUsed: _recordUsage,
+                        quickAccess: _quickAccess,
+                      ),
+                      const ClientsScreen(),
+                      const InvoicesScreen(),
+                      const ReportsScreen(),
+                      BusinessProfileScreen(key: _businessProfileKey),
+                    ],
                   ),
-                  selectedIcon: _BusinessNavIcon(
-                    icon: Icons.business_center,
-                    showBadge: businessIncomplete,
+            bottomNavigationBar: isPhoneLandscape
+                ? null
+                : NavigationBar(
+                    selectedIndex: _index.clamp(0, 4),
+                    onDestinationSelected: _go,
+                    destinations: [
+                      NavigationDestination(
+                        icon: const Icon(Icons.home_outlined, size: 32),
+                        selectedIcon: const Icon(Icons.home, size: 32),
+                        label: t.home,
+                      ),
+                      NavigationDestination(
+                        icon: const Icon(Icons.people_alt_outlined, size: 32),
+                        selectedIcon: const Icon(Icons.people_alt, size: 32),
+                        label: t.clients,
+                      ),
+                      NavigationDestination(
+                        icon: const Icon(Icons.receipt_long_outlined, size: 32),
+                        selectedIcon: const Icon(Icons.receipt_long, size: 32),
+                        label: t.invoices,
+                      ),
+                      NavigationDestination(
+                        icon: const Icon(Icons.bar_chart_outlined, size: 32),
+                        selectedIcon: const Icon(Icons.bar_chart, size: 32),
+                        label: t.reports,
+                      ),
+                      NavigationDestination(
+                        icon: _BusinessNavIcon(
+                          icon: Icons.business_center_outlined,
+                          showBadge: businessIncomplete,
+                        ),
+                        selectedIcon: _BusinessNavIcon(
+                          icon: Icons.business_center,
+                          showBadge: businessIncomplete,
+                        ),
+                        label: t.business,
+                      ),
+                    ],
                   ),
-                  label: t.business,
-                ),
-              ],
-            ),
           ),
         );
       },
@@ -143,6 +198,11 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
         primary: _brandGreen,
         secondary: _brandGreen,
         surface: Colors.white,
+        surfaceContainerLowest: Colors.white,
+        surfaceContainerLow: Colors.white,
+        surfaceContainer: Colors.white,
+        surfaceContainerHigh: Colors.white,
+        surfaceContainerHighest: Colors.white,
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.white,
@@ -156,11 +216,71 @@ class _ResponsiveMainShellState extends State<ResponsiveMainShell> {
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: const Color(0xFFFCFFFD),
+        surfaceTintColor: Colors.transparent,
+        indicatorColor: const Color(0xFFDDF3EA),
+        iconTheme: WidgetStateProperty.resolveWith(
+          (states) => IconThemeData(
+            color: states.contains(WidgetState.selected)
+                ? _brandGreen
+                : const Color(0xFF52756C),
+          ),
+        ),
+        labelTextStyle: WidgetStateProperty.resolveWith(
+          (states) => TextStyle(
+            color: states.contains(WidgetState.selected)
+                ? _brandGreen
+                : const Color(0xFF52756C),
+            fontWeight: states.contains(WidgetState.selected)
+                ? FontWeight.w900
+                : FontWeight.w700,
+          ),
+        ),
+      ),
+      navigationRailTheme: const NavigationRailThemeData(
+        backgroundColor: Colors.white,
+        indicatorColor: Color(0xFFDDF3EA),
+        selectedIconTheme: IconThemeData(color: _brandGreen),
+        unselectedIconTheme: IconThemeData(color: Color(0xFF52756C)),
+        selectedLabelTextStyle: TextStyle(
+          color: _brandGreen,
+          fontWeight: FontWeight.w900,
+        ),
+        unselectedLabelTextStyle: TextStyle(
+          color: Color(0xFF52756C),
+          fontWeight: FontWeight.w700,
+        ),
+      ),
     );
+  }
+
+  Future<void> _loadQuickAccess() async {
+    final order = await QuickAccessService.load(
+      userId: FirebaseAuth.instance.currentUser?.uid,
+    );
+    if (!mounted) return;
+    setState(() => _quickAccess = order);
+  }
+
+  void _recordUsage(int destination) {
+    if (destination < 1 || destination > 4) return;
+    QuickAccessService.record(
+      destination: destination,
+      userId: FirebaseAuth.instance.currentUser?.uid,
+    ).then((order) {
+      if (mounted) setState(() => _quickAccess = order);
+    });
   }
 
   void _go(int index) {
     setState(() => _index = index);
+    _recordUsage(index);
   }
 
   bool _isBusinessIncomplete(BusinessProfile profile) {
@@ -219,20 +339,22 @@ class _BusinessNavIcon extends StatelessWidget {
     required this.icon,
     required this.showBadge,
     this.color,
+    this.size = 32,
   });
 
   final IconData icon;
   final bool showBadge;
   final Color? color;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
-    final iconWidget = Icon(icon, color: color);
+    final iconWidget = Icon(icon, color: color, size: size);
     if (!showBadge) return iconWidget;
     return ExcludeSemantics(
       child: SizedBox(
-        width: 28,
-        height: 28,
+        width: size + 4,
+        height: size + 4,
         child: Stack(
           clipBehavior: Clip.none,
           alignment: Alignment.center,
@@ -253,6 +375,86 @@ class _BusinessNavIcon extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PhoneLandscapeRail extends StatelessWidget {
+  const _PhoneLandscapeRail({
+    required this.selectedIndex,
+    required this.businessIncomplete,
+    required this.onSelected,
+  });
+
+  final int selectedIndex;
+  final bool businessIncomplete;
+  final ValueChanged<int> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
+    return SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          child: SizedBox(
+            height: math.max(
+              constraints.maxHeight,
+              540 * (MediaQuery.textScalerOf(context).scale(14) / 14),
+            ),
+            child: NavigationRail(
+              minWidth: 112,
+              selectedLabelTextStyle: const TextStyle(
+                color: Color(0xFF1F7A64),
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+              ),
+              unselectedLabelTextStyle: const TextStyle(
+                fontSize: 14,
+                color: Color(0xFF44434A),
+              ),
+              selectedIndex: selectedIndex,
+              onDestinationSelected: onSelected,
+              labelType: NavigationRailLabelType.all,
+              destinations: [
+                NavigationRailDestination(
+                  icon: const Icon(Icons.home_outlined, size: 36),
+                  selectedIcon: const Icon(Icons.home, size: 36),
+                  label: Text(t.home),
+                ),
+                NavigationRailDestination(
+                  icon: const Icon(Icons.people_alt_outlined, size: 36),
+                  selectedIcon: const Icon(Icons.people_alt, size: 36),
+                  label: Text(t.clients),
+                ),
+                NavigationRailDestination(
+                  icon: const Icon(Icons.receipt_long_outlined, size: 36),
+                  selectedIcon: const Icon(Icons.receipt_long, size: 36),
+                  label: Text(t.invoices),
+                ),
+                NavigationRailDestination(
+                  icon: const Icon(Icons.bar_chart_outlined, size: 36),
+                  selectedIcon: const Icon(Icons.bar_chart, size: 36),
+                  label: Text(t.reports),
+                ),
+                NavigationRailDestination(
+                  icon: _BusinessNavIcon(
+                    size: 36,
+                    icon: Icons.business_center_outlined,
+                    showBadge: businessIncomplete,
+                  ),
+                  selectedIcon: _BusinessNavIcon(
+                    size: 36,
+                    icon: Icons.business_center,
+                    showBadge: businessIncomplete,
+                  ),
+                  label: Text(t.business),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -363,7 +565,7 @@ class _SidebarItem extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          height: 48,
+          height: 56,
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
             color: selected ? const Color(0xFFEAF5F1) : Colors.transparent,
@@ -567,9 +769,15 @@ class _PlanSummaryCard extends StatelessWidget {
 }
 
 class _DashboardScreen extends StatefulWidget {
-  const _DashboardScreen({required this.onNavigate});
+  const _DashboardScreen({
+    required this.onNavigate,
+    required this.onActionUsed,
+    required this.quickAccess,
+  });
 
   final ValueChanged<int> onNavigate;
+  final ValueChanged<int> onActionUsed;
+  final List<int> quickAccess;
 
   @override
   State<_DashboardScreen> createState() => _DashboardScreenState();
@@ -644,36 +852,49 @@ class _DashboardScreenState extends State<_DashboardScreen> {
 
             return LayoutBuilder(
               builder: (context, constraints) {
-                final isTablet = constraints.maxWidth >= 900;
-                if (isTablet) {
-                  return _TabletDashboard(
-                    email: user.email ?? '',
-                    isPro: isPro,
-                    limit: limit,
-                    used: monthInvoices.length,
-                    totals: totals,
-                    trends: trends,
-                    invoices: monthInvoices,
-                    collectionRate: collectionRate,
-                    selectedMonth: _selectedMonth,
-                    alerts: alerts,
-                    onNavigate: widget.onNavigate,
-                    onPickMonth: () => _pickMonth(context),
-                  );
-                }
+                final isTablet =
+                    constraints.maxWidth >= 1100 &&
+                    constraints.maxHeight >= 600 &&
+                    MediaQuery.textScalerOf(context).scale(16) <= 20;
+                final dashboard = isTablet
+                    ? _TabletDashboard(
+                        email: user.email ?? '',
+                        isPro: isPro,
+                        limit: limit,
+                        used: monthInvoices.length,
+                        totals: totals,
+                        trends: trends,
+                        invoices: monthInvoices,
+                        allInvoices: invoices,
+                        collectionRate: collectionRate,
+                        selectedMonth: _selectedMonth,
+                        alerts: alerts,
+                        onNavigate: widget.onNavigate,
+                        quickAccess: widget.quickAccess,
+                        onPickMonth: () => _pickMonth(context),
+                      )
+                    : _MobileDashboard(
+                        email: user.email ?? '',
+                        isPro: isPro,
+                        limit: limit,
+                        used: monthInvoices.length,
+                        totals: totals,
+                        trends: trends,
+                        invoices: monthInvoices,
+                        selectedMonth: _selectedMonth,
+                        alerts: alerts,
+                        onNavigate: widget.onNavigate,
+                        quickAccess: widget.quickAccess,
+                        onPickMonth: () => _pickMonth(context),
+                      );
 
-                return _MobileDashboard(
-                  email: user.email ?? '',
-                  isPro: isPro,
-                  limit: limit,
-                  used: monthInvoices.length,
-                  totals: totals,
-                  trends: trends,
-                  invoices: monthInvoices,
-                  selectedMonth: _selectedMonth,
-                  alerts: alerts,
-                  onNavigate: widget.onNavigate,
-                  onPickMonth: () => _pickMonth(context),
+                return Stack(
+                  children: [
+                    Positioned.fill(child: dashboard),
+                    _DashboardNewInvoiceFab(
+                      onOpen: () => widget.onActionUsed(2),
+                    ),
+                  ],
                 );
               },
             );
@@ -699,13 +920,13 @@ class _DashboardScreenState extends State<_DashboardScreen> {
 class _DashboardTotals {
   final double sales;
   final double tip;
-  final double subtotal;
+  final double billedTotal;
   final double tax;
 
   const _DashboardTotals({
     required this.sales,
     required this.tip,
-    required this.subtotal,
+    required this.billedTotal,
     required this.tax,
   });
 
@@ -715,9 +936,9 @@ class _DashboardTotals {
     final validInvoices = invoices.where((inv) => inv.invoiceNumber != 'ERROR');
 
     return _DashboardTotals(
-      sales: validInvoices.fold(0.0, (total, inv) => total + inv.total),
+      sales: validInvoices.fold(0.0, (total, inv) => total + inv.subtotal),
       tip: validInvoices.fold(0.0, (total, inv) => total + inv.tip),
-      subtotal: validInvoices.fold(0.0, (total, inv) => total + inv.subtotal),
+      billedTotal: validInvoices.fold(0.0, (total, inv) => total + inv.total),
       tax: validInvoices.fold(0.0, (total, inv) => total + inv.taxAmount),
     );
   }
@@ -754,7 +975,7 @@ class _DashboardTrends {
       final date = DateTime.fromMillisecondsSinceEpoch(inv.createdAtMs);
       if (date.year != selectedMonth.year) continue;
       final index = (date.month - 1).clamp(0, 11);
-      sales[index] += inv.total;
+      sales[index] += inv.subtotal;
       tip[index] += inv.tip;
       subtotal[index] += inv.subtotal;
       tax[index] += inv.taxAmount;
@@ -852,10 +1073,12 @@ class _TabletDashboard extends StatelessWidget {
     required this.totals,
     required this.trends,
     required this.invoices,
+    required this.allInvoices,
     required this.collectionRate,
     required this.selectedMonth,
     required this.alerts,
     required this.onNavigate,
+    required this.quickAccess,
     required this.onPickMonth,
   });
 
@@ -866,10 +1089,12 @@ class _TabletDashboard extends StatelessWidget {
   final _DashboardTotals totals;
   final _DashboardTrends trends;
   final List<Invoice> invoices;
+  final List<Invoice> allInvoices;
   final int collectionRate;
   final DateTime selectedMonth;
   final _DashboardAlerts alerts;
   final ValueChanged<int> onNavigate;
+  final List<int> quickAccess;
   final VoidCallback onPickMonth;
 
   @override
@@ -880,7 +1105,7 @@ class _TabletDashboard extends StatelessWidget {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(28, 24, 28, 24),
+        padding: const EdgeInsets.fromLTRB(28, 24, 28, 100),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -901,58 +1126,52 @@ class _TabletDashboard extends StatelessWidget {
                     flex: 7,
                     child: ListView(
                       children: [
-                        Row(
+                        DashboardGrid(
                           children: [
-                            Expanded(
-                              child: _MetricTile(
-                                icon: Icons.attach_money,
-                                label: t.salesTitle,
-                                value: _money(totals.sales),
-                                amount: totals.sales,
-                                trend: trends.sales,
-                                compactLabels: trends.compactLabels,
-                                fullLabels: trends.fullLabels,
-                                onTap: () => _openMetric(context, t.salesTitle),
-                              ),
+                            _MetricTile(
+                              icon: Icons.attach_money,
+                              label: t.salesTitle,
+                              value: _money(totals.sales),
+                              amount: totals.sales,
+                              selectedMonth: selectedMonth,
+                              compactLabels: trends.compactLabels,
+                              fullLabels: trends.fullLabels,
+                              onTap: () =>
+                                  _openMetric(context, DashboardMetric.sales),
                             ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: _MetricTile(
-                                icon: Icons.volunteer_activism_outlined,
-                                label: t.tipTitle,
-                                value: _money(totals.tip),
-                                amount: totals.tip,
-                                trend: trends.tip,
-                                compactLabels: trends.compactLabels,
-                                fullLabels: trends.fullLabels,
-                                onTap: () => _openMetric(context, t.tipTitle),
-                              ),
+                            _MetricTile(
+                              icon: Icons.volunteer_activism_outlined,
+                              label: t.tipTitle,
+                              value: _money(totals.tip),
+                              amount: totals.tip,
+                              selectedMonth: selectedMonth,
+                              compactLabels: trends.compactLabels,
+                              fullLabels: trends.fullLabels,
+                              onTap: () =>
+                                  _openMetric(context, DashboardMetric.tip),
                             ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: _MetricTile(
-                                icon: Icons.receipt_outlined,
-                                label: t.subtotalTitle,
-                                value: _money(totals.subtotal),
-                                amount: totals.subtotal,
-                                trend: trends.subtotal,
-                                compactLabels: trends.compactLabels,
-                                fullLabels: trends.fullLabels,
-                                onTap: () =>
-                                    _openMetric(context, t.subtotalTitle),
-                              ),
+                            _MetricTile(
+                              icon: Icons.percent,
+                              label: t.taxTitle,
+                              value: _money(totals.tax),
+                              amount: totals.tax,
+                              selectedMonth: selectedMonth,
+                              compactLabels: trends.compactLabels,
+                              fullLabels: trends.fullLabels,
+                              onTap: () =>
+                                  _openMetric(context, DashboardMetric.tax),
                             ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: _MetricTile(
-                                icon: Icons.percent,
-                                label: t.taxTitle,
-                                value: _money(totals.tax),
-                                amount: totals.tax,
-                                trend: trends.tax,
-                                compactLabels: trends.compactLabels,
-                                fullLabels: trends.fullLabels,
-                                onTap: () => _openMetric(context, t.taxTitle),
+                            _MetricTile(
+                              icon: Icons.receipt_outlined,
+                              label: t.totalInvoicedTitle,
+                              value: _money(totals.billedTotal),
+                              amount: totals.billedTotal,
+                              selectedMonth: selectedMonth,
+                              compactLabels: trends.compactLabels,
+                              fullLabels: trends.fullLabels,
+                              onTap: () => _openMetric(
+                                context,
+                                DashboardMetric.billedTotal,
                               ),
                             ),
                           ],
@@ -960,44 +1179,13 @@ class _TabletDashboard extends StatelessWidget {
                         const SizedBox(height: 22),
                         _SectionTitle(t.quickAccessTitle),
                         const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _ActionTile(
-                                icon: Icons.people_alt_outlined,
-                                title: t.clients,
-                                subtitle: t.clientsManageSubtitle,
-                                onTap: () => onNavigate(1),
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: _ActionTile(
-                                icon: Icons.receipt_long_outlined,
-                                title: t.invoices,
-                                subtitle: t.invoicesViewSendSubtitle,
-                                onTap: () => onNavigate(2),
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: _ActionTile(
-                                icon: Icons.bar_chart_outlined,
-                                title: t.reports,
-                                subtitle: t.monthlyYearlySubtitle,
-                                onTap: () => onNavigate(3),
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: _ActionTile(
-                                icon: Icons.business_center_outlined,
-                                title: t.business,
-                                subtitle: t.businessProfileSubtitle,
-                                onTap: () => onNavigate(4),
-                              ),
-                            ),
-                          ],
+                        DashboardGrid(
+                          children: _quickAccessTiles(
+                            t: t,
+                            destinations: quickAccess,
+                            onNavigate: onNavigate,
+                            includeSubtitles: true,
+                          ),
                         ),
                         const SizedBox(height: 22),
                         _RecentInvoicesTable(invoices: recent),
@@ -1007,15 +1195,16 @@ class _TabletDashboard extends StatelessWidget {
                   const SizedBox(width: 22),
                   SizedBox(
                     width: 300,
-                    child: _AnalyticsPanel(
-                      invoiceCount: used,
-                      collectionRate: collectionRate,
-                      isPro: isPro,
-                      limit: limit,
-                      trend: trends.sales,
-                      compactLabels: trends.compactLabels,
-                      fullLabels: trends.fullLabels,
-                      invoices: recent,
+                    child: SingleChildScrollView(
+                      child: _AnalyticsPanel(
+                        invoiceCount: used,
+                        collectionRate: collectionRate,
+                        trend: trends.sales,
+                        compactLabels: trends.compactLabels,
+                        fullLabels: trends.fullLabels,
+                        allInvoices: allInvoices,
+                        selectedMonth: selectedMonth,
+                      ),
                     ),
                   ),
                 ],
@@ -1027,14 +1216,10 @@ class _TabletDashboard extends StatelessWidget {
     );
   }
 
-  void _openMetric(BuildContext context, String metric) {
-    onNavigate(3);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '$metric report opened for ${_monthLabel(selectedMonth)}',
-        ),
-      ),
+  void _openMetric(BuildContext context, DashboardMetric metric) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => MetricDetailScreen(metric: metric)),
     );
   }
 }
@@ -1051,6 +1236,7 @@ class _MobileDashboard extends StatelessWidget {
     required this.selectedMonth,
     required this.alerts,
     required this.onNavigate,
+    required this.quickAccess,
     required this.onPickMonth,
   });
 
@@ -1064,6 +1250,7 @@ class _MobileDashboard extends StatelessWidget {
   final DateTime selectedMonth;
   final _DashboardAlerts alerts;
   final ValueChanged<int> onNavigate;
+  final List<int> quickAccess;
   final VoidCallback onPickMonth;
 
   @override
@@ -1071,7 +1258,7 @@ class _MobileDashboard extends StatelessWidget {
     final t = AppLocalizations.of(context);
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+        padding: const EdgeInsets.fromLTRB(18, 18, 18, 108),
         children: [
           _DashboardHeader(
             title: t.dashboardTitle,
@@ -1081,86 +1268,61 @@ class _MobileDashboard extends StatelessWidget {
             onPickMonth: onPickMonth,
             onNavigate: onNavigate,
           ),
-          const SizedBox(height: 16),
-          _MetricTile(
-            icon: Icons.attach_money,
-            label: t.salesTitle,
-            value: _money(totals.sales),
-            amount: totals.sales,
-            trend: trends.sales,
-            compactLabels: trends.compactLabels,
-            fullLabels: trends.fullLabels,
-            onTap: () => _openMetric(context, t.salesTitle),
-          ),
-          const SizedBox(height: 12),
-          _MetricTile(
-            icon: Icons.volunteer_activism_outlined,
-            label: t.tipTitle,
-            value: _money(totals.tip),
-            amount: totals.tip,
-            trend: trends.tip,
-            compactLabels: trends.compactLabels,
-            fullLabels: trends.fullLabels,
-            onTap: () => _openMetric(context, t.tipTitle),
-          ),
-          const SizedBox(height: 12),
-          _MetricTile(
-            icon: Icons.receipt_outlined,
-            label: t.subtotalTitle,
-            value: _money(totals.subtotal),
-            amount: totals.subtotal,
-            trend: trends.subtotal,
-            compactLabels: trends.compactLabels,
-            fullLabels: trends.fullLabels,
-            onTap: () => _openMetric(context, t.subtotalTitle),
-          ),
-          const SizedBox(height: 12),
-          _MetricTile(
-            icon: Icons.percent,
-            label: t.taxTitle,
-            value: _money(totals.tax),
-            amount: totals.tax,
-            trend: trends.tax,
-            compactLabels: trends.compactLabels,
-            fullLabels: trends.fullLabels,
-            onTap: () => _openMetric(context, t.taxTitle),
+          DashboardGrid(
+            children: [
+              _MetricTile(
+                icon: Icons.attach_money,
+                label: t.salesTitle,
+                value: _money(totals.sales),
+                amount: totals.sales,
+                selectedMonth: selectedMonth,
+                compactLabels: trends.compactLabels,
+                fullLabels: trends.fullLabels,
+                onTap: () => _openMetric(context, DashboardMetric.sales),
+              ),
+              _MetricTile(
+                icon: Icons.volunteer_activism_outlined,
+                label: t.tipTitle,
+                value: _money(totals.tip),
+                amount: totals.tip,
+                selectedMonth: selectedMonth,
+                compactLabels: trends.compactLabels,
+                fullLabels: trends.fullLabels,
+                onTap: () => _openMetric(context, DashboardMetric.tip),
+              ),
+              _MetricTile(
+                icon: Icons.percent,
+                label: t.taxTitle,
+                value: _money(totals.tax),
+                amount: totals.tax,
+                selectedMonth: selectedMonth,
+                compactLabels: trends.compactLabels,
+                fullLabels: trends.fullLabels,
+                onTap: () => _openMetric(context, DashboardMetric.tax),
+              ),
+              _MetricTile(
+                icon: Icons.receipt_outlined,
+                label: t.totalInvoicedTitle,
+                value: _money(totals.billedTotal),
+                amount: totals.billedTotal,
+                selectedMonth: selectedMonth,
+                compactLabels: trends.compactLabels,
+                fullLabels: trends.fullLabels,
+                onTap: () => _openMetric(context, DashboardMetric.billedTotal),
+              ),
+            ],
           ),
           const SizedBox(height: 22),
           _SectionTitle(t.quickAccessTitle),
           const SizedBox(height: 12),
-          GridView.count(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: 2,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 1.45,
-            children: [
-              _ActionTile(
-                icon: Icons.people_alt_outlined,
-                title: t.clients,
-                subtitle: '',
-                onTap: () => onNavigate(1),
-              ),
-              _ActionTile(
-                icon: Icons.receipt_long_outlined,
-                title: t.invoices,
-                subtitle: '',
-                onTap: () => onNavigate(2),
-              ),
-              _ActionTile(
-                icon: Icons.bar_chart_outlined,
-                title: t.reports,
-                subtitle: '',
-                onTap: () => onNavigate(3),
-              ),
-              _ActionTile(
-                icon: Icons.business_center_outlined,
-                title: t.business,
-                subtitle: '',
-                onTap: () => onNavigate(4),
-              ),
-            ],
+          DashboardGrid(
+            minItemWidth: 180,
+            children: _quickAccessTiles(
+              t: t,
+              destinations: quickAccess,
+              onNavigate: onNavigate,
+              includeSubtitles: false,
+            ),
           ),
           const SizedBox(height: 22),
           _RecentInvoicesList(invoices: invoices.take(5).toList()),
@@ -1171,13 +1333,69 @@ class _MobileDashboard extends StatelessWidget {
     );
   }
 
-  void _openMetric(BuildContext context, String metric) {
-    onNavigate(3);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '$metric report opened for ${_monthLabel(selectedMonth)}',
-        ),
+  void _openMetric(BuildContext context, DashboardMetric metric) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => MetricDetailScreen(metric: metric)),
+    );
+  }
+}
+
+class _DashboardNewInvoiceFab extends StatelessWidget {
+  const _DashboardNewInvoiceFab({required this.onOpen});
+
+  static const _brandGreen = Color(0xFF1F7A64);
+
+  final VoidCallback onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return Positioned.fill(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final textScale = MediaQuery.textScalerOf(context).scale(16) / 16;
+          final showExtendedAction =
+              constraints.maxWidth >= 680 &&
+              constraints.maxHeight >= 520 &&
+              textScale <= 1.4;
+          void openInvoice() {
+            onOpen();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const InvoiceFormScreen()),
+            );
+          }
+
+          final action = showExtendedAction
+              ? FloatingActionButton.extended(
+                  heroTag: 'dashboard-new-invoice',
+                  tooltip: t.newInvoiceTitle,
+                  backgroundColor: _brandGreen,
+                  foregroundColor: Colors.white,
+                  onPressed: openInvoice,
+                  icon: const Icon(Icons.add, size: 24),
+                  label: Text(t.newInvoiceTitle),
+                )
+              : FloatingActionButton(
+                  heroTag: 'dashboard-new-invoice',
+                  tooltip: t.newInvoiceTitle,
+                  backgroundColor: _brandGreen,
+                  foregroundColor: Colors.white,
+                  onPressed: openInvoice,
+                  child: const Icon(Icons.add, size: 28),
+                );
+
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsetsDirectional.only(end: 18, bottom: 18),
+              child: Align(
+                alignment: AlignmentDirectional.bottomEnd,
+                child: action,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -1224,15 +1442,17 @@ class _DashboardHeader extends StatelessWidget {
                 onTap: onPickMonth,
                 borderRadius: BorderRadius.circular(8),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        subtitle,
-                        style: const TextStyle(
-                          color: Colors.black54,
-                          fontWeight: FontWeight.w700,
+                      Flexible(
+                        child: Text(
+                          subtitle,
+                          style: const TextStyle(
+                            color: Colors.black54,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 4),
@@ -1285,9 +1505,12 @@ class _DashboardHeader extends StatelessWidget {
             } else if (value == 'settings') {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const LanguageSettingsScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const _SettingsHubScreen()),
+              );
+            } else if (value == 'about') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AboutScreen()),
               );
             } else if (value == 'privacy') {
               Navigator.push(
@@ -1310,6 +1533,7 @@ class _DashboardHeader extends StatelessWidget {
             ),
             PopupMenuItem(value: 'subscription', child: Text(t.proBadge)),
             PopupMenuItem(value: 'settings', child: Text(t.settings)),
+            PopupMenuItem(value: 'about', child: Text(_aboutLabel(t))),
             PopupMenuItem(value: 'privacy', child: Text(t.privacyPolicy)),
             PopupMenuItem(value: 'delete', child: Text(_deleteAccountLabel(t))),
             const PopupMenuDivider(),
@@ -1470,74 +1694,52 @@ class _MetricTile extends StatelessWidget {
     required this.label,
     required this.value,
     required this.amount,
-    required this.trend,
+    required this.selectedMonth,
     required this.compactLabels,
     required this.fullLabels,
     this.onTap,
   });
 
-  static const _brandGreen = Color(0xFF1F7A64);
-
   final IconData icon;
   final String label;
   final String value;
   final double amount;
-  final List<double> trend;
+  final DateTime selectedMonth;
   final List<String> compactLabels;
   final List<String> fullLabels;
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
-    return _SoftCard(
-      onTap: onTap,
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: const Color(0xFFEAF5F1),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: _brandGreen),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.black54,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          _TrendChart(
-            title: label,
-            values: trend,
-            maxValue: _chartMax(amount, trend),
-            currentValue: amount,
-            compactLabels: compactLabels,
-            fullLabels: fullLabels,
-            compact: true,
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      DashboardMetricCard(icon: icon, label: label, value: value, onTap: onTap);
+}
+
+List<Widget> _quickAccessTiles({
+  required AppLocalizations t,
+  required List<int> destinations,
+  required ValueChanged<int> onNavigate,
+  required bool includeSubtitles,
+}) {
+  final items = <int, (IconData, String, String)>{
+    1: (Icons.people_alt_outlined, t.clients, t.clientsManageSubtitle),
+    2: (Icons.receipt_long_outlined, t.invoices, t.invoicesViewSendSubtitle),
+    3: (Icons.bar_chart_outlined, t.reports, t.monthlyYearlySubtitle),
+    4: (Icons.business_center_outlined, t.business, t.businessProfileSubtitle),
+  };
+
+  return destinations
+      .map((destination) {
+        final item = items[destination];
+        if (item == null) return null;
+        return _ActionTile(
+          icon: item.$1,
+          title: item.$2,
+          subtitle: includeSubtitles ? item.$3 : '',
+          onTap: () => onNavigate(destination),
+        );
+      })
+      .whereType<Widget>()
+      .toList();
 }
 
 class _ActionTile extends StatelessWidget {
@@ -1548,40 +1750,18 @@ class _ActionTile extends StatelessWidget {
     required this.onTap,
   });
 
-  static const _brandGreen = Color(0xFF1F7A64);
-
   final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    return _SoftCard(
-      onTap: onTap,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: _brandGreen, size: 28),
-          const Spacer(),
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
-          ),
-          if (subtitle.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: const TextStyle(
-                color: Colors.black54,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => DashboardActionCard(
+    icon: icon,
+    title: title,
+    subtitle: subtitle,
+    onTap: onTap,
+  );
 }
 
 class _RecentInvoicesTable extends StatelessWidget {
@@ -1749,29 +1929,28 @@ class _AnalyticsPanel extends StatelessWidget {
   const _AnalyticsPanel({
     required this.invoiceCount,
     required this.collectionRate,
-    required this.isPro,
-    required this.limit,
     required this.trend,
     required this.compactLabels,
     required this.fullLabels,
-    required this.invoices,
+    required this.allInvoices,
+    required this.selectedMonth,
   });
 
   static const _brandGreen = Color(0xFF1F7A64);
 
   final int invoiceCount;
   final int collectionRate;
-  final bool isPro;
-  final int limit;
   final List<double> trend;
   final List<String> compactLabels;
   final List<String> fullLabels;
-  final List<Invoice> invoices;
+  final List<Invoice> allInvoices;
+  final DateTime selectedMonth;
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    return Column(
+    return ListView(
+      padding: EdgeInsets.zero,
       children: [
         _SoftCard(
           child: Column(
@@ -1816,49 +1995,130 @@ class _AnalyticsPanel extends StatelessWidget {
           value: '$collectionRate%',
           icon: Icons.check_circle_outline,
         ),
-        const SizedBox(height: 10),
-        _PlanStatus(isPro: isPro, limit: limit, used: invoiceCount),
         const SizedBox(height: 14),
         _SoftCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _SectionTitle(_recentActivityLabel(t)),
+              _SectionTitle(_performanceLabel(t)),
               const SizedBox(height: 12),
-              if (invoices.isEmpty)
-                Text(
-                  _noActivityLabel(t),
-                  style: const TextStyle(color: Colors.black54),
-                )
-              else
-                for (final inv in invoices.take(3))
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Row(
-                      children: [
-                        const CircleAvatar(
-                          radius: 14,
-                          backgroundColor: Color(0xFFEAF5F1),
-                          child: Icon(
-                            Icons.check,
-                            size: 14,
-                            color: _brandGreen,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            '${inv.invoiceNumber} ${inv.isPaid ? t.paidLabel : _createdLabel(t)}',
-                            style: const TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+              _ComparisonRow(
+                icon: Icons.calendar_month_outlined,
+                label: _monthVsLastMonthLabel(t),
+                summary: _compareMonth(allInvoices, selectedMonth),
+              ),
+              const SizedBox(height: 12),
+              _ComparisonRow(
+                icon: Icons.stacked_line_chart,
+                label: _yearVsLastYearLabel(t),
+                summary: _compareYear(allInvoices, selectedMonth.year),
+              ),
             ],
           ),
         ),
       ],
+    );
+  }
+}
+
+class _ComparisonSummary {
+  const _ComparisonSummary({
+    required this.current,
+    required this.previous,
+    required this.changePercent,
+  });
+
+  final double current;
+  final double previous;
+  final double changePercent;
+
+  bool get isUp => changePercent >= 0;
+}
+
+class _ComparisonRow extends StatelessWidget {
+  const _ComparisonRow({
+    required this.icon,
+    required this.label,
+    required this.summary,
+  });
+
+  static const _brandGreen = Color(0xFF1F7A64);
+
+  final IconData icon;
+  final String label;
+  final _ComparisonSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final color = summary.isUp ? _brandGreen : Colors.red.shade600;
+    final percent = summary.changePercent;
+    final percentText =
+        '${summary.isUp ? '+' : ''}${percent.toStringAsFixed(0)}%';
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7FAF9),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE1E8E5)),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 17,
+            backgroundColor: const Color(0xFFEAF5F1),
+            child: Icon(icon, size: 18, color: _brandGreen),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 12,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  _money(summary.current),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Text(
+                  '${_previousLabel(t)} ${_money(summary.previous)}',
+                  style: const TextStyle(
+                    color: Colors.black45,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              percentText,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w900,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1913,14 +2173,19 @@ class _PlanStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _SoftCard(
-      child: _PlanSummaryCard(isPro: isPro, limit: limit, used: used),
-    );
+    return _PlanSummaryCard(isPro: isPro, limit: limit, used: used);
   }
 }
 
-class _SettingsHubScreen extends StatelessWidget {
+class _SettingsHubScreen extends StatefulWidget {
   const _SettingsHubScreen();
+
+  @override
+  State<_SettingsHubScreen> createState() => _SettingsHubScreenState();
+}
+
+class _SettingsHubScreenState extends State<_SettingsHubScreen> {
+  late final Future<PackageInfo> _packageInfo = PackageInfo.fromPlatform();
 
   @override
   Widget build(BuildContext context) {
@@ -1929,10 +2194,25 @@ class _SettingsHubScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(28),
         children: [
+          if (Navigator.canPop(context)) ...[
+            Align(
+              alignment: Alignment.centerLeft,
+              child: IconButton.filledTonal(
+                tooltip: t.close,
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
           Text(
             t.settings,
             style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
           ),
+          const SizedBox(height: 12),
+          _AppVersionCard(packageInfo: _packageInfo),
+          const SizedBox(height: 12),
+          const _SettingsPlanComparisonCard(),
           const SizedBox(height: 20),
           _SettingsTile(
             icon: Icons.language,
@@ -1959,6 +2239,22 @@ class _SettingsHubScreen extends StatelessWidget {
             ),
           ),
           _SettingsTile(
+            icon: Icons.info_outline_rounded,
+            title: _aboutLabel(t),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AboutScreen()),
+            ),
+          ),
+          _SettingsTile(
+            icon: Icons.description_outlined,
+            title: 'Terms & Conditions',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const TermsScreen()),
+            ),
+          ),
+          _SettingsTile(
             icon: Icons.delete_outline,
             title: _deleteAccountLabel(t),
             danger: true,
@@ -1974,6 +2270,210 @@ class _SettingsHubScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _AppVersionCard extends StatelessWidget {
+  const _AppVersionCard({required this.packageInfo});
+
+  final Future<PackageInfo> packageInfo;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<PackageInfo>(
+      future: packageInfo,
+      builder: (context, snapshot) {
+        final info = snapshot.data;
+        final version = info == null
+            ? 'Version'
+            : 'Version ${info.version} (${info.buildNumber})';
+
+        return _SoftCard(
+          child: Row(
+            children: [
+              const Icon(Icons.info_outline, color: Color(0xFF1F7A64)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  version,
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SettingsPlanComparisonCard extends StatelessWidget {
+  const _SettingsPlanComparisonCard();
+
+  static const _brandGreen = Color(0xFF1F7A64);
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
+    return ValueListenableBuilder<SubscriptionState>(
+      valueListenable: SubscriptionManager.instance.state,
+      builder: (context, sub, _) {
+        final current = sub.isPro ? t.proBadge : 'FREE';
+
+        return _SoftCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(
+                    Icons.workspace_premium_outlined,
+                    color: _brandGreen,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Free vs ${t.proBadge}',
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAF5F1),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      current,
+                      style: const TextStyle(
+                        color: _brandGreen,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final freeColumn = _PlanColumn(
+                    title: 'FREE',
+                    items: [
+                      'Ads included',
+                      'Limited invoices each month',
+                      'Basic invoice style',
+                      'Basic reports',
+                      'PDF includes EzInvoice branding',
+                    ],
+                  );
+                  final proColumn = _PlanColumn(
+                    title: t.proBadge,
+                    accent: true,
+                    items: [
+                      t.benefitNoAds,
+                      t.benefitUnlimitedInvoices,
+                      t.benefitTaxReports,
+                      t.benefitPremiumTemplates,
+                      t.benefitNoWatermarkPdf,
+                      t.benefitExport,
+                      t.benefitCloudBackup,
+                    ],
+                  );
+
+                  if (constraints.maxWidth < 360) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        freeColumn,
+                        const SizedBox(height: 12),
+                        proColumn,
+                      ],
+                    );
+                  }
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: freeColumn),
+                      const SizedBox(width: 12),
+                      Expanded(child: proColumn),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _PlanColumn extends StatelessWidget {
+  const _PlanColumn({
+    required this.title,
+    required this.items,
+    this.accent = false,
+  });
+
+  final String title;
+  final List<String> items;
+  final bool accent;
+
+  static const _brandGreen = Color(0xFF1F7A64);
+
+  @override
+  Widget build(BuildContext context) {
+    final titleColor = accent ? _brandGreen : Colors.black87;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            color: titleColor,
+            fontSize: 13,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        const SizedBox(height: 8),
+        for (final item in items)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 7),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.check_circle, size: 15, color: _brandGreen),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    item,
+                    style: const TextStyle(
+                      color: Colors.black54,
+                      fontSize: 12,
+                      height: 1.25,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }
@@ -2483,6 +2983,52 @@ List<double> _normaliseTrend(List<double> values, double maxValue) {
 
 String _money(double value) => '\$${value.toStringAsFixed(2)}';
 
+_ComparisonSummary _compareMonth(List<Invoice> invoices, DateTime month) {
+  final previousMonth = month.month == 1
+      ? DateTime(month.year - 1, 12)
+      : DateTime(month.year, month.month - 1);
+  final current = _salesForMonth(invoices, month);
+  final previous = _salesForMonth(invoices, previousMonth);
+  return _ComparisonSummary(
+    current: current,
+    previous: previous,
+    changePercent: _percentChange(current, previous),
+  );
+}
+
+_ComparisonSummary _compareYear(List<Invoice> invoices, int year) {
+  final current = _salesForYear(invoices, year);
+  final previous = _salesForYear(invoices, year - 1);
+  return _ComparisonSummary(
+    current: current,
+    previous: previous,
+    changePercent: _percentChange(current, previous),
+  );
+}
+
+double _salesForMonth(List<Invoice> invoices, DateTime month) {
+  return invoices.fold<double>(0, (total, inv) {
+    if (inv.invoiceNumber == 'ERROR') return total;
+    final date = DateTime.fromMillisecondsSinceEpoch(inv.createdAtMs);
+    if (date.year != month.year || date.month != month.month) return total;
+    return total + inv.subtotal;
+  });
+}
+
+double _salesForYear(List<Invoice> invoices, int year) {
+  return invoices.fold<double>(0, (total, inv) {
+    if (inv.invoiceNumber == 'ERROR') return total;
+    final date = DateTime.fromMillisecondsSinceEpoch(inv.createdAtMs);
+    if (date.year != year) return total;
+    return total + inv.subtotal;
+  });
+}
+
+double _percentChange(double current, double previous) {
+  if (previous <= 0) return current > 0 ? 100 : 0;
+  return ((current - previous) / previous) * 100;
+}
+
 double _chartMax(double currentValue, List<double> values) {
   final maxTrend = values.fold<double>(
     0,
@@ -2566,6 +3112,18 @@ String _businessReminderText(AppLocalizations t) => _shortByLang(t, {
   'ru': 'Заполните профиль для проф. счетов.',
   'zh': '完善资料，生成专业发票。',
 }, 'Complete your profile for pro invoices.');
+
+String _aboutLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Acerca de EzInvoice',
+  'pt': 'Sobre EzInvoice',
+  'fr': 'À propos d’EzInvoice',
+  'de': 'Über EzInvoice',
+  'ar': 'حول EzInvoice',
+  'hi': 'EzInvoice के बारे में',
+  'ja': 'EzInvoice について',
+  'ru': 'О EzInvoice',
+  'zh': '关于 EzInvoice',
+}, 'About EzInvoice');
 
 String _deleteAccountLabel(AppLocalizations t) => _shortByLang(t, {
   'es': 'Borrar cuenta',
@@ -2698,6 +3256,66 @@ String _collectionRateLabel(AppLocalizations t) => _shortByLang(t, {
   'ru': 'Оплата',
   'zh': '收款',
 }, 'Paid rate');
+
+String _performanceLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Rendimiento',
+  'pt': 'Desempenho',
+  'fr': 'Performance',
+  'de': 'Leistung',
+  'ar': 'الأداء',
+  'hi': 'प्रदर्शन',
+  'ja': '実績',
+  'ru': 'Показатели',
+  'zh': '表现',
+}, 'Performance');
+
+String _monthVsLastMonthLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Este mes vs mes pasado',
+  'pt': 'Este mês vs mês passado',
+  'fr': 'Ce mois vs mois dernier',
+  'de': 'Dieser Monat vs letzter',
+  'ar': 'هذا الشهر مقابل السابق',
+  'hi': 'यह महीना बनाम पिछला',
+  'ja': '今月と先月',
+  'ru': 'Месяц к прошлому',
+  'zh': '本月对比上月',
+}, 'This month vs last month');
+
+String _yearVsLastYearLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Este año vs año pasado',
+  'pt': 'Este ano vs ano passado',
+  'fr': 'Cette année vs l’an dernier',
+  'de': 'Dieses Jahr vs letztes',
+  'ar': 'هذا العام مقابل السابق',
+  'hi': 'यह साल बनाम पिछला',
+  'ja': '今年と昨年',
+  'ru': 'Год к прошлому',
+  'zh': '今年对比去年',
+}, 'This year vs last year');
+
+String _previousLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Antes',
+  'pt': 'Antes',
+  'fr': 'Avant',
+  'de': 'Vorher',
+  'ar': 'السابق',
+  'hi': 'पहले',
+  'ja': '前回',
+  'ru': 'Ранее',
+  'zh': '之前',
+}, 'Previous');
+
+String _notEnoughDataLabel(AppLocalizations t) => _shortByLang(t, {
+  'es': 'Nuevo',
+  'pt': 'Novo',
+  'fr': 'Nouveau',
+  'de': 'Neu',
+  'ar': 'جديد',
+  'hi': 'नया',
+  'ja': '新規',
+  'ru': 'Новое',
+  'zh': '新增',
+}, 'New');
 
 String _recentActivityLabel(AppLocalizations t) => _shortByLang(t, {
   'es': 'Actividad',

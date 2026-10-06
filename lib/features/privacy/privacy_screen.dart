@@ -9,6 +9,165 @@ class PrivacyScreen extends StatefulWidget {
   State<PrivacyScreen> createState() => _PrivacyScreenState();
 }
 
+class TermsScreen extends StatefulWidget {
+  const TermsScreen({super.key});
+
+  @override
+  State<TermsScreen> createState() => _TermsScreenState();
+}
+
+class _TermsScreenState extends State<TermsScreen> {
+  static const Color brandGreen = Color(0xFF1F6E5C);
+  static const String company = 'Liisgo LLC';
+  static const String appName = 'EzInvoice';
+  static const String supportEmail = 'sales@liisgo.com';
+  static const String lastUpdatedEn = 'June 16, 2026';
+  static const String lastUpdatedEs = '16 de junio de 2026';
+
+  bool _isSpanish(BuildContext context) {
+    return Localizations.localeOf(context).languageCode.toLowerCase() == 'es';
+  }
+
+  Future<void> _contactSupport(bool isEs) async {
+    final uri = Uri.parse(
+      'mailto:$supportEmail?subject=${Uri.encodeComponent(isEs ? "Terms & Conditions - $appName" : "Terms & Conditions - $appName")}',
+    );
+    final launched = await launchUrl(uri, mode: LaunchMode.platformDefault);
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isEs
+                ? 'No se pudo abrir el correo. Email: $supportEmail'
+                : 'Could not open email. Email: $supportEmail',
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isEs = _isSpanish(context);
+    final title = isEs ? 'Términos y condiciones' : 'Terms & Conditions';
+
+    return Theme(
+      data: theme.copyWith(
+        appBarTheme: theme.appBarTheme.copyWith(
+          backgroundColor: brandGreen,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.white),
+          titleTextStyle: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+          ),
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF5F7F8),
+        appBar: AppBar(title: Text(title)),
+        body: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            children: [
+              Text(
+                title,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '${isEs ? "Última actualización" : "Last updated"}: ${isEs ? lastUpdatedEs : lastUpdatedEn}',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: Colors.black54,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _section(
+                isEs ? 'Aceptación de los términos' : 'Acceptance of Terms',
+                isEs
+                    ? 'Al usar $appName o comprar una suscripción Pro, aceptas estos Términos y nuestra Política de privacidad. Si no aceptas estos términos, no uses la App ni compres una suscripción.'
+                    : 'By using $appName or purchasing a Pro subscription, you agree to these Terms and our Privacy Policy. If you do not agree, do not use the App or purchase a subscription.',
+              ),
+              _section(
+                isEs ? 'Uso de la App' : 'Use of the App',
+                isEs
+                    ? '$appName ayuda a crear facturas, reportes, exportaciones y documentos relacionados con negocios. Eres responsable de revisar la exactitud de tus facturas, impuestos, totales y datos antes de enviarlos o usarlos.'
+                    : '$appName helps create invoices, reports, exports, and business-related documents. You are responsible for reviewing the accuracy of invoices, taxes, totals, and data before sending or using them.',
+              ),
+              _section(
+                isEs ? 'Suscripciones Pro' : 'Pro Subscriptions',
+                isEs
+                    ? 'Pro puede desbloquear funciones como eliminar anuncios, facturas ilimitadas, reportes avanzados, plantillas premium, exportaciones y respaldo en la nube. Las compras se procesan por Apple App Store o Google Play. Las suscripciones se renuevan automáticamente hasta que las canceles desde la configuración de tu tienda.'
+                    : 'Pro may unlock features such as removing ads, unlimited invoices, advanced reports, premium templates, exports, and cloud backup. Purchases are processed by Apple App Store or Google Play. Subscriptions automatically renew until canceled through your store account settings.',
+              ),
+              _section(
+                isEs ? 'Gratis vs Pro' : 'Free vs Pro',
+                isEs
+                    ? 'La versión gratis puede incluir anuncios, límites de uso y funciones básicas. Pro remueve anuncios y desbloquea funciones adicionales según se muestra en la pantalla de suscripción.'
+                    : 'The free version may include ads, usage limits, and basic features. Pro removes ads and unlocks additional features as shown on the subscription screen.',
+              ),
+              _section(
+                isEs ? 'Cancelaciones y reembolsos' : 'Cancellation & Refunds',
+                isEs
+                    ? 'Puedes cancelar la suscripción desde tu cuenta de Apple App Store o Google Play. Los reembolsos son manejados por la tienda correspondiente según sus políticas.'
+                    : 'You can cancel your subscription from your Apple App Store or Google Play account. Refunds are handled by the applicable store according to its policies.',
+              ),
+              _section(
+                isEs ? 'Datos y privacidad' : 'Data & Privacy',
+                isEs
+                    ? 'El uso de tus datos se describe en nuestra Política de privacidad. Debes tener permiso para ingresar datos de clientes o negocios en la App.'
+                    : 'Our handling of your data is described in our Privacy Policy. You must have permission to enter customer or business data into the App.',
+              ),
+              _section(
+                isEs
+                    ? 'Limitación de responsabilidad'
+                    : 'Limitation of Liability',
+                isEs
+                    ? 'La App se ofrece “tal cual”. En la medida permitida por la ley, $company no será responsable por pérdidas indirectas, errores de datos, decisiones comerciales, cálculos de impuestos o uso incorrecto de la App.'
+                    : 'The App is provided “as is.” To the extent permitted by law, $company is not liable for indirect losses, data errors, business decisions, tax calculations, or misuse of the App.',
+              ),
+              _section(
+                isEs ? 'Cambios' : 'Changes',
+                isEs
+                    ? 'Podemos actualizar estos Términos ocasionalmente. Los cambios se publicarán en la App y entrarán en vigor cuando se publiquen.'
+                    : 'We may update these Terms from time to time. Changes will be posted in the App and become effective when posted.',
+              ),
+              const SizedBox(height: 14),
+              OutlinedButton.icon(
+                onPressed: () => _contactSupport(isEs),
+                icon: const Icon(Icons.email),
+                label: Text(isEs ? 'Contactar soporte' : 'Contact support'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _section(String title, String body) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 6),
+          Text(body, style: const TextStyle(fontSize: 13.5, height: 1.35)),
+        ],
+      ),
+    );
+  }
+}
+
 class _PrivacyScreenState extends State<PrivacyScreen> {
   // Brand
   static const Color brandGreen = Color(0xFF1F6E5C);
@@ -20,8 +179,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   static const String supportEmail = 'sales@liisgo.com';
 
   // IMPORTANT: set a FIXED date (don't change daily)
-  static const String lastUpdatedEn = 'January 11, 2026';
-  static const String lastUpdatedEs = '11 de enero de 2026';
+  static const String lastUpdatedEn = 'June 16, 2026';
+  static const String lastUpdatedEs = '16 de junio de 2026';
 
   Future<void> _openUrl(String url) async {
     final uri = Uri.parse(url);
@@ -109,6 +268,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
         ),
       ),
       child: Scaffold(
+        backgroundColor: const Color(0xFFF5F7F8),
         appBar: AppBar(title: Text(title)),
         body: SafeArea(
           child: ListView(
@@ -155,6 +315,13 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                           '• Invoice data you create (e.g., customer name, items, amounts, tax/tip).\n'
                           '• Device and usage data (e.g., app interactions, diagnostics, crash logs).\n'
                           '• Optional contacts access (only if you choose to import customers from your phone contacts).',
+              ),
+
+              _section(
+                title: isEs ? 'Servicios de terceros' : 'Third-Party Services',
+                body: isEs
+                    ? 'La App puede usar servicios de terceros para funcionar correctamente, incluyendo Firebase/Google Cloud para autenticación, base de datos y almacenamiento; Google Mobile Ads para anuncios en la versión gratis; y herramientas de diagnóstico, analítica o crash reporting para mejorar estabilidad. Estos proveedores pueden procesar datos según sus propias políticas.'
+                    : 'The App may use third-party services to operate properly, including Firebase/Google Cloud for authentication, database, and storage; Google Mobile Ads for ads in the free version; and diagnostics, analytics, or crash reporting tools to improve stability. These providers may process data under their own policies.',
               ),
 
               _section(
@@ -246,9 +413,9 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                 title: isEs ? 'Tus derechos' : 'Your Rights',
                 body: isEs
                     ? 'Dependiendo de tu ubicación, puedes tener derecho a acceder, corregir, eliminar o exportar tus datos. '
-                          'Para solicitar ayuda con tus datos, contáctanos.'
+                          'Puedes borrar tu cuenta desde Settings > Delete account o solicitar ayuda con tus datos contactándonos.'
                     : 'Depending on your location, you may have rights to access, correct, delete, or export your data. '
-                          'To request help with your data, contact us.',
+                          'You can delete your account from Settings > Delete account or contact us for help with your data.',
               ),
 
               _section(

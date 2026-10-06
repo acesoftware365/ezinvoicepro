@@ -16,8 +16,9 @@ class ForceUpdateGate extends StatefulWidget {
 
 class _ForceUpdateGateState extends State<ForceUpdateGate> {
   static const String _androidStoreUrl =
-      'https://play.google.com/store/apps/details?id=com.liisgo.ezinvoice';
-  static const String _iosStoreUrl = 'https://apps.apple.com/app/id6757661737';
+      'https://play.google.com/store/apps/details?id=com.liisgo.ezinvoice&pcampaignid=web_share';
+  static const String _iosStoreUrl =
+      'https://apps.apple.com/us/app/ezinvoice-pro/id6757661737';
 
   bool _checking = true;
   bool _updateRequired = false;

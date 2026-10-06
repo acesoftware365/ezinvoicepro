@@ -329,7 +329,7 @@
   "sentLabel": "已发送",
   "paidLabel": "已付款",
   "overdueLabel": "已逾期",
-  "reportCalculatedHint": "根据 Firestore 中的发票计算。",
+  "reportCalculatedHint": "根据您的发票计算。",
   "exportPdfComingSoon": "导出 PDF（即将推出）",
   "exportCsvComingSoon": "导出 CSV（即将推出）",
   "unsentLabel": "未发送",
@@ -337,7 +337,8 @@
   "deleteAccountWarning": "此操作将永久删除您的账户及所有相关数据。",
   "deleteAccountButton": "删除账户",
   "deleteAccountConfirmTitle": "确认删除",
-  "deleteAccountConfirmMessage": "您确定吗？此操作无法撤销。",
+  "deleteAccountConfirmMessage": "您确定吗？此操作无法撤销。"
+,
   "servicePresetsTitle": "Service presets",
   "servicePresetsScreenTitle": "Service Presets",
   "servicePresetsAddNew": "Add new preset",
@@ -367,5 +368,14 @@
       "style": {},
       "palette": {}
     }
-  }
+  },
+  "profileSaved": "已自动保存",
+  "profileSaveError": "无法保存。您的更改仍保留在此处。",
+  "profileRetry": "重试",
+  "profileAutosaveHint": "更改会自动保存，关闭后仍会保留。",
+  "profileLogo": "公司标志",
+  "profileDefaults": "发票默认设置",
+  "profileTaxInvalid": "请检查税率（0–100%）。",
+  "metricLoadError": "无法加载报告，请重试。",
+  "totalInvoicedTitle": "开票总额"
 }

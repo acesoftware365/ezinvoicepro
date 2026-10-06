@@ -738,8 +738,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get overdueLabel => 'En retard';
 
   @override
-  String get reportCalculatedHint =>
-      'Calculé à partir de vos factures dans Firestore.';
+  String get reportCalculatedHint => 'Calculé à partir de vos factures.';
 
   @override
   String get exportPdfComingSoon => 'Exporter PDF (bientôt)';
@@ -840,4 +839,33 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get deleteAccountConfirmMessage =>
       'Êtes-vous sûr ? Cette action est irréversible.';
+
+  @override
+  String get profileSaved => 'Enregistré automatiquement';
+
+  @override
+  String get profileSaveError =>
+      'Échec de l’enregistrement. Vos modifications sont conservées ici.';
+
+  @override
+  String get profileRetry => 'Réessayer';
+
+  @override
+  String get profileAutosaveHint =>
+      'Les modifications sont enregistrées automatiquement, même à la fermeture.';
+
+  @override
+  String get profileLogo => 'Logo de l’entreprise';
+
+  @override
+  String get profileDefaults => 'Valeurs de facturation';
+
+  @override
+  String get profileTaxInvalid => 'Vérifiez la taxe (0–100 %).';
+
+  @override
+  String get metricLoadError => 'Impossible de charger ce rapport. Réessayez.';
+
+  @override
+  String get totalInvoicedTitle => 'Total facturé';
 }

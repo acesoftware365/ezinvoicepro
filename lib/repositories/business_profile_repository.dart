@@ -6,11 +6,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/business_profile.dart';
 
 class BusinessProfileRepository {
+  // Bind this repository to its original account, including pending saves.
+  late final String _userId = FirebaseAuth.instance.currentUser!.uid;
   DocumentReference<Map<String, dynamic>> _doc() {
-    final user = FirebaseAuth.instance.currentUser!;
     return FirebaseFirestore.instance
         .collection('users')
-        .doc(user.uid)
+        .doc(_userId)
         .collection('business_profile')
         .doc('profile');
   }
@@ -30,6 +31,10 @@ class BusinessProfileRepository {
     await _doc().set(p.toMap(), SetOptions(merge: true));
   }
 
+  Future<void> updateFields(Map<String, dynamic> fields) {
+    return _doc().set(fields, SetOptions(merge: true));
+  }
+
   // ✅ Presets helpers
   Future<List<String>> loadPresets() async {
     final p = await load();
@@ -37,10 +42,9 @@ class BusinessProfileRepository {
   }
 
   Future<void> setPresets(List<String> presets) async {
-    await _doc().set(
-      {'servicePresets': _normalize(presets)},
-      SetOptions(merge: true),
-    );
+    await _doc().set({
+      'servicePresets': _normalize(presets),
+    }, SetOptions(merge: true));
   }
 
   Future<void> addPreset(String text) async {
