@@ -1,8 +1,6 @@
 {
   "@@locale": "ar",
-
   "appName": "Ez Invoice",
-
   "loginSubtitle": "أنشئ حسابك",
   "email": "البريد الإلكتروني",
   "password": "كلمة المرور",
@@ -15,7 +13,6 @@
   "processing": "جارٍ المعالجة...",
   "invalidCredentials": "أدخل بريدًا إلكترونيًا صحيحًا وكلمة مرور (6+ أحرف)",
   "authError": "خطأ في المصادقة",
-
   "home": "الرئيسية",
   "clients": "العملاء",
   "invoices": "الفواتير",
@@ -23,35 +20,28 @@
   "settings": "الإعدادات",
   "logout": "تسجيل الخروج",
   "business": "النشاط التجاري",
-
   "settingsLanguage": "اللغة",
   "settingsLanguageDescription": "اختر لغة التطبيق.",
   "systemDefault": "لغة النظام",
-
   "privacyPolicy": "سياسة الخصوصية",
-
   "clientMessageTemplateMultiline": "مرحبًا {name},\nأرسل لك فاتورتك من EzInvoice. ✅",
   "@clientMessageTemplateMultiline": {
-    "placeholders": { "name": {} }
+    "placeholders": {
+      "name": {}
+    }
   },
-
   "invoiceEmailSubject": "فاتورة - EzInvoice",
-
   "dashboardTitle": "لوحة التحكم",
   "monthWord": "الشهر",
-
   "planLabel": "الخطة",
   "invoicesRemaining": "الفواتير المتبقية",
   "proUnlimitedLabel": "PRO · غير محدود",
-
   "createNewInvoice": "إنشاء فاتورة جديدة",
   "limitReachedSubtitle": "تم الوصول للحد • قم بالترقية إلى Pro",
   "createInvoiceFastSubtitle": "أنشئ فاتورة + PDF خلال ثوانٍ",
-
   "limitReachedTitle": "تم الوصول للحد",
   "limitReachedBody": "قم بالترقية إلى Pro لفواتير غير محدودة وإزالة الإعلانات.",
   "upgrade": "ترقية",
-
   "monthSummaryTitle": "ملخص الشهر",
   "salesTitle": "المبيعات",
   "tipTitle": "الإكرامية",
@@ -59,37 +49,34 @@
   "taxTitle": "الضريبة",
   "beforeTaxTip": "قبل الضريبة/الإكرامية",
   "collectedThisMonth": "المحصّل هذا الشهر",
-
   "quickAccessTitle": "وصول سريع",
   "clientsManageSubtitle": "إنشاء / تعديل العملاء",
   "invoicesViewSendSubtitle": "عرض وإرسال PDF",
   "monthlyYearlySubtitle": "شهري / سنوي",
   "businessProfileSubtitle": "الملف / الشعار / الضريبة",
-
   "invoiceCount": "{count} فاتورة",
-  "@invoiceCount": { "placeholders": { "count": {} } },
-
+  "@invoiceCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "paywallTitle": "Ez Invoice Pro",
   "close": "إغلاق",
   "paywallHeaderTitle": "افتح كل شيء لعملك",
   "paywallHeaderSubtitle": "بدون إعلانات • فواتير غير محدودة • تقارير ضرائب • قوالب مميزة",
-
   "bestValue": "أفضل قيمة",
   "proYearly": "Pro سنوي",
   "saveMoreYearly": "وفّر أكثر بالدفع سنويًا",
   "proMonthly": "Pro شهري",
   "flexible": "مرن",
   "cancelAnytime": "إلغاء في أي وقت",
-
   "processingPurchase": "جارٍ معالجة الشراء…",
   "restoringPurchases": "جارٍ استعادة المشتريات…",
   "restorePurchases": "استعادة المشتريات",
   "continueFreeWithAds": "المتابعة بالنسخة المجانية مع الإعلانات",
-
   "alreadyProTitle": "أنت Pro ✅",
   "alreadyProBody": "استمتع بفواتير غير محدودة، تقارير، وبدون إعلانات.",
   "continueText": "متابعة",
-
   "includesInPro": "يتضمن Pro",
   "benefitNoAds": "بدون إعلانات (Banner/Interstitial/Rewarded)",
   "benefitUnlimitedInvoices": "فواتير غير محدودة + حالات (مسودة/مرسلة/مدفوعة)",
@@ -98,179 +85,215 @@
   "benefitTaxReports": "تقارير ضرائب: شهري وسنوي (ضرائب/إكرامية/صافي)",
   "benefitExport": "تصدير PDF/CSV/Excel (للمحاسبة)",
   "benefitCloudBackup": "نسخ احتياطي سحابي + استعادة (أجهزة متعددة)",
-
   "continueWithPlan": "متابعة مع {plan}",
-  "@continueWithPlan": { "placeholders": { "plan": {} } },
-
+  "@continueWithPlan": {
+    "placeholders": {
+      "plan": {}
+    }
+  },
   "paywallFinePrint": "بالاشتراك، سيتم خصم الدفع من حساب {store} الخاص بك. يتجدد الاشتراك تلقائيًا ما لم تقم بالإلغاء قبل 24 ساعة على الأقل من نهاية الفترة الحالية. يمكنك إدارة اشتراكك أو إلغاؤه من إعدادات المتجر.",
-  "@paywallFinePrint": { "placeholders": { "store": {} } },
-
+  "@paywallFinePrint": {
+    "placeholders": {
+      "store": {}
+    }
+  },
   "reportsTitle": "التقارير",
   "proBadge": "PRO",
-
   "byMonth": "حسب الشهر",
   "byYear": "حسب السنة",
   "monthLabel": "الشهر",
   "yearLabel": "السنة",
-
   "businessProfileTitle": "ملف النشاط",
   "save": "حفظ",
   "uploadLogo": "رفع الشعار",
   "remove": "إزالة",
-
   "businessNameLabel": "اسم النشاط",
   "ownerNameLabel": "المالك / اسم جهة الاتصال",
   "phoneLabel": "الهاتف",
   "addressLabel": "العنوان",
-
   "currencyLabel": "العملة",
   "taxDefaultLabel": "الضريبة الافتراضية (%)",
-
   "invalidNumber": "رقم غير صالح",
   "range0to100": "يجب أن يكون بين 0 و 100",
   "requiredField": "مطلوب",
-
   "footerNoteLabel": "ملاحظة التذييل (PDF)",
   "saveChanges": "حفظ التغييرات",
-
   "businessFooterDefault": "شكرًا لتعاملكم معنا.",
   "businessSavedSuccess": "تم حفظ ملف النشاط بنجاح",
-
   "businessInfoSection": "معلومات النشاط",
   "settingsSection": "الإعدادات",
   "footerSection": "ملاحظة التذييل (PDF)",
   "upgradeToPro": "ترقية إلى Pro",
-
   "bestValueStar": "⭐ أفضل قيمة",
-
   "invoicesTitle": "الفواتير",
   "noInvoicesYet": "لا توجد فواتير بعد.",
-
   "freePlanMonthlyLimitBanner": "الخطة المجانية: حد شهري {limit} فاتورة • ترقية لغير محدود",
-  "@freePlanMonthlyLimitBanner": { "placeholders": { "limit": {} } },
-
+  "@freePlanMonthlyLimitBanner": {
+    "placeholders": {
+      "limit": {}
+    }
+  },
   "filtersTitle": "الفلاتر",
   "clientLabel": "العميل",
   "allMonths": "كل الأشهر",
   "allClients": "كل العملاء",
   "clear": "مسح",
-
   "invoicesSummaryLabel": "الفواتير",
   "totalTitle": "الإجمالي",
   "dateLabel": "التاريخ",
-
   "noResultsForFilters": "لا توجد نتائج للفلاتر المحددة.",
-
   "freePlanLimitDialogBody": "الخطة المجانية: {current} / {limit} فواتير هذا الشهر.\n\nقم بالترقية إلى Pro لغير محدود.",
-  "@freePlanLimitDialogBody": { "placeholders": { "current": {}, "limit": {} } },
-
+  "@freePlanLimitDialogBody": {
+    "placeholders": {
+      "current": {},
+      "limit": {}
+    }
+  },
   "deleteInvoiceTitle": "حذف الفاتورة؟",
   "deleteInvoiceBody": "هل أنت متأكد أنك تريد حذف {invNo}؟",
-  "@deleteInvoiceBody": { "placeholders": { "invNo": {} } },
-
+  "@deleteInvoiceBody": {
+    "placeholders": {
+      "invNo": {}
+    }
+  },
   "cancel": "إلغاء",
   "delete": "حذف",
   "edit": "تعديل",
   "sendPdf": "إرسال PDF",
-
   "shareInvoiceText": "فاتورة {invNo} - {client}",
-  "@shareInvoiceText": { "placeholders": { "invNo": {}, "client": {} } },
-
+  "@shareInvoiceText": {
+    "placeholders": {
+      "invNo": {},
+      "client": {}
+    }
+  },
   "pdfSendError": "خطأ في إنشاء/إرسال PDF: {error}",
-  "@pdfSendError": { "placeholders": { "error": {} } },
-
+  "@pdfSendError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "reportTitleMonth": "تقرير • {month} {year}",
-  "@reportTitleMonth": { "placeholders": { "month": {}, "year": {} } },
-
+  "@reportTitleMonth": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
   "reportTitleYear": "تقرير • سنة {year}",
-  "@reportTitleYear": { "placeholders": { "year": {} } },
-
+  "@reportTitleYear": {
+    "placeholders": {
+      "year": {}
+    }
+  },
   "invoicesLine": "الفواتير: {count}",
-  "@invoicesLine": { "placeholders": { "count": {} } },
-
+  "@invoicesLine": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "totalSalesLine": "إجمالي المبيعات: ${amount}",
-  "@totalSalesLine": { "placeholders": { "amount": {} } },
-
+  "@totalSalesLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "totalTaxLine": "إجمالي الضريبة: ${amount}",
-  "@totalTaxLine": { "placeholders": { "amount": {} } },
-
+  "@totalTaxLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "totalTipLine": "إجمالي الإكرامية: ${amount}",
-  "@totalTipLine": { "placeholders": { "amount": {} } },
-
+  "@totalTipLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "netLine": "الصافي: ${amount}",
-  "@netLine": { "placeholders": { "amount": {} } },
-
+  "@netLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "calculatedFromInvoices": "تم الحساب من فواتيرك في Firestore.",
   "noInvoicesInPeriod": "لا توجد فواتير في هذه الفترة.",
-
   "exportPdf": "تصدير PDF",
   "exportCsv": "تصدير CSV",
-
   "yearlyProReason": "التقرير السنوي PRO. قم بالترقية لفتحه.",
   "exportPdfProReason": "تصدير PDF للتقرير هو PRO.",
   "exportCsvProReason": "تصدير CSV هو PRO.",
-
   "noDataToExport": "لا توجد بيانات للتصدير.",
   "freePlanReportsNote": "الخطة المجانية: تقارير شهرية فقط. قم بالترقية للتقارير السنوية والتصدير.",
-
   "genericError": "حدث خطأ ما. حاول مرة أخرى.",
-
   "newInvoiceTitle": "فاتورة جديدة",
   "editInvoiceTitle": "تعديل الفاتورة",
   "pickClient": "اختر عميلًا",
-
   "invoiceAutoNumberLabel": "رقم الفاتورة (تلقائي)",
   "invoiceDateLabel": "تاريخ الفاتورة: {date}",
-  "@invoiceDateLabel": { "placeholders": { "date": {} } },
-
+  "@invoiceDateLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
   "clientNameLabel": "اسم العميل",
   "clientNameRequired": "اسم العميل مطلوب",
   "clientEmailOptionalLabel": "بريد العميل (اختياري)",
   "clientPhoneOptionalLabel": "هاتف العميل (اختياري)",
   "invalidEmailFormat": "تنسيق بريد غير صالح",
-
   "itemsTitle": "العناصر",
   "descriptionLabel": "الوصف",
   "itemDateLabel": "تاريخ العنصر: {date}",
-  "@itemDateLabel": { "placeholders": { "date": {} } },
-
+  "@itemDateLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
   "qtyLabel": "الكمية",
   "priceLabel": "السعر",
   "lineTotalLabel": "إجمالي السطر: ${amount}",
-  "@lineTotalLabel": { "placeholders": { "amount": {} } },
-
+  "@lineTotalLabel": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "taxDefaultOwnerLabel": "الضريبة % (افتراضي المالك)",
-
   "tipPercentChip": "إكرامية %",
   "tipAmountChip": "إكرامية $",
   "tipPercentLabel": "نسبة الإكرامية (%)",
   "tipAmountLabel": "قيمة الإكرامية ($)",
-
   "messageOptionalLabel": "رسالة (اختياري)",
-
   "totalsBlock": "المجموع الفرعي: ${sub}\nالضريبة: ${tax}\nالإكرامية: ${tip}\nالإجمالي: ${total}",
   "@totalsBlock": {
-    "placeholders": { "sub": {}, "tax": {}, "tip": {}, "total": {} }
+    "placeholders": {
+      "sub": {},
+      "tax": {},
+      "tip": {},
+      "total": {}
+    }
   },
-
   "saving": "جارٍ الحفظ…",
   "saveInvoice": "حفظ الفاتورة",
   "updateInvoice": "تحديث الفاتورة",
-
   "addAtLeastOneItem": "أضف عنصرًا واحدًا على الأقل",
   "errorSavingInvoice": "خطأ في حفظ الفاتورة: {error}",
-  "@errorSavingInvoice": { "placeholders": { "error": {} } },
-
+  "@errorSavingInvoice": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "savedTab": "المحفوظة",
   "contactsTab": "جهات الاتصال",
   "noSavedClients": "لا توجد عملاء محفوظون",
   "permissionDeniedContacts": "تم رفض الإذن: جهات الاتصال",
   "noContactsFound": "لا توجد جهات اتصال على هذا الجهاز/المحاكي",
   "contactsError": "خطأ جهات الاتصال: {error}",
-  "@contactsError": { "placeholders": { "error": {} } },
-
+  "@contactsError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "noName": "(بدون اسم)",
-
   "newClientTitle": "عميل جديد",
   "editClientTitle": "تعديل العميل",
   "clientInfoSection": "معلومات العميل",
@@ -279,30 +302,36 @@
   "clientCreateHint": "نصيحة: أضف البريد/الهاتف لإرسال الفواتير أسرع.",
   "clientEditHint": "يمكنك تحديث معلومات العميل في أي وقت.",
   "errorSavingClient": "خطأ في حفظ العميل: {error}",
-  "@errorSavingClient": { "placeholders": { "error": {} } },
-
+  "@errorSavingClient": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "clientsTitle": "العملاء",
   "searchClientsLabel": "بحث عن العملاء",
   "clientsCount": "{count} عميل",
-  "@clientsCount": { "placeholders": { "count": {} } },
-
+  "@clientsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "noClientsYet": "لا يوجد عملاء بعد.",
   "noClientsForSearch": "لا يوجد عملاء مطابقون للبحث.",
-
   "cannotOpenDialer": "لا يمكن فتح لوحة الاتصال",
   "cannotOpenSms": "لا يمكن فتح الرسائل",
   "whatsAppNotAvailable": "واتساب غير متاح",
   "cannotOpenEmail": "لا يمكن فتح البريد الإلكتروني",
-
   "deleteClientTitle": "حذف العميل؟",
   "deleteClientBody": "إزالة {name}؟",
-  "@deleteClientBody": { "placeholders": { "name": {} } },
-
+  "@deleteClientBody": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "call": "اتصال",
   "sms": "SMS",
   "whatsapp": "WhatsApp",
   "emailAction": "البريد",
-
   "shareAppTitle": "جرّب EzInvoice 👇",
   "shareAppBody": "أنشئ فواتير، أرسل PDFs، وتابع التقارير بسهولة.",
   "shareAppTooltip": "مشاركة التطبيق",
@@ -311,7 +340,6 @@
   "openWebsiteTooltip": "فتح الموقع",
   "availableLanguages": "اللغات المتاحة",
   "usePhoneLanguage": "استخدام لغة الهاتف",
-
   "shareReceiptText": "إيصال {invoiceNumber} لـ {clientName}",
   "@shareReceiptText": {
     "placeholders": {
@@ -319,7 +347,6 @@
       "clientName": {}
     }
   },
-
   "report": "تقرير",
   "invoicesLabel": "الفواتير",
   "totalSalesLabel": "إجمالي المبيعات",
@@ -337,31 +364,30 @@
   "deleteAccountWarning": "سيؤدي هذا الإجراء إلى حذف حسابك وجميع البيانات المرتبطة به نهائيًا.",
   "deleteAccountButton": "حذف الحساب",
   "deleteAccountConfirmTitle": "تأكيد الحذف",
-  "deleteAccountConfirmMessage": "هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء."
-,
-  "servicePresetsTitle": "Service presets",
-  "servicePresetsScreenTitle": "Service Presets",
-  "servicePresetsAddNew": "Add new preset",
-  "servicePresetsHint": "e.g. Cleaning, Repair, Consultation...",
-  "servicePresetsAddButton": "Add",
-  "addServiceLabel": "Add a service",
-  "yourPresets": "Your presets",
-  "noPresetsYet": "No presets yet.",
-  "notNow": "Not now",
-  "openPaywallPlaceholder": "Open Paywall (connect PaywallScreen here)",
-  "invoiceStyleTitle": "Invoice style",
-  "invoiceFreeStyleHint": "Free plan uses one invoice version (Minimal). Upgrade to Pro to unlock all layouts and palettes.",
-  "invoicePaletteLabel": "Invoice palette",
-  "invoiceLayoutLabel": "Invoice layout",
-  "saveInvoicePaletteError": "Could not save invoice palette.",
-  "saveInvoiceLayoutError": "Could not save invoice layout.",
-  "reportStyleTitle": "Report style",
-  "reportFreeStyleHint": "Free plan uses one report version (Minimal). Upgrade to Pro to unlock all layouts and palettes.",
-  "reportPaletteLabel": "Report palette",
-  "reportLayoutLabel": "Report layout",
-  "saveReportPaletteError": "Could not save report palette.",
-  "saveReportLayoutError": "Could not save report layout.",
-  "stylePaletteFootnote": "{docType} style: {style} | Palette: {palette}",
+  "deleteAccountConfirmMessage": "هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء.",
+  "servicePresetsTitle": "الخدمات المحفوظة",
+  "servicePresetsScreenTitle": "الخدمات المحفوظة",
+  "servicePresetsAddNew": "إضافة خدمة جديدة",
+  "servicePresetsHint": "مثل: تنظيف، إصلاح، استشارة...",
+  "servicePresetsAddButton": "إضافة",
+  "addServiceLabel": "إضافة خدمة",
+  "yourPresets": "خدماتك المحفوظة",
+  "noPresetsYet": "لا توجد خدمات محفوظة بعد.",
+  "notNow": "ليس الآن",
+  "openPaywallPlaceholder": "فتح الاشتراكات",
+  "invoiceStyleTitle": "نمط الفاتورة",
+  "invoiceFreeStyleHint": "تستخدم الخطة المجانية نسخة فاتورة واحدة (Minimal). قم بالترقية إلى Pro لفتح جميع التخطيطات واللوحات.",
+  "invoicePaletteLabel": "لوحة ألوان الفاتورة",
+  "invoiceLayoutLabel": "تخطيط الفاتورة",
+  "saveInvoicePaletteError": "تعذر حفظ لوحة ألوان الفاتورة.",
+  "saveInvoiceLayoutError": "تعذر حفظ تخطيط الفاتورة.",
+  "reportStyleTitle": "نمط التقرير",
+  "reportFreeStyleHint": "تستخدم الخطة المجانية نسخة تقرير واحدة (Minimal). قم بالترقية إلى Pro لفتح جميع التخطيطات واللوحات.",
+  "reportPaletteLabel": "لوحة ألوان التقرير",
+  "reportLayoutLabel": "تخطيط التقرير",
+  "saveReportPaletteError": "تعذر حفظ لوحة ألوان التقرير.",
+  "saveReportLayoutError": "تعذر حفظ تخطيط التقرير.",
+  "stylePaletteFootnote": "نمط {docType}: {style} | اللوحة: {palette}",
   "@stylePaletteFootnote": {
     "placeholders": {
       "docType": {},
@@ -377,5 +403,407 @@
   "profileDefaults": "إعدادات الفاتورة الافتراضية",
   "profileTaxInvalid": "تحقق من الضريبة (0–100٪).",
   "metricLoadError": "تعذر تحميل التقرير. حاول مرة أخرى.",
-  "totalInvoicedTitle": "إجمالي الفواتير"
+  "totalInvoicedTitle": "إجمالي الفواتير",
+  "versionLabel": "الإصدار {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "errorWithDetails": "خطأ: {error}",
+  "@errorWithDetails": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "rememberEmail": "تذكر بريدي الإلكتروني",
+  "forgotPassword": "هل نسيت كلمة المرور؟",
+  "passwordResetEnterEmail": "أدخل بريدك الإلكتروني لإرسال رابط إعادة التعيين.",
+  "passwordResetSent": "أرسلنا رسالة لإعادة تعيين كلمة المرور. تحقق من البريد العشوائي.",
+  "passwordResetNoAccount": "لم يتم العثور على حساب بهذا البريد الإلكتروني.",
+  "invalidEmail": "البريد الإلكتروني غير صالح.",
+  "passwordResetError": "تعذر إرسال البريد الإلكتروني. حاول مرة أخرى.",
+  "updateRequired": "التحديث مطلوب",
+  "updateRequiredBody": "يتوفر إصدار جديد من Ez Invoice. للمتابعة، حدّث التطبيق من المتجر.",
+  "updateNow": "حدّث الآن",
+  "open": "فتح",
+  "share": "مشاركة",
+  "actions": "إجراءات",
+  "message": "رسالة",
+  "done": "تم",
+  "confirm": "تأكيد",
+  "free": "مجاني",
+  "clientInformation": "معلومات العميل",
+  "clientName": "اسم العميل",
+  "notesOptional": "ملاحظات (اختياري)",
+  "saveClient": "حفظ العميل",
+  "importFromContacts": "استيراد من جهات الاتصال",
+  "importContactsDescription": "املأ الاسم والهاتف والبريد الإلكتروني فورًا.",
+  "loadContacts": "تحميل جهات الاتصال",
+  "clientPhone": "هاتف العميل",
+  "searchContacts": "البحث في جهات الاتصال",
+  "shareClient": "مشاركة العميل",
+  "clientProfile": "ملف العميل",
+  "chooseSavedService": "اختر خدمة محفوظة",
+  "searchSavedServices": "ابحث عن الخدمات المحفوظة",
+  "noSavedServicesFound": "لم يتم العثور على خدمات محفوظة",
+  "noSavedServicesToUse": "لا توجد خدمات محفوظة بعد. اكتب واحدة بالأعلى ثم احفظها لاحقًا.",
+  "savedServiceAlreadyExists": "محفوظ بالفعل: {service}",
+  "@savedServiceAlreadyExists": {
+    "placeholders": {
+      "service": {}
+    }
+  },
+  "savedService": "تم حفظ الخدمة: {service}",
+  "@savedService": {
+    "placeholders": {
+      "service": {}
+    }
+  },
+  "savePresetError": "تعذر حفظ الخدمة: {error}",
+  "@savePresetError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "saveServiceForLater": "حفظ الخدمة لاحقًا",
+  "removeClient": "إزالة العميل",
+  "service": "خدمة",
+  "taxAndTip": "الضريبة والإكرامية",
+  "totals": "الإجماليات",
+  "dueDate": "تاريخ الاستحقاق: {date}",
+  "@dueDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "paidDate": "تاريخ الدفع: {date}",
+  "@paidDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "notPaidYet": "لم يتم الدفع بعد",
+  "paymentMethodWithValue": "الطريقة: {method}",
+  "@paymentMethodWithValue": {
+    "placeholders": {
+      "method": {}
+    }
+  },
+  "paymentNoteWithValue": "ملاحظة: {note}",
+  "@paymentNoteWithValue": {
+    "placeholders": {
+      "note": {}
+    }
+  },
+  "markAsPaid": "وضع علامة مدفوعة",
+  "markAsUnpaid": "وضع علامة غير مدفوعة",
+  "editTax": "تعديل",
+  "addClient": "إضافة عميل",
+  "firstClientHint": "أنشئ أول عميل لإعادة استخدامه في الفواتير القادمة.",
+  "searchSavedClients": "ابحث عن العملاء المحفوظين",
+  "paymentMethod": "طريقة الدفع",
+  "cash": "نقدًا",
+  "card": "بطاقة",
+  "check": "شيك",
+  "other": "أخرى",
+  "noteOptional": "ملاحظة (اختياري)",
+  "invoiceMarkPaidError": "تعذر وضع علامة على الفاتورة كمدفوعة: {error}",
+  "@invoiceMarkPaidError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkUnpaidError": "تعذر وضع علامة على الفاتورة كغير مدفوعة: {error}",
+  "@invoiceMarkUnpaidError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "deleteError": "تعذر حذف الفاتورة: {error}",
+  "@deleteError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceDeleted": "تم حذف الفاتورة",
+  "invoiceMarkedSent": "تم وضع علامة مرسلة ✅",
+  "invoiceMarkSentError": "تعذر وضع علامة مرسلة: {error}",
+  "@invoiceMarkSentError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkedUnsent": "تم وضع علامة غير مرسلة ✅",
+  "invoiceMarkUnsentError": "تعذر وضع علامة غير مرسلة: {error}",
+  "@invoiceMarkUnsentError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkedPaid": "تم وضع علامة مدفوعة ✅",
+  "invoiceMarkedUnpaid": "تم وضع علامة غير مدفوعة ✅",
+  "invoiceLoadingError": "تعذر تحميل الفواتير",
+  "tipType": "نوع الإكرامية",
+  "amountOption": "المبلغ ($)",
+  "percentageOption": "النسبة المئوية (%)",
+  "pdfPreview": "معاينة PDF",
+  "openPdf": "فتح PDF",
+  "sharePdf": "مشاركة PDF",
+  "selectReportMonth": "اختر شهر التقرير",
+  "reportForBusiness": "التقارير • {business}",
+  "@reportForBusiness": {
+    "placeholders": {
+      "business": {}
+    }
+  },
+  "tapToChangeMonth": "اضغط لتغيير الشهر",
+  "csvSaved": "تم حفظ CSV: {path}",
+  "@csvSaved": {
+    "placeholders": {
+      "path": {}
+    }
+  },
+  "csvExportError": "تعذر تصدير CSV: {error}",
+  "@csvExportError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "aboutTitle": "حول",
+  "aboutTagline": "فواتير واضحة للأعمال المتحركة",
+  "aboutAppTitle": "التطبيق",
+  "aboutAppBody": "يجمع EzInvoice الفواتير والعملاء والمدفوعات والتقارير في سير عمل بسيط لتعرف ما يهمك وتحصل على مستحقاتك بثقة.",
+  "aboutCompanyTitle": "الشركة",
+  "aboutCompanyBody": "تنشئ Liisgo LLC أدوات عملية تساعد الشركات الصغيرة على العمل بتنظيم ووضوح وثقة أكبر.",
+  "aboutPromiseTitle": "مصمم ليومك اليومي",
+  "aboutPromiseBody": "يهدف كل قرار في EzInvoice إلى تقليل الخطوات وإبقاء التفاصيل ظاهرة وجعل إدارة عملك أسهل.",
+  "visitLiisgo": "زيارة Liisgo",
+  "contactSupport": "اتصل بالدعم",
+  "shareEzInvoice": "مشاركة EzInvoice",
+  "sendIdeaOrBug": "إرسال فكرة أو مشكلة",
+  "feedbackTitle": "رأيك مهم",
+  "feedbackSubtitle": "أخبرنا بما تريد تحسينه أو بما لم يعمل جيدًا.",
+  "feedbackIdea": "فكرة",
+  "feedbackBug": "مشكلة",
+  "feedbackHint": "اكتب فكرتك أو اشرح ما حدث…",
+  "feedbackRequired": "اكتب رسالة قبل الإرسال.",
+  "continueToEmail": "المتابعة إلى البريد الإلكتروني",
+  "couldNotOpenLink": "تعذر فتح هذا الرابط.",
+  "shareAppText": "تعرّف على EzInvoice Pro: الفواتير والعملاء والتقارير في مكان واحد.\n{storeUrl}",
+  "@shareAppText": {
+    "placeholders": {
+      "storeUrl": {}
+    }
+  },
+  "feedbackEmailSubject": "{kind} لـ EzInvoice",
+  "@feedbackEmailSubject": {
+    "placeholders": {
+      "kind": {}
+    }
+  },
+  "supportEmailSubject": "دعم EzInvoice",
+  "changePassword": "تغيير كلمة المرور",
+  "changePasswordSubtitle": "حدّث كلمة مرور حسابك.",
+  "confirmCurrentPasswordHint": "لأمانك، أكد كلمة المرور الحالية أولًا.",
+  "currentPassword": "كلمة المرور الحالية",
+  "newPassword": "كلمة المرور الجديدة",
+  "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+  "updatePassword": "تحديث كلمة المرور",
+  "passwordAtLeastSix": "يجب أن تحتوي على 6 أحرف على الأقل.",
+  "noActiveSession": "لا توجد جلسة نشطة.",
+  "passwordsDoNotMatch": "كلمة المرور الجديدة غير متطابقة.",
+  "passwordMustDiffer": "يجب أن تكون كلمة المرور الجديدة مختلفة.",
+  "passwordUpdated": "تم تحديث كلمة المرور بنجاح.",
+  "incorrectPassword": "كلمة المرور الحالية غير صحيحة.",
+  "weakPassword": "كلمة المرور الجديدة ضعيفة جدًا.",
+  "reauthenticationNeeded": "لأمانك، سجّل الدخول مرة أخرى ثم حاول مجددًا.",
+  "changePasswordError": "تعذر تغيير كلمة المرور.",
+  "confirmPassword": "تأكيد كلمة المرور",
+  "reauthCancelled": "تم إلغاء إعادة التحقق.",
+  "accountDeleted": "تم حذف حسابك وبياناتك نهائيًا.",
+  "deleteAccountIncorrectPassword": "كلمة المرور غير صحيحة.",
+  "deleteAccountError": "تعذر حذف الحساب.",
+  "deleteAccountBody": "إذا حذفت حسابك:\n\n• سيتم حذف عملائك وفواتيرك وتقاريرك وملف نشاطك نهائيًا.\n• لا يمكن التراجع عن هذا الإجراء.\n• إذا كان لديك اشتراك نشط، فأدره أو ألغِه من App Store أو Google Play.",
+  "termsConditions": "الشروط والأحكام",
+  "agreeTermsPrivacy": "يرجى الموافقة أولًا على الشروط والأحكام وسياسة الخصوصية.",
+  "currentPlan": "الخطة الحالية",
+  "currentPlanFree": "الخطة الحالية: مجانية",
+  "proPlanDescription": "تتضمن الخطة المجانية إعلانات واستخدامًا محدودًا. يزيل Pro الإعلانات ويفتح فواتير غير محدودة وتقارير وقوالب مميزة وتصديرًا ونسخًا احتياطيًا سحابيًا.",
+  "adsIncluded": "يتضمن إعلانات",
+  "limitedInvoicesPerMonth": "فواتير محدودة كل شهر",
+  "basicInvoiceStyle": "نمط فاتورة أساسي",
+  "basicReports": "تقارير أساسية",
+  "pdfIncludesBranding": "يتضمن PDF علامة EzInvoice",
+  "unpaidLabel": "غير مدفوعة",
+  "loading": "جارٍ التحميل...",
+  "store": "المتجر",
+  "storeProductLoadingOne": "لا يزال أحد منتجات الاشتراك قيد التحميل. يمكنك المتابعة بالخطة المتاحة أثناء تحميل المنتج الآخر.",
+  "storeProductsLoading": "جارٍ الاتصال بمنتجات الاشتراك في المتجر. إذا لم يكتمل التحميل، فتأكد من جاهزية الاشتراكات في لوحة المتجر.",
+  "agreeTo": "أوافق على ",
+  "and": " و",
+  "currentProPlanDescription": "لديك بالفعل Ez Invoice Pro. يمكنك مراجعة خياري الاشتراك أدناه.",
+  "freeVsPro": "المجاني مقابل {pro}",
+  "@freeVsPro": {
+    "placeholders": {
+      "pro": {}
+    }
+  },
+  "openInvoices": "افتح الفواتير.",
+  "allCaughtUp": "كل شيء محدث",
+  "itemsToReview": "{count} للمراجعة",
+  "@itemsToReview": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "pdfInvoice": "فاتورة",
+  "pdfReceipt": "إيصال",
+  "pdfBusiness": "النشاط التجاري",
+  "pdfPhone": "الهاتف",
+  "pdfEmail": "البريد الإلكتروني",
+  "pdfNumber": "رقم",
+  "pdfDate": "التاريخ",
+  "pdfDue": "الاستحقاق",
+  "pdfPaid": "مدفوعة",
+  "pdfPaidDate": "تاريخ الدفع",
+  "pdfMethod": "الطريقة",
+  "pdfBillTo": "الفاتورة إلى",
+  "pdfClient": "العميل",
+  "pdfDescription": "الوصف",
+  "pdfQuantity": "الكمية",
+  "pdfPrice": "السعر",
+  "pdfSubtotal": "المجموع الفرعي",
+  "pdfTax": "الضريبة",
+  "pdfTaxWithRate": "الضريبة ({rate}%)",
+  "@pdfTaxWithRate": {
+    "placeholders": {
+      "rate": {}
+    }
+  },
+  "pdfTip": "إكرامية",
+  "pdfTipWithRate": "إكرامية ({rate}%)",
+  "@pdfTipWithRate": {
+    "placeholders": {
+      "rate": {}
+    }
+  },
+  "pdfDiscount": "خصم",
+  "pdfMessage": "رسالة",
+  "pdfPaymentNote": "ملاحظة الدفع",
+  "pdfThankYou": "شكرًا لتعاملكم معنا.",
+  "pdfPoweredBy": "مدعوم من EzInvoice",
+  "pdfFreeVersion": "الإصدار المجاني",
+  "pdfTotal": "الإجمالي",
+  "styleMinimal": "بسيط",
+  "styleProfessional": "احترافي",
+  "styleCorporate": "مؤسسي",
+  "styleModern": "حديث",
+  "styleSlate": "أردوازي",
+  "reportDocument": "تقرير",
+  "reportPrintDocument": "طباعة التقرير",
+  "reportMonth": "الشهر",
+  "reportYear": "السنة",
+  "reportGeneratedOn": "تم الإنشاء في",
+  "reportInvoices": "الفواتير",
+  "reportStatus": "الحالة",
+  "reportTotals": "الإجماليات",
+  "reportSales": "المبيعات",
+  "reportTotalTax": "إجمالي الضريبة",
+  "reportTotalTip": "إجمالي الإكراميات",
+  "reportTotalInvoiced": "إجمالي المفوتر",
+  "reportUnsent": "غير مرسلة",
+  "reportSent": "مرسلة",
+  "reportPaid": "مدفوعة",
+  "reportOverdue": "متأخرة",
+  "reportInvoiceNumber": "رقم الفاتورة",
+  "reportClient": "العميل",
+  "reportDueDate": "تاريخ الاستحقاق",
+  "reportDescription": "الوصف",
+  "reportDate": "التاريخ",
+  "reportFreeVersion": "الإصدار المجاني",
+  "reportPoweredBy": "مدعوم من EzInvoice",
+  "reportPdfShareText": "تقرير PDF: {title}",
+  "@reportPdfShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportCsvShareText": "تقرير CSV: {title}",
+  "@reportCsvShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportPrintShareText": "طباعة: {title}",
+  "@reportPrintShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportFileMonthly": "تقرير_{month}_{year}",
+  "@reportFileMonthly": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
+  "reportFileYearly": "تقرير_سنة_{year}",
+  "@reportFileYearly": {
+    "placeholders": {
+      "year": {}
+    }
+  },
+  "reportTextMonthly": "تقرير | {month} {year}",
+  "@reportTextMonthly": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
+  "reportTextYearly": "تقرير | {year}",
+  "@reportTextYearly": {
+    "placeholders": {
+      "year": {}
+    }
+  },
+  "reportBreakdown": "التفاصيل",
+  "reportInvoicesStatus": "حالة الفواتير",
+  "viewReport": "عرض التقرير",
+  "reviewBeforeExport": "راجع ملف PDF أو CSV قبل التصدير.",
+  "customizeReport": "تخصيص التقرير",
+  "reportPreviewUpdates": "تظهر التغييرات فورًا في المعاينة.",
+  "yourReportPreview": "معاينة تقريرك",
+  "reportStyleLiveHint": "غيّر التصميم وشاهده مباشرةً.",
+  "watchAdToExportReport": "شاهد الإعلان كاملًا لتصدير هذا التقرير. رقِّ إلى Pro للتصدير من دون إعلانات.",
+  "reportExportError": "تعذر تصدير التقرير: {error}",
+  "@reportExportError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "shareCsvFile": "مشاركة ملف CSV",
+  "shareCsvFileDescription": "شارك مرفق .csv عبر البريد أو Drive أو تطبيق آخر.",
+  "shareReportAsText": "مشاركة كنص (WhatsApp / SMS)",
+  "shareReportAsTextDescription": "أرسل ملخص التقرير كنص.",
+  "printCsv": "طباعة CSV",
+  "printReportDescription": "اطبع التقرير كجدول PDF.",
+  "reportPreview": "معاينة",
+  "live": "مباشر",
+  "proFeatureUnlimitedInvoices": "فواتير غير محدودة",
+  "proFeatureRemovePdfBranding": "إزالة علامة PDF",
+  "proFeatureExportCsv": "تصدير CSV",
+  "proFeaturePremiumTemplates": "قوالب مميزة",
+  "proFeatureDetailedTaxReport": "تقرير ضريبي مفصل",
+  "proFeatureUnlimitedInvoicesDescription": "تسمح الخطة المجانية بما يصل إلى {limit} فاتورة شهريًا.",
+  "@proFeatureUnlimitedInvoicesDescription": {
+    "placeholders": {
+      "limit": {}
+    }
+  },
+  "proFeatureRemovePdfBrandingDescription": "يزيل «مدعوم من EzInvoice» من ملفات PDF.",
+  "proFeatureExportCsvDescription": "صدّر فواتيرك إلى CSV.",
+  "proFeaturePremiumTemplatesDescription": "افتح قوالب الفواتير المميزة.",
+  "proFeatureDetailedTaxReportDescription": "اعرض تقارير تفصيلية للضرائب.",
+  "pdfShareText": "ملف PDF للفاتورة من EzInvoice"
 }

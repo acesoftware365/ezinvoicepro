@@ -16,7 +16,7 @@ class ReportsService {
 
   static String _uidOrThrow() {
     final u = FirebaseAuth.instance.currentUser;
-    if (u == null) throw Exception('User not logged in');
+    if (u == null) throw StateError('unauthenticated');
     return u.uid;
   }
 
@@ -32,7 +32,7 @@ class ReportsService {
   static Invoice _toInvoice(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data();
     if (data == null) {
-      throw Exception('Invoice document is empty: ${doc.id}');
+      throw StateError('invoice-document-empty');
     }
     return Invoice.fromMap(doc.id, data);
   }

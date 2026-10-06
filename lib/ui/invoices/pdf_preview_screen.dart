@@ -1,17 +1,15 @@
 import 'dart:io';
+
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:share_plus/share_plus.dart';
 
 class PdfPreviewScreen extends StatelessWidget {
   final File pdfFile;
-  final String title;
+  final String? title;
 
-  const PdfPreviewScreen({
-    super.key,
-    required this.pdfFile,
-    this.title = 'PDF Preview',
-  });
+  const PdfPreviewScreen({super.key, required this.pdfFile, this.title});
 
   Future<void> _open() async {
     await OpenFilex.open(pdfFile.path);
@@ -26,24 +24,25 @@ class PdfPreviewScreen extends StatelessWidget {
 
     await Share.shareXFiles(
       [XFile(pdfFile.path)],
-      text: 'Invoice PDF from EzInvoice',
+      text: AppLocalizations.of(context).pdfShareText,
       sharePositionOrigin: origin,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(title ?? t.pdfPreview),
         actions: [
           IconButton(
-            tooltip: 'Share',
+            tooltip: t.share,
             icon: const Icon(Icons.share),
             onPressed: () => _share(context),
           ),
           IconButton(
-            tooltip: 'Open',
+            tooltip: t.open,
             icon: const Icon(Icons.open_in_new),
             onPressed: _open,
           ),
@@ -68,7 +67,7 @@ class PdfPreviewScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.open_in_new),
-                  label: const Text('Open PDF'),
+                  label: Text(t.openPdf),
                   onPressed: _open,
                 ),
               ),
@@ -78,7 +77,7 @@ class PdfPreviewScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.share),
-                  label: const Text('Share PDF'),
+                  label: Text(t.sharePdf),
                   onPressed: () => _share(context),
                 ),
               ),
@@ -88,7 +87,7 @@ class PdfPreviewScreen extends StatelessWidget {
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Close'),
+                  child: Text(t.close),
                 ),
               ),
             ],

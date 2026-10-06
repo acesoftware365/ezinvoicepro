@@ -730,95 +730,92 @@ class AppLocalizationsJa extends AppLocalizations {
   String get unsentLabel => '未送信';
 
   @override
-  String get servicePresetsTitle => 'Service presets';
+  String get servicePresetsTitle => '保存済みサービス';
 
   @override
-  String get servicePresetsScreenTitle => 'Service Presets';
+  String get servicePresetsScreenTitle => '保存済みサービス';
 
   @override
-  String get servicePresetsAddNew => 'Add new preset';
+  String get servicePresetsAddNew => '新しいサービスを追加';
 
   @override
-  String get servicePresetsHint => 'e.g. Cleaning, Repair, Consultation...';
+  String get servicePresetsHint => '例: 清掃、修理、コンサルティング...';
 
   @override
-  String get servicePresetsAddButton => 'Add';
+  String get servicePresetsAddButton => '追加';
 
   @override
-  String get addServiceLabel => 'Add a service';
+  String get addServiceLabel => 'サービスを追加';
 
   @override
-  String get yourPresets => 'Your presets';
+  String get yourPresets => '保存済みサービス';
 
   @override
-  String get noPresetsYet => 'No presets yet.';
+  String get noPresetsYet => '保存済みサービスはまだありません。';
 
   @override
-  String get notNow => 'Not now';
+  String get notNow => '今はしない';
 
   @override
-  String get openPaywallPlaceholder =>
-      'Open Paywall (connect PaywallScreen here)';
+  String get openPaywallPlaceholder => 'サブスクリプションを開く';
 
   @override
-  String get invoiceStyleTitle => 'Invoice style';
+  String get invoiceStyleTitle => '請求書スタイル';
 
   @override
   String get invoiceFreeStyleHint =>
-      'Free plan uses one invoice version (Minimal). Upgrade to Pro to unlock all layouts and palettes.';
+      '無料プランでは請求書のバージョンは 1 つ（Minimal）です。すべてのレイアウトとパレットを使うには Pro にアップグレードしてください。';
 
   @override
-  String get invoicePaletteLabel => 'Invoice palette';
+  String get invoicePaletteLabel => '請求書パレット';
 
   @override
-  String get invoiceLayoutLabel => 'Invoice layout';
+  String get invoiceLayoutLabel => '請求書レイアウト';
 
   @override
-  String get saveInvoicePaletteError => 'Could not save invoice palette.';
+  String get saveInvoicePaletteError => '請求書パレットを保存できませんでした。';
 
   @override
-  String get saveInvoiceLayoutError => 'Could not save invoice layout.';
+  String get saveInvoiceLayoutError => '請求書レイアウトを保存できませんでした。';
 
   @override
-  String get reportStyleTitle => 'Report style';
+  String get reportStyleTitle => 'レポートスタイル';
 
   @override
   String get reportFreeStyleHint =>
-      'Free plan uses one report version (Minimal). Upgrade to Pro to unlock all layouts and palettes.';
+      '無料プランではレポートのバージョンは 1 つ（Minimal）です。すべてのレイアウトとパレットを使うには Pro にアップグレードしてください。';
 
   @override
-  String get reportPaletteLabel => 'Report palette';
+  String get reportPaletteLabel => 'レポートパレット';
 
   @override
-  String get reportLayoutLabel => 'Report layout';
+  String get reportLayoutLabel => 'レポートレイアウト';
 
   @override
-  String get saveReportPaletteError => 'Could not save report palette.';
+  String get saveReportPaletteError => 'レポートパレットを保存できませんでした。';
 
   @override
-  String get saveReportLayoutError => 'Could not save report layout.';
+  String get saveReportLayoutError => 'レポートレイアウトを保存できませんでした。';
 
   @override
   String stylePaletteFootnote(Object docType, Object style, Object palette) {
-    return '$docType style: $style | Palette: $palette';
+    return '$docType スタイル: $style | パレット: $palette';
   }
 
   @override
-  String get deleteAccountTitle => 'Delete Account';
+  String get deleteAccountTitle => 'アカウントを削除';
 
   @override
-  String get deleteAccountWarning =>
-      'This action will permanently delete your account and all associated data.';
+  String get deleteAccountWarning => 'この操作により、アカウントと関連するすべてのデータが完全に削除されます。';
 
   @override
-  String get deleteAccountButton => 'Delete Account';
+  String get deleteAccountButton => 'アカウントを削除';
 
   @override
-  String get deleteAccountConfirmTitle => 'Confirm Deletion';
+  String get deleteAccountConfirmTitle => '削除の確認';
 
   @override
-  String get deleteAccountConfirmMessage =>
-      'Are you sure? This action cannot be undone.';
+  String get deleteAccountConfirmMessage => '本当によろしいですか？この操作は元に戻せません。';
 
   @override
   String get profileSaved => '自動保存しました';
@@ -846,4 +843,800 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get totalInvoicedTitle => '請求総額';
+
+  @override
+  String versionLabel(Object version) {
+    return 'バージョン $version';
+  }
+
+  @override
+  String errorWithDetails(Object error) {
+    return 'エラー: $error';
+  }
+
+  @override
+  String get rememberEmail => 'メールアドレスを記憶する';
+
+  @override
+  String get forgotPassword => 'パスワードをお忘れですか？';
+
+  @override
+  String get passwordResetEnterEmail => 'リセットリンクを送るため、メールアドレスを入力してください。';
+
+  @override
+  String get passwordResetSent => 'パスワード再設定用のメールを送信しました。迷惑メールフォルダもご確認ください。';
+
+  @override
+  String get passwordResetNoAccount => 'このメールアドレスのアカウントは見つかりませんでした。';
+
+  @override
+  String get invalidEmail => 'メールアドレスが正しくありません。';
+
+  @override
+  String get passwordResetError => 'メールを送信できませんでした。もう一度お試しください。';
+
+  @override
+  String get updateRequired => '更新が必要です';
+
+  @override
+  String get updateRequiredBody =>
+      'Ez Invoice の新しいバージョンがあります。続けるにはストアからアプリを更新してください。';
+
+  @override
+  String get updateNow => '今すぐ更新';
+
+  @override
+  String get open => '開く';
+
+  @override
+  String get share => '共有';
+
+  @override
+  String get actions => '操作';
+
+  @override
+  String get message => 'メッセージ';
+
+  @override
+  String get done => '完了';
+
+  @override
+  String get confirm => '確認';
+
+  @override
+  String get free => '無料';
+
+  @override
+  String get clientInformation => '顧客情報';
+
+  @override
+  String get clientName => '顧客名';
+
+  @override
+  String get notesOptional => 'メモ（任意）';
+
+  @override
+  String get saveClient => '顧客を保存';
+
+  @override
+  String get importFromContacts => '連絡先から読み込む';
+
+  @override
+  String get importContactsDescription => '名前、電話番号、メールをすぐに入力できます。';
+
+  @override
+  String get loadContacts => '連絡先を読み込む';
+
+  @override
+  String get clientPhone => '顧客の電話番号';
+
+  @override
+  String get searchContacts => '連絡先を検索';
+
+  @override
+  String get shareClient => '顧客を共有';
+
+  @override
+  String get clientProfile => '顧客プロフィール';
+
+  @override
+  String get chooseSavedService => '保存したサービスを選択';
+
+  @override
+  String get searchSavedServices => '保存したサービスを検索';
+
+  @override
+  String get noSavedServicesFound => '保存したサービスが見つかりません';
+
+  @override
+  String get noSavedServicesToUse => '保存したサービスはまだありません。上で入力して後で使うために保存してください。';
+
+  @override
+  String savedServiceAlreadyExists(Object service) {
+    return 'すでに保存済み: $service';
+  }
+
+  @override
+  String savedService(Object service) {
+    return 'サービスを保存しました: $service';
+  }
+
+  @override
+  String savePresetError(Object error) {
+    return 'サービスを保存できませんでした: $error';
+  }
+
+  @override
+  String get saveServiceForLater => 'サービスを後で使うために保存';
+
+  @override
+  String get removeClient => '顧客を削除';
+
+  @override
+  String get service => 'サービス';
+
+  @override
+  String get taxAndTip => '税金とチップ';
+
+  @override
+  String get totals => '合計';
+
+  @override
+  String dueDate(Object date) {
+    return '支払期日: $date';
+  }
+
+  @override
+  String paidDate(Object date) {
+    return '支払日: $date';
+  }
+
+  @override
+  String get notPaidYet => '未払い';
+
+  @override
+  String paymentMethodWithValue(Object method) {
+    return '方法: $method';
+  }
+
+  @override
+  String paymentNoteWithValue(Object note) {
+    return 'メモ: $note';
+  }
+
+  @override
+  String get markAsPaid => '支払い済みにする';
+
+  @override
+  String get markAsUnpaid => '未払いにする';
+
+  @override
+  String get editTax => '編集';
+
+  @override
+  String get addClient => '顧客を追加';
+
+  @override
+  String get firstClientHint => '今後の請求書で再利用するために最初の顧客を作成してください。';
+
+  @override
+  String get searchSavedClients => '保存した顧客を検索';
+
+  @override
+  String get paymentMethod => '支払い方法';
+
+  @override
+  String get cash => '現金';
+
+  @override
+  String get card => 'カード';
+
+  @override
+  String get check => '小切手';
+
+  @override
+  String get other => 'その他';
+
+  @override
+  String get noteOptional => 'メモ（任意）';
+
+  @override
+  String invoiceMarkPaidError(Object error) {
+    return '請求書を支払い済みにできませんでした: $error';
+  }
+
+  @override
+  String invoiceMarkUnpaidError(Object error) {
+    return '請求書を未払いにできませんでした: $error';
+  }
+
+  @override
+  String deleteError(Object error) {
+    return '請求書を削除できませんでした: $error';
+  }
+
+  @override
+  String get invoiceDeleted => '請求書を削除しました';
+
+  @override
+  String get invoiceMarkedSent => '送信済みにしました ✅';
+
+  @override
+  String invoiceMarkSentError(Object error) {
+    return '送信済みにできませんでした: $error';
+  }
+
+  @override
+  String get invoiceMarkedUnsent => '未送信にしました ✅';
+
+  @override
+  String invoiceMarkUnsentError(Object error) {
+    return '未送信にできませんでした: $error';
+  }
+
+  @override
+  String get invoiceMarkedPaid => '支払い済みにしました ✅';
+
+  @override
+  String get invoiceMarkedUnpaid => '未払いにしました ✅';
+
+  @override
+  String get invoiceLoadingError => '請求書を読み込めませんでした';
+
+  @override
+  String get tipType => 'チップの種類';
+
+  @override
+  String get amountOption => '金額 (\$)';
+
+  @override
+  String get percentageOption => '割合 (%)';
+
+  @override
+  String get pdfPreview => 'PDFプレビュー';
+
+  @override
+  String get openPdf => 'PDFを開く';
+
+  @override
+  String get sharePdf => 'PDFを共有';
+
+  @override
+  String get selectReportMonth => 'レポート月を選択';
+
+  @override
+  String reportForBusiness(Object business) {
+    return 'レポート • $business';
+  }
+
+  @override
+  String get tapToChangeMonth => 'タップして月を変更';
+
+  @override
+  String csvSaved(Object path) {
+    return 'CSVを保存しました: $path';
+  }
+
+  @override
+  String csvExportError(Object error) {
+    return 'CSVをエクスポートできませんでした: $error';
+  }
+
+  @override
+  String get aboutTitle => 'このアプリについて';
+
+  @override
+  String get aboutTagline => '動き続けるビジネスのためのわかりやすい請求書';
+
+  @override
+  String get aboutAppTitle => 'アプリ';
+
+  @override
+  String get aboutAppBody =>
+      'EzInvoice は請求書、顧客、支払い、レポートを一つの簡単な流れにまとめ、大切なことを把握して安心して支払いを受けられるようにします。';
+
+  @override
+  String get aboutCompanyTitle => '会社';
+
+  @override
+  String get aboutCompanyBody =>
+      'Liisgo LLC は、小規模事業者がより整理され、明確で、自信を持って働ける実用的なツールを作っています。';
+
+  @override
+  String get aboutPromiseTitle => '毎日の仕事のために';
+
+  @override
+  String get aboutPromiseBody =>
+      'EzInvoice のすべての設計は、手順を減らし、詳細を見やすくし、ビジネス管理をより簡単にするためのものです。';
+
+  @override
+  String get visitLiisgo => 'Liisgo を見る';
+
+  @override
+  String get contactSupport => 'サポートに連絡';
+
+  @override
+  String get shareEzInvoice => 'EzInvoice を共有';
+
+  @override
+  String get sendIdeaOrBug => 'アイデアまたは不具合を送る';
+
+  @override
+  String get feedbackTitle => 'ご意見をお聞かせください';
+
+  @override
+  String get feedbackSubtitle => '改善したいことや、うまく動かなかったことを教えてください。';
+
+  @override
+  String get feedbackIdea => 'アイデア';
+
+  @override
+  String get feedbackBug => '不具合';
+
+  @override
+  String get feedbackHint => 'アイデアまたは起きたことを書いてください…';
+
+  @override
+  String get feedbackRequired => '送信前にメッセージを入力してください。';
+
+  @override
+  String get continueToEmail => 'メールへ進む';
+
+  @override
+  String get couldNotOpenLink => 'このリンクを開けませんでした。';
+
+  @override
+  String shareAppText(Object storeUrl) {
+    return 'EzInvoice Pro：請求書、顧客、レポートを一か所で管理。\n$storeUrl';
+  }
+
+  @override
+  String feedbackEmailSubject(Object kind) {
+    return 'EzInvoice の$kind';
+  }
+
+  @override
+  String get supportEmailSubject => 'EzInvoice サポート';
+
+  @override
+  String get changePassword => 'パスワードを変更';
+
+  @override
+  String get changePasswordSubtitle => 'アカウントのパスワードを更新します。';
+
+  @override
+  String get confirmCurrentPasswordHint => '安全のため、先に現在のパスワードを確認してください。';
+
+  @override
+  String get currentPassword => '現在のパスワード';
+
+  @override
+  String get newPassword => '新しいパスワード';
+
+  @override
+  String get confirmNewPassword => '新しいパスワードを確認';
+
+  @override
+  String get updatePassword => 'パスワードを更新';
+
+  @override
+  String get passwordAtLeastSix => '6文字以上で入力してください。';
+
+  @override
+  String get noActiveSession => 'アクティブなセッションがありません。';
+
+  @override
+  String get passwordsDoNotMatch => '新しいパスワードが一致しません。';
+
+  @override
+  String get passwordMustDiffer => '新しいパスワードは現在のものと異なる必要があります。';
+
+  @override
+  String get passwordUpdated => 'パスワードを更新しました。';
+
+  @override
+  String get incorrectPassword => '現在のパスワードが正しくありません。';
+
+  @override
+  String get weakPassword => '新しいパスワードが弱すぎます。';
+
+  @override
+  String get reauthenticationNeeded => '安全のため、もう一度サインインして再試行してください。';
+
+  @override
+  String get changePasswordError => 'パスワードを変更できませんでした。';
+
+  @override
+  String get confirmPassword => 'パスワードを確認';
+
+  @override
+  String get reauthCancelled => '再認証をキャンセルしました。';
+
+  @override
+  String get accountDeleted => 'アカウントとデータを完全に削除しました。';
+
+  @override
+  String get deleteAccountIncorrectPassword => 'パスワードが正しくありません。';
+
+  @override
+  String get deleteAccountError => 'アカウントを削除できませんでした。';
+
+  @override
+  String get deleteAccountBody =>
+      'アカウントを削除すると：\n\n• 顧客、請求書、レポート、事業プロフィールが完全に削除されます。\n• この操作は元に戻せません。\n• 有効なサブスクリプションがある場合は、App Store または Google Play で管理または解約してください。';
+
+  @override
+  String get termsConditions => '利用規約';
+
+  @override
+  String get agreeTermsPrivacy => 'まず利用規約とプライバシーポリシーに同意してください。';
+
+  @override
+  String get currentPlan => '現在のプラン';
+
+  @override
+  String get currentPlanFree => '現在のプラン：無料';
+
+  @override
+  String get proPlanDescription =>
+      '無料版には広告と利用制限があります。Pro では広告がなくなり、無制限の請求書、レポート、プレミアムテンプレート、エクスポート、クラウドバックアップが利用できます。';
+
+  @override
+  String get adsIncluded => '広告あり';
+
+  @override
+  String get limitedInvoicesPerMonth => '毎月の請求書数に制限';
+
+  @override
+  String get basicInvoiceStyle => '基本の請求書スタイル';
+
+  @override
+  String get basicReports => '基本レポート';
+
+  @override
+  String get pdfIncludesBranding => 'PDF に EzInvoice のブランド表示が含まれます';
+
+  @override
+  String get unpaidLabel => '未払い';
+
+  @override
+  String get loading => '読み込み中...';
+
+  @override
+  String get store => 'ストア';
+
+  @override
+  String get storeProductLoadingOne =>
+      'サブスクリプション商品の一つを読み込み中です。もう一方の読み込み中も利用可能なプランで続けられます。';
+
+  @override
+  String get storeProductsLoading =>
+      'ストアのサブスクリプション商品に接続しています。読み込みが完了しない場合は、ストアコンソールでサブスクリプションの準備状況を確認してください。';
+
+  @override
+  String get agreeTo => '次に同意します：';
+
+  @override
+  String get and => 'と';
+
+  @override
+  String get currentProPlanDescription =>
+      'すでに Ez Invoice Pro を利用しています。下で両方のサブスクリプションオプションを確認できます。';
+
+  @override
+  String freeVsPro(Object pro) {
+    return '無料版と $pro';
+  }
+
+  @override
+  String get openInvoices => '請求書を開く。';
+
+  @override
+  String get allCaughtUp => 'すべて完了';
+
+  @override
+  String itemsToReview(Object count) {
+    return '$count 件を確認';
+  }
+
+  @override
+  String get pdfInvoice => '請求書';
+
+  @override
+  String get pdfReceipt => '領収書';
+
+  @override
+  String get pdfBusiness => '事業';
+
+  @override
+  String get pdfPhone => '電話';
+
+  @override
+  String get pdfEmail => 'メール';
+
+  @override
+  String get pdfNumber => '番号';
+
+  @override
+  String get pdfDate => '日付';
+
+  @override
+  String get pdfDue => '期限';
+
+  @override
+  String get pdfPaid => '支払い済み';
+
+  @override
+  String get pdfPaidDate => '支払日';
+
+  @override
+  String get pdfMethod => '方法';
+
+  @override
+  String get pdfBillTo => '請求先';
+
+  @override
+  String get pdfClient => '顧客';
+
+  @override
+  String get pdfDescription => '説明';
+
+  @override
+  String get pdfQuantity => '数量';
+
+  @override
+  String get pdfPrice => '価格';
+
+  @override
+  String get pdfSubtotal => '小計';
+
+  @override
+  String get pdfTax => '税';
+
+  @override
+  String pdfTaxWithRate(Object rate) {
+    return '税 ($rate%)';
+  }
+
+  @override
+  String get pdfTip => 'チップ';
+
+  @override
+  String pdfTipWithRate(Object rate) {
+    return 'チップ ($rate%)';
+  }
+
+  @override
+  String get pdfDiscount => '割引';
+
+  @override
+  String get pdfMessage => 'メッセージ';
+
+  @override
+  String get pdfPaymentNote => '支払いメモ';
+
+  @override
+  String get pdfThankYou => 'ご利用ありがとうございます。';
+
+  @override
+  String get pdfPoweredBy => 'EzInvoice 提供';
+
+  @override
+  String get pdfFreeVersion => '無料版';
+
+  @override
+  String get pdfTotal => '合計';
+
+  @override
+  String get styleMinimal => 'ミニマル';
+
+  @override
+  String get styleProfessional => 'プロフェッショナル';
+
+  @override
+  String get styleCorporate => 'コーポレート';
+
+  @override
+  String get styleModern => 'モダン';
+
+  @override
+  String get styleSlate => 'スレート';
+
+  @override
+  String get reportDocument => 'レポート';
+
+  @override
+  String get reportPrintDocument => 'レポートを印刷';
+
+  @override
+  String get reportMonth => '月';
+
+  @override
+  String get reportYear => '年';
+
+  @override
+  String get reportGeneratedOn => '作成日';
+
+  @override
+  String get reportInvoices => '請求書';
+
+  @override
+  String get reportStatus => 'ステータス';
+
+  @override
+  String get reportTotals => '合計';
+
+  @override
+  String get reportSales => '売上';
+
+  @override
+  String get reportTotalTax => '税金合計';
+
+  @override
+  String get reportTotalTip => 'チップ合計';
+
+  @override
+  String get reportTotalInvoiced => '請求総額';
+
+  @override
+  String get reportUnsent => '未送信';
+
+  @override
+  String get reportSent => '送信済み';
+
+  @override
+  String get reportPaid => '支払済み';
+
+  @override
+  String get reportOverdue => '期限超過';
+
+  @override
+  String get reportInvoiceNumber => '請求書番号';
+
+  @override
+  String get reportClient => '顧客';
+
+  @override
+  String get reportDueDate => '支払期日';
+
+  @override
+  String get reportDescription => '説明';
+
+  @override
+  String get reportDate => '日付';
+
+  @override
+  String get reportFreeVersion => '無料版';
+
+  @override
+  String get reportPoweredBy => 'EzInvoice 提供';
+
+  @override
+  String reportPdfShareText(Object title) {
+    return 'PDF レポート: $title';
+  }
+
+  @override
+  String reportCsvShareText(Object title) {
+    return 'CSV レポート: $title';
+  }
+
+  @override
+  String reportPrintShareText(Object title) {
+    return '印刷: $title';
+  }
+
+  @override
+  String reportFileMonthly(Object month, Object year) {
+    return 'レポート_${month}_$year';
+  }
+
+  @override
+  String reportFileYearly(Object year) {
+    return 'レポート_年_$year';
+  }
+
+  @override
+  String reportTextMonthly(Object month, Object year) {
+    return 'レポート | $month $year';
+  }
+
+  @override
+  String reportTextYearly(Object year) {
+    return 'レポート | $year';
+  }
+
+  @override
+  String get reportBreakdown => '内訳';
+
+  @override
+  String get reportInvoicesStatus => '請求書のステータス';
+
+  @override
+  String get viewReport => 'レポートを見る';
+
+  @override
+  String get reviewBeforeExport => 'エクスポート前に PDF または CSV を確認します。';
+
+  @override
+  String get customizeReport => 'レポートをカスタマイズ';
+
+  @override
+  String get reportPreviewUpdates => '変更はすぐにプレビューに反映されます。';
+
+  @override
+  String get yourReportPreview => 'レポートのプレビュー';
+
+  @override
+  String get reportStyleLiveHint => 'デザインを変更してすぐに確認できます。';
+
+  @override
+  String get watchAdToExportReport =>
+      'このレポートをエクスポートするには広告を最後まで視聴してください。広告なしでエクスポートするには Pro にアップグレードしてください。';
+
+  @override
+  String reportExportError(Object error) {
+    return 'レポートをエクスポートできませんでした: $error';
+  }
+
+  @override
+  String get shareCsvFile => 'CSV ファイルを共有';
+
+  @override
+  String get shareCsvFileDescription =>
+      'メール、Drive、または別のアプリで .csv 添付ファイルを共有します。';
+
+  @override
+  String get shareReportAsText => 'テキストとして共有 (WhatsApp / SMS)';
+
+  @override
+  String get shareReportAsTextDescription => 'レポートの要約をテキストで送信します。';
+
+  @override
+  String get printCsv => 'CSV を印刷';
+
+  @override
+  String get printReportDescription => 'レポートを PDF テーブルとして印刷します。';
+
+  @override
+  String get reportPreview => 'プレビュー';
+
+  @override
+  String get live => 'ライブ';
+
+  @override
+  String get proFeatureUnlimitedInvoices => '請求書を無制限に';
+
+  @override
+  String get proFeatureRemovePdfBranding => 'PDF ブランディングを削除';
+
+  @override
+  String get proFeatureExportCsv => 'CSV をエクスポート';
+
+  @override
+  String get proFeaturePremiumTemplates => 'プレミアムテンプレート';
+
+  @override
+  String get proFeatureDetailedTaxReport => '詳細な税レポート';
+
+  @override
+  String proFeatureUnlimitedInvoicesDescription(Object limit) {
+    return '無料プランでは月に最大 $limit 件の請求書を利用できます。';
+  }
+
+  @override
+  String get proFeatureRemovePdfBrandingDescription =>
+      'PDF から「Powered by EzInvoice」を削除します。';
+
+  @override
+  String get proFeatureExportCsvDescription => '請求書を CSV にエクスポートします。';
+
+  @override
+  String get proFeaturePremiumTemplatesDescription => 'プレミアム請求書テンプレートを解除します。';
+
+  @override
+  String get proFeatureDetailedTaxReportDescription => '詳細な税の内訳レポートを表示します。';
+
+  @override
+  String get pdfShareText => 'EzInvoice の請求書 PDF';
 }

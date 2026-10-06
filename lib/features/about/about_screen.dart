@@ -1,3 +1,4 @@
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
@@ -22,39 +23,26 @@ class _AboutScreenState extends State<AboutScreen> {
 
   late final Future<PackageInfo> _packageInfo = PackageInfo.fromPlatform();
 
-  bool get _isSpanish =>
-      Localizations.localeOf(context).languageCode.toLowerCase() == 'es';
-
   Future<void> _open(Uri uri) async {
     final launched = await launchUrl(uri, mode: LaunchMode.platformDefault);
     if (!launched && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isSpanish
-                ? 'No se pudo abrir este enlace.'
-                : 'Could not open this link.',
-          ),
-        ),
+        SnackBar(content: Text(AppLocalizations.of(context).couldNotOpenLink)),
       );
     }
   }
 
   Future<void> _shareApp() async {
-    final spanish = _isSpanish;
+    final t = AppLocalizations.of(context);
     final storeUrl = Theme.of(context).platform == TargetPlatform.iOS
         ? _iosStore
         : _androidStore;
-    await Share.share(
-      spanish
-          ? 'Conoce EzInvoice Pro: facturas, clientes y reportes en un solo lugar.\n$storeUrl'
-          : 'Meet EzInvoice Pro: invoices, clients, and reports in one place.\n$storeUrl',
-      subject: 'EzInvoice Pro',
-    );
+    await Share.share(t.shareAppText(storeUrl), subject: 'EzInvoice Pro');
   }
 
   Future<void> _showFeedbackSheet() async {
-    final copy = _AboutCopy(_isSpanish);
+    final t = AppLocalizations.of(context);
+    final copy = _AboutCopy(t);
     final feedback = await showModalBottomSheet<_FeedbackSubmission>(
       context: context,
       isScrollControlled: true,
@@ -66,9 +54,9 @@ class _AboutScreenState extends State<AboutScreen> {
     final info = await _packageInfo;
     if (!mounted) return;
     final isIdea = feedback.kind == _FeedbackKind.idea;
-    final subject = _isSpanish
-        ? '${isIdea ? 'Idea' : 'Error'} para EzInvoice'
-        : '${isIdea ? 'Idea' : 'Bug'} for EzInvoice';
+    final subject = t.feedbackEmailSubject(
+      isIdea ? t.feedbackIdea : t.feedbackBug,
+    );
     final body =
         '${feedback.message}\n\n— EzInvoice ${info.version} (${info.buildNumber})';
     await _open(
@@ -82,8 +70,8 @@ class _AboutScreenState extends State<AboutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isSpanish = _isSpanish;
-    final copy = _AboutCopy(isSpanish);
+    final t = AppLocalizations.of(context);
+    final copy = _AboutCopy(t);
     final theme = Theme.of(context);
 
     return Theme(
@@ -194,7 +182,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                     scheme: 'mailto',
                                     path: _supportEmail,
                                     queryParameters: {
-                                      'subject': 'EzInvoice support',
+                                      'subject': t.supportEmailSubject,
                                     },
                                   ),
                                 ),
@@ -218,7 +206,9 @@ class _AboutScreenState extends State<AboutScreen> {
                             Uri(
                               scheme: 'mailto',
                               path: _supportEmail,
-                              queryParameters: {'subject': 'EzInvoice support'},
+                              queryParameters: {
+                                'subject': t.supportEmailSubject,
+                              },
                             ),
                           ),
                         ),
@@ -564,9 +554,10 @@ class _VersionBadge extends StatelessWidget {
       future: packageInfo,
       builder: (context, snapshot) {
         final info = snapshot.data;
-        final version = info == null
-            ? 'Version'
-            : 'Version ${info.version} (${info.buildNumber})';
+        final t = AppLocalizations.of(context);
+        final version = t.versionLabel(
+          info == null ? '' : '${info.version} (${info.buildNumber})',
+        );
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
           decoration: BoxDecoration(
@@ -718,45 +709,27 @@ class _AboutAction extends StatelessWidget {
 }
 
 class _AboutCopy {
-  const _AboutCopy(this.spanish);
+  const _AboutCopy(this.t);
 
-  final bool spanish;
+  final AppLocalizations t;
 
-  String get title => spanish ? 'Acerca de' : 'About';
-  String get tagline => spanish
-      ? 'Facturas claras para negocios en movimiento'
-      : 'Clear invoicing for businesses in motion';
-  String get appTitle => spanish ? 'La aplicación' : 'The app';
-  String get appBody => spanish
-      ? 'EzInvoice reúne facturas, clientes, pagos y reportes en un flujo simple, para que puedas ver lo importante y cobrar con más claridad.'
-      : 'EzInvoice brings invoices, clients, payments, and reports into one simple flow so you can see what matters and get paid with confidence.';
-  String get companyTitle => spanish ? 'La compañía' : 'The company';
-  String get companyBody => spanish
-      ? 'Liisgo LLC crea herramientas prácticas para ayudar a los pequeños negocios a trabajar con más orden, claridad y confianza.'
-      : 'Liisgo LLC creates practical tools that help small businesses work with more order, clarity, and confidence.';
-  String get promiseTitle =>
-      spanish ? 'Pensado para tu día a día' : 'Made for your day-to-day';
-  String get promiseBody => spanish
-      ? 'Cada decisión de EzInvoice busca reducir pasos, mantener los detalles visibles y hacer que administrar tu negocio se sienta más sencillo.'
-      : 'Every EzInvoice decision aims to reduce steps, keep details visible, and make running your business feel simpler.';
-  String get websiteAction => spanish ? 'Visitar Liisgo' : 'Visit Liisgo';
-  String get supportAction => spanish ? 'Contactar soporte' : 'Contact support';
-  String get shareAction => spanish ? 'Compartir EzInvoice' : 'Share EzInvoice';
-  String get feedbackAction =>
-      spanish ? 'Enviar idea o bug' : 'Send an idea or bug';
-  String get feedbackTitle =>
-      spanish ? 'Tu opinión cuenta' : 'Your feedback matters';
-  String get feedbackSubtitle => spanish
-      ? 'Cuéntanos qué te gustaría mejorar o qué no funcionó bien.'
-      : 'Tell us what you would improve or what did not work well.';
-  String get ideaLabel => spanish ? 'Idea' : 'Idea';
-  String get bugLabel => spanish ? 'Error' : 'Bug';
-  String get feedbackHint => spanish
-      ? 'Escribe tu idea o explica lo que ocurrió…'
-      : 'Write your idea or explain what happened…';
-  String get feedbackRequired => spanish
-      ? 'Escribe un mensaje antes de enviarlo.'
-      : 'Write a message before sending.';
-  String get sendAction =>
-      spanish ? 'Continuar al correo' : 'Continue to email';
+  String get title => t.aboutTitle;
+  String get tagline => t.aboutTagline;
+  String get appTitle => t.aboutAppTitle;
+  String get appBody => t.aboutAppBody;
+  String get companyTitle => t.aboutCompanyTitle;
+  String get companyBody => t.aboutCompanyBody;
+  String get promiseTitle => t.aboutPromiseTitle;
+  String get promiseBody => t.aboutPromiseBody;
+  String get websiteAction => t.visitLiisgo;
+  String get supportAction => t.contactSupport;
+  String get shareAction => t.shareEzInvoice;
+  String get feedbackAction => t.sendIdeaOrBug;
+  String get feedbackTitle => t.feedbackTitle;
+  String get feedbackSubtitle => t.feedbackSubtitle;
+  String get ideaLabel => t.feedbackIdea;
+  String get bugLabel => t.feedbackBug;
+  String get feedbackHint => t.feedbackHint;
+  String get feedbackRequired => t.feedbackRequired;
+  String get sendAction => t.continueToEmail;
 }

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
+import 'package:intl/intl.dart';
 import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:ezinvoice/models/business_profile.dart';
 import 'package:ezinvoice/repositories/business_profile_repository.dart';
@@ -35,26 +36,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
     return List.generate(9, (i) => now - 6 + i);
   }
 
-  String _monthName(int m) {
-    const names = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return names[m - 1];
-  }
-
-  bool get _isSpanish {
-    return Localizations.localeOf(context).languageCode.toLowerCase() == 'es';
+  String _monthName(int month) {
+    return DateFormat.MMM(
+      AppLocalizations.of(context).localeName,
+    ).format(DateTime(2026, month.clamp(1, 12).toInt()));
   }
 
   @override
@@ -795,10 +780,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   Widget _viewReportCard(AppLocalizations t) {
-    final viewReportLabel = _isSpanish ? 'Ver reporte' : 'View report';
-    final previewHint = _isSpanish
-        ? 'Revisa el PDF o CSV antes de exportarlo'
-        : 'Review the PDF or CSV before exporting';
+    final viewReportLabel = t.viewReport;
+    final previewHint = t.reviewBeforeExport;
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -894,7 +877,6 @@ class _ReportDesignBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
     final repo = BusinessProfileRepository();
     return StreamBuilder<BusinessProfile>(
       stream: repo.stream(),
@@ -959,16 +941,10 @@ class _ReportDesignBar extends StatelessWidget {
                     const SizedBox(height: 10),
                   ],
                   if (isPro) ...[
-                    _stylePreview(
-                      palette: palette,
-                      layoutId: layoutId,
-                      isSpanish: isSpanish,
-                    ),
+                    _stylePreview(palette: palette, layoutId: layoutId, t: t),
                     const SizedBox(height: 16),
                     Text(
-                      isSpanish
-                          ? 'Personaliza el reporte'
-                          : 'Customize the report',
+                      t.customizeReport,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w900,
@@ -976,9 +952,7 @@ class _ReportDesignBar extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      isSpanish
-                          ? 'Los cambios aparecen de inmediato en tu vista previa.'
-                          : 'Changes appear immediately in your preview.',
+                      t.reportPreviewUpdates,
                       style: TextStyle(
                         color: Colors.black.withValues(alpha: 0.56),
                         fontSize: 12,
@@ -1073,7 +1047,7 @@ class _ReportDesignBar extends StatelessWidget {
                   const SizedBox(width: 6),
                   _paletteDot(item.accent),
                   const SizedBox(width: 8),
-                  Text(item.label),
+                  Text(AppThemePresets.localizedPaletteLabel(t, item.id)),
                 ],
               ),
             ),
@@ -1115,7 +1089,10 @@ class _ReportDesignBar extends StatelessWidget {
       ),
       items: AppThemePresets.layouts
           .map(
-            (item) => DropdownMenuItem(value: item.id, child: Text(item.label)),
+            (item) => DropdownMenuItem(
+              value: item.id,
+              child: Text(AppThemePresets.localizedLayoutLabel(t, item.id)),
+            ),
           )
           .toList(),
       onChanged: (value) async {
@@ -1135,12 +1112,12 @@ class _ReportDesignBar extends StatelessWidget {
   Widget _stylePreview({
     required PalettePreset palette,
     required String layoutId,
-    required bool isSpanish,
+    required AppLocalizations t,
   }) {
     final primary = Color(palette.primary);
     final soft = Color(palette.soft);
     final accent = Color(palette.accent);
-    final layoutName = AppThemePresets.layoutLabel(layoutId);
+    final layoutName = AppThemePresets.localizedLayoutLabel(t, layoutId);
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -1189,7 +1166,7 @@ class _ReportDesignBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isSpanish ? 'Vista de tu reporte' : 'Your report preview',
+                  t.yourReportPreview,
                   style: TextStyle(
                     color: primary,
                     fontSize: 12,
@@ -1198,7 +1175,7 @@ class _ReportDesignBar extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  '${palette.label} · $layoutName',
+                  '${AppThemePresets.localizedPaletteLabel(t, palette.id)} · $layoutName',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
@@ -1300,25 +1277,13 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
 
   String get _periodLabel {
     if (!widget.byMonth) return '${widget.year}';
-    const names = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${names[widget.month! - 1]} ${widget.year}';
+    final month = DateFormat.MMM(
+      AppLocalizations.of(context).localeName,
+    ).format(DateTime(2026, widget.month!.clamp(1, 12).toInt()));
+    return '$month ${widget.year}';
   }
 
   Future<void> _openReportStylePanel(AppLocalizations t) {
-    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
     return showModalBottomSheet<void>(
       context: context,
       showDragHandle: false,
@@ -1392,9 +1357,7 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
                               ),
                               const SizedBox(height: 3),
                               Text(
-                                isSpanish
-                                    ? 'Cambia el diseño y míralo en vivo.'
-                                    : 'Change the design and see it live.',
+                                t.reportStyleLiveHint,
                                 style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.80),
                                   fontWeight: FontWeight.w600,
@@ -1428,10 +1391,6 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
     );
   }
 
-  bool get _isSpanish {
-    return Localizations.localeOf(context).languageCode.toLowerCase() == 'es';
-  }
-
   void _snack(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(
@@ -1451,11 +1410,7 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
     );
     if (shown && rewarded) return true;
 
-    _snack(
-      _isSpanish
-          ? 'Mira el anuncio completo para exportar este reporte. Actualiza a Pro para exportar sin anuncios.'
-          : 'Watch the full ad to export this report. Upgrade to Pro to export without ads.',
-    );
+    _snack(AppLocalizations.of(context).watchAdToExportReport);
     return false;
   }
 
@@ -1490,7 +1445,7 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
         month: widget.month,
       );
     } catch (error) {
-      _snack(_isSpanish ? 'Error al exportar: $error' : 'Export error: $error');
+      _snack(AppLocalizations.of(context).reportExportError(error));
     } finally {
       if (mounted) setState(() => _exporting = false);
     }
@@ -1498,7 +1453,7 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
 
   Future<void> _exportCsvMenu() async {
     if (_exporting) return;
-    final isSpanish = _isSpanish;
+    final t = AppLocalizations.of(context);
     final origin = _exportOrigin();
 
     await showModalBottomSheet<void>(
@@ -1517,14 +1472,8 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
               const SizedBox(height: 6),
               ListTile(
                 leading: const Icon(Icons.insert_drive_file_outlined),
-                title: Text(
-                  isSpanish ? 'Compartir archivo CSV' : 'Share CSV file',
-                ),
-                subtitle: Text(
-                  isSpanish
-                      ? 'Comparte el archivo .csv por email, Drive u otra app'
-                      : 'Share the .csv attachment by email, Drive, or another app',
-                ),
+                title: Text(t.shareCsvFile),
+                subtitle: Text(t.shareCsvFileDescription),
                 onTap: () async {
                   Navigator.pop(sheetContext);
                   await _runExport(
@@ -1540,16 +1489,8 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.message_outlined),
-                title: Text(
-                  isSpanish
-                      ? 'Compartir como texto (WhatsApp / SMS)'
-                      : 'Share as text (WhatsApp / SMS)',
-                ),
-                subtitle: Text(
-                  isSpanish
-                      ? 'Envía un resumen del reporte como texto'
-                      : 'Sends a report summary as text',
-                ),
+                title: Text(t.shareReportAsText),
+                subtitle: Text(t.shareReportAsTextDescription),
                 onTap: () async {
                   Navigator.pop(sheetContext);
                   await _runExport(
@@ -1565,12 +1506,8 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.print_outlined),
-                title: Text(isSpanish ? 'Imprimir CSV' : 'Print CSV'),
-                subtitle: Text(
-                  isSpanish
-                      ? 'Imprime el reporte como tabla PDF'
-                      : 'Print as a table (PDF print)',
-                ),
+                title: Text(t.printCsv),
+                subtitle: Text(t.printReportDescription),
                 onTap: () async {
                   Navigator.pop(sheetContext);
                   await _runExport(
@@ -1599,7 +1536,7 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
       if (!allowed || !mounted) return;
       await action();
     } catch (error) {
-      _snack(_isSpanish ? 'Error al exportar: $error' : 'Export error: $error');
+      _snack(AppLocalizations.of(context).reportExportError(error));
     } finally {
       if (mounted) setState(() => _exporting = false);
     }
@@ -1612,8 +1549,7 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
-    final previewLabel = isSpanish ? 'Vista previa' : 'Preview';
+    final previewLabel = t.reportPreview;
 
     return Scaffold(
       backgroundColor: _pageBackground,
@@ -1651,7 +1587,7 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.all(24),
-                  child: Text('${reportSnapshot.error}'),
+                  child: Text(t.errorWithDetails(reportSnapshot.error ?? '')),
                 ),
               );
             }
@@ -1715,7 +1651,6 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
     required BusinessProfile profile,
     required String previewLabel,
   }) {
-    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
     final businessName = profile.businessName.trim().isEmpty
         ? t.reports
         : profile.businessName.trim();
@@ -1763,7 +1698,7 @@ class _ReportPreviewScreenState extends State<_ReportPreviewScreen> {
             borderRadius: BorderRadius.circular(99),
           ),
           child: Text(
-            isSpanish ? 'En vivo' : 'Live',
+            t.live,
             style: const TextStyle(
               color: _brandGreen,
               fontWeight: FontWeight.w900,

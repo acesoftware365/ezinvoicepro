@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,10 +24,6 @@ class _ForceUpdateGateState extends State<ForceUpdateGate> {
   bool _checking = true;
   bool _updateRequired = false;
   String? _storeUrl;
-
-  bool get _isEs {
-    return Localizations.localeOf(context).languageCode.toLowerCase() == 'es';
-  }
 
   @override
   void initState() {
@@ -138,7 +135,7 @@ class _ForceUpdateGateState extends State<ForceUpdateGate> {
 
     if (!_updateRequired) return widget.child;
 
-    final isEs = _isEs;
+    final t = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -158,7 +155,7 @@ class _ForceUpdateGateState extends State<ForceUpdateGate> {
                   ),
                   const SizedBox(height: 18),
                   Text(
-                    isEs ? 'Actualizacion requerida' : 'Update required',
+                    t.updateRequired,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 24,
@@ -168,9 +165,7 @@ class _ForceUpdateGateState extends State<ForceUpdateGate> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    isEs
-                        ? 'Hay una version nueva de Ez Invoice. Para continuar, actualiza la app desde la tienda.'
-                        : 'A new version of Ez Invoice is available. To continue, update the app from the store.',
+                    t.updateRequiredBody,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: Colors.black87,
@@ -182,7 +177,7 @@ class _ForceUpdateGateState extends State<ForceUpdateGate> {
                   ElevatedButton.icon(
                     onPressed: _openStore,
                     icon: const Icon(Icons.open_in_new),
-                    label: Text(isEs ? 'Actualizar ahora' : 'Update now'),
+                    label: Text(t.updateNow),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF1F6E5C),
                       foregroundColor: Colors.white,

@@ -168,7 +168,7 @@ class _ClientsScreenState extends State<ClientsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Share Client',
+                  t.shareClient,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w900,
                     color: ink,
@@ -689,7 +689,7 @@ class _MobileClientCard extends StatelessWidget {
                   ),
                 ),
                 PopupMenuButton<String>(
-                  tooltip: 'Actions',
+                  tooltip: t.actions,
                   icon: const Icon(
                     Icons.more_vert,
                     color: _ClientsScreenState.ink,
@@ -716,16 +716,16 @@ class _MobileClientCard extends StatelessWidget {
                     PopupMenuItem(
                       value: 'message',
                       enabled: onMessage != null,
-                      child: const _MenuRow(
+                      child: _MenuRow(
                         icon: Icons.sms_outlined,
-                        label: 'Message',
+                        label: t.message,
                       ),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'share',
                       child: _MenuRow(
                         icon: Icons.ios_share_outlined,
-                        label: 'Share',
+                        label: t.share,
                       ),
                     ),
                     PopupMenuItem(
@@ -869,7 +869,7 @@ class _ClientDetailPanel extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Client profile',
+                      t.clientProfile,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: _ClientsScreenState.muted,
                         fontWeight: FontWeight.w700,
@@ -893,7 +893,7 @@ class _ClientDetailPanel extends StatelessWidget {
               ),
               _PillButton(
                 icon: Icons.ios_share_outlined,
-                label: 'Share',
+                label: t.share,
                 onTap: onShare,
               ),
               _PillButton(
@@ -912,14 +912,14 @@ class _ClientDetailPanel extends StatelessWidget {
           const SizedBox(height: 32),
           _DetailRow(
             icon: Icons.phone_outlined,
-            label: 'Phone',
+            label: t.phoneLabel,
             value: client.phoneDisplay.trim().isEmpty
                 ? '-'
                 : client.phoneDisplay.trim(),
           ),
           _DetailRow(
             icon: Icons.email_outlined,
-            label: 'Email',
+            label: t.emailAction,
             value: client.email.trim().isEmpty ? '-' : client.email.trim(),
           ),
           _DetailRow(

@@ -1,5 +1,6 @@
 // lib/ui/invoices/widgets/item_description_field.dart
 
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:ezinvoice/repositories/business_profile_repository.dart';
 import 'package:flutter/material.dart';
 
@@ -51,6 +52,7 @@ class _ItemDescriptionFieldState extends State<ItemDescriptionField> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final presets = widget.presets;
 
     return Autocomplete<String>(
@@ -77,7 +79,8 @@ class _ItemDescriptionFieldState extends State<ItemDescriptionField> {
           }
         });
 
-        final canSave = widget.controller.text.trim().isNotEmpty &&
+        final canSave =
+            widget.controller.text.trim().isNotEmpty &&
             !_existsInPresets(widget.controller.text);
 
         return TextField(
@@ -85,20 +88,23 @@ class _ItemDescriptionFieldState extends State<ItemDescriptionField> {
           focusNode: focusNode,
           textInputAction: TextInputAction.next,
           decoration: InputDecoration(
-            labelText: 'Description',
+            labelText: t.descriptionLabel,
             prefixIcon: const Icon(Icons.list_alt_outlined, color: brandGreen),
             suffixIcon: canSave
                 ? IconButton(
-              tooltip: 'Save as preset',
-              onPressed: _saving ? null : _savePreset,
-              icon: _saving
-                  ? const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-                  : const Icon(Icons.bookmark_add_outlined, color: brandGreen),
-            )
+                    tooltip: t.saveServiceForLater,
+                    onPressed: _saving ? null : _savePreset,
+                    icon: _saving
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(
+                            Icons.bookmark_add_outlined,
+                            color: brandGreen,
+                          ),
+                  )
                 : null,
           ),
           onSubmitted: (_) => onFieldSubmitted(),

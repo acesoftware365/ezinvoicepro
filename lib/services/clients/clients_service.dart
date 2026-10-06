@@ -7,7 +7,7 @@ class ClientsService {
 
   static String get _uid {
     final u = FirebaseAuth.instance.currentUser;
-    if (u == null) throw Exception('User not logged in');
+    if (u == null) throw StateError('unauthenticated');
     return u.uid;
   }
 

@@ -1673,6 +1673,1446 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total invoiced'**
   String get totalInvoicedTitle;
+
+  /// No description provided for @versionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String versionLabel(Object version);
+
+  /// No description provided for @errorWithDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String errorWithDetails(Object error);
+
+  /// No description provided for @rememberEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember my email'**
+  String get rememberEmail;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPassword;
+
+  /// No description provided for @passwordResetEnterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email to send the reset link.'**
+  String get passwordResetEnterEmail;
+
+  /// No description provided for @passwordResetSent.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent you an email to reset your password. Check Spam or Junk.'**
+  String get passwordResetSent;
+
+  /// No description provided for @passwordResetNoAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'No account was found for that email.'**
+  String get passwordResetNoAccount;
+
+  /// No description provided for @invalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email.'**
+  String get invalidEmail;
+
+  /// No description provided for @passwordResetError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send the email. Try again.'**
+  String get passwordResetError;
+
+  /// No description provided for @updateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Update required'**
+  String get updateRequired;
+
+  /// No description provided for @updateRequiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version of Ez Invoice is available. To continue, update the app from the store.'**
+  String get updateRequiredBody;
+
+  /// No description provided for @updateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update now'**
+  String get updateNow;
+
+  /// No description provided for @open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get open;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actions;
+
+  /// No description provided for @message.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get message;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @free.
+  ///
+  /// In en, this message translates to:
+  /// **'FREE'**
+  String get free;
+
+  /// No description provided for @clientInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Client information'**
+  String get clientInformation;
+
+  /// No description provided for @clientName.
+  ///
+  /// In en, this message translates to:
+  /// **'Client name'**
+  String get clientName;
+
+  /// No description provided for @notesOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (optional)'**
+  String get notesOptional;
+
+  /// No description provided for @saveClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Save client'**
+  String get saveClient;
+
+  /// No description provided for @importFromContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from contacts'**
+  String get importFromContacts;
+
+  /// No description provided for @importContactsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill name, phone, and email instantly.'**
+  String get importContactsDescription;
+
+  /// No description provided for @loadContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Load contacts'**
+  String get loadContacts;
+
+  /// No description provided for @clientPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Client phone'**
+  String get clientPhone;
+
+  /// No description provided for @searchContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Search contacts'**
+  String get searchContacts;
+
+  /// No description provided for @shareClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Share client'**
+  String get shareClient;
+
+  /// No description provided for @clientProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Client profile'**
+  String get clientProfile;
+
+  /// No description provided for @chooseSavedService.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose saved service'**
+  String get chooseSavedService;
+
+  /// No description provided for @searchSavedServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Search saved services'**
+  String get searchSavedServices;
+
+  /// No description provided for @noSavedServicesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved services found'**
+  String get noSavedServicesFound;
+
+  /// No description provided for @noSavedServicesToUse.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved services yet. Type one above, then save it for later.'**
+  String get noSavedServicesToUse;
+
+  /// No description provided for @savedServiceAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Already saved: {service}'**
+  String savedServiceAlreadyExists(Object service);
+
+  /// No description provided for @savedService.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved service: {service}'**
+  String savedService(Object service);
+
+  /// No description provided for @savePresetError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the service: {error}'**
+  String savePresetError(Object error);
+
+  /// No description provided for @saveServiceForLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Save service for later'**
+  String get saveServiceForLater;
+
+  /// No description provided for @removeClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove client'**
+  String get removeClient;
+
+  /// No description provided for @service.
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get service;
+
+  /// No description provided for @taxAndTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax & tip'**
+  String get taxAndTip;
+
+  /// No description provided for @totals.
+  ///
+  /// In en, this message translates to:
+  /// **'Totals'**
+  String get totals;
+
+  /// No description provided for @dueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due date: {date}'**
+  String dueDate(Object date);
+
+  /// No description provided for @paidDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid date: {date}'**
+  String paidDate(Object date);
+
+  /// No description provided for @notPaidYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not paid yet'**
+  String get notPaidYet;
+
+  /// No description provided for @paymentMethodWithValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Method: {method}'**
+  String paymentMethodWithValue(Object method);
+
+  /// No description provided for @paymentNoteWithValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Note: {note}'**
+  String paymentNoteWithValue(Object note);
+
+  /// No description provided for @markAsPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as paid'**
+  String get markAsPaid;
+
+  /// No description provided for @markAsUnpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as unpaid'**
+  String get markAsUnpaid;
+
+  /// No description provided for @editTax.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editTax;
+
+  /// No description provided for @addClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a client'**
+  String get addClient;
+
+  /// No description provided for @firstClientHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first client to reuse it in future invoices.'**
+  String get firstClientHint;
+
+  /// No description provided for @searchSavedClients.
+  ///
+  /// In en, this message translates to:
+  /// **'Search saved clients'**
+  String get searchSavedClients;
+
+  /// No description provided for @paymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get paymentMethod;
+
+  /// No description provided for @cash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get cash;
+
+  /// No description provided for @card.
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get card;
+
+  /// No description provided for @check.
+  ///
+  /// In en, this message translates to:
+  /// **'Check'**
+  String get check;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
+
+  /// No description provided for @noteOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get noteOptional;
+
+  /// No description provided for @invoiceMarkPaidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not mark the invoice as paid: {error}'**
+  String invoiceMarkPaidError(Object error);
+
+  /// No description provided for @invoiceMarkUnpaidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not mark the invoice as unpaid: {error}'**
+  String invoiceMarkUnpaidError(Object error);
+
+  /// No description provided for @deleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete the invoice: {error}'**
+  String deleteError(Object error);
+
+  /// No description provided for @invoiceDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice deleted'**
+  String get invoiceDeleted;
+
+  /// No description provided for @invoiceMarkedSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as sent ✅'**
+  String get invoiceMarkedSent;
+
+  /// No description provided for @invoiceMarkSentError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not mark as sent: {error}'**
+  String invoiceMarkSentError(Object error);
+
+  /// No description provided for @invoiceMarkedUnsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as unsent ✅'**
+  String get invoiceMarkedUnsent;
+
+  /// No description provided for @invoiceMarkUnsentError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not mark as unsent: {error}'**
+  String invoiceMarkUnsentError(Object error);
+
+  /// No description provided for @invoiceMarkedPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as paid ✅'**
+  String get invoiceMarkedPaid;
+
+  /// No description provided for @invoiceMarkedUnpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as unpaid ✅'**
+  String get invoiceMarkedUnpaid;
+
+  /// No description provided for @invoiceLoadingError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load invoices'**
+  String get invoiceLoadingError;
+
+  /// No description provided for @tipType.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip type'**
+  String get tipType;
+
+  /// No description provided for @amountOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (\$)'**
+  String get amountOption;
+
+  /// No description provided for @percentageOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Percentage (%)'**
+  String get percentageOption;
+
+  /// No description provided for @pdfPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF preview'**
+  String get pdfPreview;
+
+  /// No description provided for @openPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Open PDF'**
+  String get openPdf;
+
+  /// No description provided for @sharePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Share PDF'**
+  String get sharePdf;
+
+  /// No description provided for @selectReportMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Select report month'**
+  String get selectReportMonth;
+
+  /// No description provided for @reportForBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports • {business}'**
+  String reportForBusiness(Object business);
+
+  /// No description provided for @tapToChangeMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change the month'**
+  String get tapToChangeMonth;
+
+  /// No description provided for @csvSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'CSV saved: {path}'**
+  String csvSaved(Object path);
+
+  /// No description provided for @csvExportError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export CSV: {error}'**
+  String csvExportError(Object error);
+
+  /// No description provided for @aboutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get aboutTitle;
+
+  /// No description provided for @aboutTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear invoicing for businesses in motion'**
+  String get aboutTagline;
+
+  /// No description provided for @aboutAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The app'**
+  String get aboutAppTitle;
+
+  /// No description provided for @aboutAppBody.
+  ///
+  /// In en, this message translates to:
+  /// **'EzInvoice brings invoices, clients, payments, and reports into one simple flow so you can see what matters and get paid with confidence.'**
+  String get aboutAppBody;
+
+  /// No description provided for @aboutCompanyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The company'**
+  String get aboutCompanyTitle;
+
+  /// No description provided for @aboutCompanyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Liisgo LLC creates practical tools that help small businesses work with more order, clarity, and confidence.'**
+  String get aboutCompanyBody;
+
+  /// No description provided for @aboutPromiseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Made for your day-to-day'**
+  String get aboutPromiseTitle;
+
+  /// No description provided for @aboutPromiseBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Every EzInvoice decision aims to reduce steps, keep details visible, and make running your business feel simpler.'**
+  String get aboutPromiseBody;
+
+  /// No description provided for @visitLiisgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit Liisgo'**
+  String get visitLiisgo;
+
+  /// No description provided for @contactSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact support'**
+  String get contactSupport;
+
+  /// No description provided for @shareEzInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Share EzInvoice'**
+  String get shareEzInvoice;
+
+  /// No description provided for @sendIdeaOrBug.
+  ///
+  /// In en, this message translates to:
+  /// **'Send an idea or bug'**
+  String get sendIdeaOrBug;
+
+  /// No description provided for @feedbackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your feedback matters'**
+  String get feedbackTitle;
+
+  /// No description provided for @feedbackSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what you would improve or what did not work well.'**
+  String get feedbackSubtitle;
+
+  /// No description provided for @feedbackIdea.
+  ///
+  /// In en, this message translates to:
+  /// **'Idea'**
+  String get feedbackIdea;
+
+  /// No description provided for @feedbackBug.
+  ///
+  /// In en, this message translates to:
+  /// **'Bug'**
+  String get feedbackBug;
+
+  /// No description provided for @feedbackHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your idea or explain what happened…'**
+  String get feedbackHint;
+
+  /// No description provided for @feedbackRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message before sending.'**
+  String get feedbackRequired;
+
+  /// No description provided for @continueToEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to email'**
+  String get continueToEmail;
+
+  /// No description provided for @couldNotOpenLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open this link.'**
+  String get couldNotOpenLink;
+
+  /// No description provided for @shareAppText.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet EzInvoice Pro: invoices, clients, and reports in one place.\n{storeUrl}'**
+  String shareAppText(Object storeUrl);
+
+  /// No description provided for @feedbackEmailSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind} for EzInvoice'**
+  String feedbackEmailSubject(Object kind);
+
+  /// No description provided for @supportEmailSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'EzInvoice support'**
+  String get supportEmailSubject;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get changePassword;
+
+  /// No description provided for @changePasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update your account password.'**
+  String get changePasswordSubtitle;
+
+  /// No description provided for @confirmCurrentPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For security, confirm your current password first.'**
+  String get confirmCurrentPasswordHint;
+
+  /// No description provided for @currentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password'**
+  String get currentPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get newPassword;
+
+  /// No description provided for @confirmNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get confirmNewPassword;
+
+  /// No description provided for @updatePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Update password'**
+  String get updatePassword;
+
+  /// No description provided for @passwordAtLeastSix.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be at least 6 characters.'**
+  String get passwordAtLeastSix;
+
+  /// No description provided for @noActiveSession.
+  ///
+  /// In en, this message translates to:
+  /// **'No active session.'**
+  String get noActiveSession;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'The new password does not match.'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @passwordMustDiffer.
+  ///
+  /// In en, this message translates to:
+  /// **'The new password must be different.'**
+  String get passwordMustDiffer;
+
+  /// No description provided for @passwordUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated successfully.'**
+  String get passwordUpdated;
+
+  /// No description provided for @incorrectPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password is wrong.'**
+  String get incorrectPassword;
+
+  /// No description provided for @weakPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'The new password is too weak.'**
+  String get weakPassword;
+
+  /// No description provided for @reauthenticationNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'For security, sign in again and try once more.'**
+  String get reauthenticationNeeded;
+
+  /// No description provided for @changePasswordError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not change password.'**
+  String get changePasswordError;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get confirmPassword;
+
+  /// No description provided for @reauthCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Reauthentication cancelled.'**
+  String get reauthCancelled;
+
+  /// No description provided for @accountDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account and data were permanently deleted.'**
+  String get accountDeleted;
+
+  /// No description provided for @deleteAccountIncorrectPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect password.'**
+  String get deleteAccountIncorrectPassword;
+
+  /// No description provided for @deleteAccountError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete account.'**
+  String get deleteAccountError;
+
+  /// No description provided for @deleteAccountBody.
+  ///
+  /// In en, this message translates to:
+  /// **'If you delete your account:\n\n• Your clients, invoices, reports, and business profile will be permanently deleted.\n• This action cannot be undone.\n• If you have an active subscription, manage or cancel it in App Store/Google Play.'**
+  String get deleteAccountBody;
+
+  /// No description provided for @termsConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms & Conditions'**
+  String get termsConditions;
+
+  /// No description provided for @agreeTermsPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Please agree to the Terms & Conditions and Privacy Policy first.'**
+  String get agreeTermsPrivacy;
+
+  /// No description provided for @currentPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Current plan'**
+  String get currentPlan;
+
+  /// No description provided for @currentPlanFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Current plan: Free'**
+  String get currentPlanFree;
+
+  /// No description provided for @proPlanDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Free includes ads and limited usage. Pro removes ads and unlocks unlimited invoices, reports, premium templates, exports, and cloud backup.'**
+  String get proPlanDescription;
+
+  /// No description provided for @adsIncluded.
+  ///
+  /// In en, this message translates to:
+  /// **'Ads included'**
+  String get adsIncluded;
+
+  /// No description provided for @limitedInvoicesPerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Limited invoices each month'**
+  String get limitedInvoicesPerMonth;
+
+  /// No description provided for @basicInvoiceStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic invoice style'**
+  String get basicInvoiceStyle;
+
+  /// No description provided for @basicReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic reports'**
+  String get basicReports;
+
+  /// No description provided for @pdfIncludesBranding.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF includes EzInvoice branding'**
+  String get pdfIncludesBranding;
+
+  /// No description provided for @unpaidLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpaid'**
+  String get unpaidLabel;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// No description provided for @store.
+  ///
+  /// In en, this message translates to:
+  /// **'Store'**
+  String get store;
+
+  /// No description provided for @storeProductLoadingOne.
+  ///
+  /// In en, this message translates to:
+  /// **'One subscription product is still loading. You can continue with the available plan while the other product loads.'**
+  String get storeProductLoadingOne;
+
+  /// No description provided for @storeProductsLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to store subscription products. If this does not finish loading, confirm the subscriptions are ready in your store console.'**
+  String get storeProductsLoading;
+
+  /// No description provided for @agreeTo.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the '**
+  String get agreeTo;
+
+  /// No description provided for @and.
+  ///
+  /// In en, this message translates to:
+  /// **' and '**
+  String get and;
+
+  /// No description provided for @currentProPlanDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have Ez Invoice Pro. You can review both subscription options below.'**
+  String get currentProPlanDescription;
+
+  /// No description provided for @freeVsPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Free vs {pro}'**
+  String freeVsPro(Object pro);
+
+  /// No description provided for @openInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Open invoices.'**
+  String get openInvoices;
+
+  /// No description provided for @allCaughtUp.
+  ///
+  /// In en, this message translates to:
+  /// **'All caught up'**
+  String get allCaughtUp;
+
+  /// No description provided for @itemsToReview.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} to review'**
+  String itemsToReview(Object count);
+
+  /// No description provided for @pdfInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice'**
+  String get pdfInvoice;
+
+  /// No description provided for @pdfReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt'**
+  String get pdfReceipt;
+
+  /// No description provided for @pdfBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Business'**
+  String get pdfBusiness;
+
+  /// No description provided for @pdfPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get pdfPhone;
+
+  /// No description provided for @pdfEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get pdfEmail;
+
+  /// No description provided for @pdfNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'No.'**
+  String get pdfNumber;
+
+  /// No description provided for @pdfDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get pdfDate;
+
+  /// No description provided for @pdfDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Due'**
+  String get pdfDue;
+
+  /// No description provided for @pdfPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get pdfPaid;
+
+  /// No description provided for @pdfPaidDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid date'**
+  String get pdfPaidDate;
+
+  /// No description provided for @pdfMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Method'**
+  String get pdfMethod;
+
+  /// No description provided for @pdfBillTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill to'**
+  String get pdfBillTo;
+
+  /// No description provided for @pdfClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Client'**
+  String get pdfClient;
+
+  /// No description provided for @pdfDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get pdfDescription;
+
+  /// No description provided for @pdfQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Qty'**
+  String get pdfQuantity;
+
+  /// No description provided for @pdfPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get pdfPrice;
+
+  /// No description provided for @pdfSubtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal'**
+  String get pdfSubtotal;
+
+  /// No description provided for @pdfTax.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax'**
+  String get pdfTax;
+
+  /// No description provided for @pdfTaxWithRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax ({rate}%)'**
+  String pdfTaxWithRate(Object rate);
+
+  /// No description provided for @pdfTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip'**
+  String get pdfTip;
+
+  /// No description provided for @pdfTipWithRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip ({rate}%)'**
+  String pdfTipWithRate(Object rate);
+
+  /// No description provided for @pdfDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get pdfDiscount;
+
+  /// No description provided for @pdfMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get pdfMessage;
+
+  /// No description provided for @pdfPaymentNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment note'**
+  String get pdfPaymentNote;
+
+  /// No description provided for @pdfThankYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for your business.'**
+  String get pdfThankYou;
+
+  /// No description provided for @pdfPoweredBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Powered by EzInvoice'**
+  String get pdfPoweredBy;
+
+  /// No description provided for @pdfFreeVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'FREE VERSION'**
+  String get pdfFreeVersion;
+
+  /// No description provided for @pdfTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get pdfTotal;
+
+  /// No description provided for @styleMinimal.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimal'**
+  String get styleMinimal;
+
+  /// No description provided for @styleProfessional.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional'**
+  String get styleProfessional;
+
+  /// No description provided for @styleCorporate.
+  ///
+  /// In en, this message translates to:
+  /// **'Corporate'**
+  String get styleCorporate;
+
+  /// No description provided for @styleModern.
+  ///
+  /// In en, this message translates to:
+  /// **'Modern'**
+  String get styleModern;
+
+  /// No description provided for @styleSlate.
+  ///
+  /// In en, this message translates to:
+  /// **'Slate'**
+  String get styleSlate;
+
+  /// No description provided for @reportDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get reportDocument;
+
+  /// No description provided for @reportPrintDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Print report'**
+  String get reportPrintDocument;
+
+  /// No description provided for @reportMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get reportMonth;
+
+  /// No description provided for @reportYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get reportYear;
+
+  /// No description provided for @reportGeneratedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated on'**
+  String get reportGeneratedOn;
+
+  /// No description provided for @reportInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoices'**
+  String get reportInvoices;
+
+  /// No description provided for @reportStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get reportStatus;
+
+  /// No description provided for @reportTotals.
+  ///
+  /// In en, this message translates to:
+  /// **'Totals'**
+  String get reportTotals;
+
+  /// No description provided for @reportSales.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales'**
+  String get reportSales;
+
+  /// No description provided for @reportTotalTax.
+  ///
+  /// In en, this message translates to:
+  /// **'Total tax'**
+  String get reportTotalTax;
+
+  /// No description provided for @reportTotalTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Total tip'**
+  String get reportTotalTip;
+
+  /// No description provided for @reportTotalInvoiced.
+  ///
+  /// In en, this message translates to:
+  /// **'Total invoiced'**
+  String get reportTotalInvoiced;
+
+  /// No description provided for @reportUnsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsent'**
+  String get reportUnsent;
+
+  /// No description provided for @reportSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get reportSent;
+
+  /// No description provided for @reportPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get reportPaid;
+
+  /// No description provided for @reportOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get reportOverdue;
+
+  /// No description provided for @reportInvoiceNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice no.'**
+  String get reportInvoiceNumber;
+
+  /// No description provided for @reportClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Client'**
+  String get reportClient;
+
+  /// No description provided for @reportDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due date'**
+  String get reportDueDate;
+
+  /// No description provided for @reportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get reportDescription;
+
+  /// No description provided for @reportDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get reportDate;
+
+  /// No description provided for @reportFreeVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'FREE VERSION'**
+  String get reportFreeVersion;
+
+  /// No description provided for @reportPoweredBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Powered by EzInvoice'**
+  String get reportPoweredBy;
+
+  /// No description provided for @reportPdfShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF report: {title}'**
+  String reportPdfShareText(Object title);
+
+  /// No description provided for @reportCsvShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'CSV report: {title}'**
+  String reportCsvShareText(Object title);
+
+  /// No description provided for @reportPrintShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'Print: {title}'**
+  String reportPrintShareText(Object title);
+
+  /// No description provided for @reportFileMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Report_{month}_{year}'**
+  String reportFileMonthly(Object month, Object year);
+
+  /// No description provided for @reportFileYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Report_Year_{year}'**
+  String reportFileYearly(Object year);
+
+  /// No description provided for @reportTextMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Report | {month} {year}'**
+  String reportTextMonthly(Object month, Object year);
+
+  /// No description provided for @reportTextYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Report | {year}'**
+  String reportTextYearly(Object year);
+
+  /// No description provided for @reportBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Breakdown'**
+  String get reportBreakdown;
+
+  /// No description provided for @reportInvoicesStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice status'**
+  String get reportInvoicesStatus;
+
+  /// No description provided for @viewReport.
+  ///
+  /// In en, this message translates to:
+  /// **'View report'**
+  String get viewReport;
+
+  /// No description provided for @reviewBeforeExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the PDF or CSV before exporting.'**
+  String get reviewBeforeExport;
+
+  /// No description provided for @customizeReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize the report'**
+  String get customizeReport;
+
+  /// No description provided for @reportPreviewUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes appear immediately in your preview.'**
+  String get reportPreviewUpdates;
+
+  /// No description provided for @yourReportPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Your report preview'**
+  String get yourReportPreview;
+
+  /// No description provided for @reportStyleLiveHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the design and see it live.'**
+  String get reportStyleLiveHint;
+
+  /// No description provided for @watchAdToExportReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch the full ad to export this report. Upgrade to Pro to export without ads.'**
+  String get watchAdToExportReport;
+
+  /// No description provided for @reportExportError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export report: {error}'**
+  String reportExportError(Object error);
+
+  /// No description provided for @shareCsvFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Share CSV file'**
+  String get shareCsvFile;
+
+  /// No description provided for @shareCsvFileDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Share the .csv attachment by email, Drive, or another app.'**
+  String get shareCsvFileDescription;
+
+  /// No description provided for @shareReportAsText.
+  ///
+  /// In en, this message translates to:
+  /// **'Share as text (WhatsApp / SMS)'**
+  String get shareReportAsText;
+
+  /// No description provided for @shareReportAsTextDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a report summary as text.'**
+  String get shareReportAsTextDescription;
+
+  /// No description provided for @printCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Print CSV'**
+  String get printCsv;
+
+  /// No description provided for @printReportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Print the report as a PDF table.'**
+  String get printReportDescription;
+
+  /// No description provided for @reportPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get reportPreview;
+
+  /// No description provided for @live.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get live;
+
+  /// No description provided for @proFeatureUnlimitedInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited invoices'**
+  String get proFeatureUnlimitedInvoices;
+
+  /// No description provided for @proFeatureRemovePdfBranding.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove PDF branding'**
+  String get proFeatureRemovePdfBranding;
+
+  /// No description provided for @proFeatureExportCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get proFeatureExportCsv;
+
+  /// No description provided for @proFeaturePremiumTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium templates'**
+  String get proFeaturePremiumTemplates;
+
+  /// No description provided for @proFeatureDetailedTaxReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed tax report'**
+  String get proFeatureDetailedTaxReport;
+
+  /// No description provided for @proFeatureUnlimitedInvoicesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Free plan allows up to {limit} invoices per month.'**
+  String proFeatureUnlimitedInvoicesDescription(Object limit);
+
+  /// No description provided for @proFeatureRemovePdfBrandingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove “Powered by EzInvoice” from PDFs.'**
+  String get proFeatureRemovePdfBrandingDescription;
+
+  /// No description provided for @proFeatureExportCsvDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Export your invoices to CSV.'**
+  String get proFeatureExportCsvDescription;
+
+  /// No description provided for @proFeaturePremiumTemplatesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock premium invoice templates.'**
+  String get proFeaturePremiumTemplatesDescription;
+
+  /// No description provided for @proFeatureDetailedTaxReportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'See detailed tax breakdown reports.'**
+  String get proFeatureDetailedTaxReportDescription;
+
+  /// No description provided for @pdfShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice PDF from EzInvoice'**
+  String get pdfShareText;
 }
 
 class _AppLocalizationsDelegate

@@ -13,10 +13,6 @@ class DeleteAccountScreen extends StatefulWidget {
 class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
   bool _deleting = false;
 
-  bool _isSpanish(BuildContext context) {
-    return Localizations.localeOf(context).languageCode.toLowerCase() == 'es';
-  }
-
   void _showSnack(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(
@@ -53,9 +49,10 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
     await userRef.delete();
   }
 
-  Future<void> _reauthenticate(User user, bool isEs) async {
+  Future<void> _reauthenticate(User user) async {
     final email = user.email;
     if (email == null || email.isEmpty) return;
+    final t = AppLocalizations.of(context);
 
     final controller = TextEditingController();
     bool obscure = true;
@@ -66,13 +63,13 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title: Text(isEs ? 'Confirmar contraseña' : 'Confirm password'),
+              title: Text(t.confirmPassword),
               content: TextField(
                 controller: controller,
                 obscureText: obscure,
                 autofocus: true,
                 decoration: InputDecoration(
-                  labelText: isEs ? 'Contraseña' : 'Password',
+                  labelText: t.password,
                   suffixIcon: IconButton(
                     icon: Icon(
                       obscure ? Icons.visibility : Icons.visibility_off,
@@ -84,12 +81,12 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(dialogContext),
-                  child: Text(isEs ? 'Cancelar' : 'Cancel'),
+                  child: Text(t.cancel),
                 ),
                 TextButton(
                   onPressed: () =>
                       Navigator.pop(dialogContext, controller.text.trim()),
-                  child: Text(isEs ? 'Continuar' : 'Continue'),
+                  child: Text(t.continueText),
                 ),
               ],
             );
@@ -101,9 +98,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
     if (pass == null || pass.isEmpty) {
       throw FirebaseAuthException(
         code: 'reauth-cancelled',
-        message: isEs
-            ? 'Cancelaste la confirmacion.'
-            : 'Reauthentication cancelled.',
+        message: t.reauthCancelled,
       );
     }
 
@@ -114,10 +109,11 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
     await user.reauthenticateWithCredential(credential);
   }
 
-  Future<void> _deleteAccount({required bool isEs}) async {
+  Future<void> _deleteAccount() async {
+    final t = AppLocalizations.of(context);
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      _showSnack(isEs ? 'No hay sesion activa.' : 'No active session.');
+      _showSnack(t.noActiveSession);
       return;
     }
 
@@ -125,34 +121,22 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
 
     setState(() => _deleting = true);
     try {
-      await _reauthenticate(user, isEs);
+      await _reauthenticate(user);
       await _deleteUserData(uid);
       await user.delete();
       await FirebaseAuth.instance.signOut();
 
-      _showSnack(
-        isEs
-            ? 'Tu cuenta y datos fueron eliminados permanentemente.'
-            : 'Your account and data were permanently deleted.',
-      );
+      _showSnack(t.accountDeleted);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'wrong-password') {
-        _showSnack(isEs ? 'Contrasena incorrecta.' : 'Incorrect password.');
+        _showSnack(t.deleteAccountIncorrectPassword);
       } else if (e.code == 'requires-recent-login') {
-        _showSnack(
-          isEs
-              ? 'Por seguridad, vuelve a iniciar sesion e intenta otra vez.'
-              : 'For security, sign in again and try once more.',
-        );
+        _showSnack(t.reauthenticationNeeded);
       } else if (e.code != 'reauth-cancelled') {
-        _showSnack(
-          isEs ? 'No se pudo eliminar la cuenta.' : 'Could not delete account.',
-        );
+        _showSnack(t.deleteAccountError);
       }
     } catch (_) {
-      _showSnack(
-        isEs ? 'No se pudo eliminar la cuenta.' : 'Could not delete account.',
-      );
+      _showSnack(t.deleteAccountError);
     } finally {
       if (mounted) setState(() => _deleting = false);
     }
@@ -160,7 +144,6 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
 
   Future<void> _confirmDeleteAccount() async {
     final t = AppLocalizations.of(context);
-    final isEs = _isSpanish(context);
 
     final confirm = await showDialog<bool>(
       context: context,
@@ -181,24 +164,14 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
     );
 
     if (confirm == true) {
-      await _deleteAccount(isEs: isEs);
+      await _deleteAccount();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final isEs = _isSpanish(context);
-
-    final warningBody = isEs
-        ? 'Si eliminas tu cuenta:\n\n'
-              '• Se eliminarán permanentemente tus clientes, facturas, reportes y perfil de negocio.\n'
-              '• Esta acción no se puede deshacer.\n'
-              '• Si tienes una suscripción activa, debes gestionarla o cancelarla en App Store/Google Play.'
-        : 'If you delete your account:\n\n'
-              '• Your clients, invoices, reports, and business profile will be permanently deleted.\n'
-              '• This action cannot be undone.\n'
-              '• If you have an active subscription, manage or cancel it in App Store/Google Play.';
+    final warningBody = t.deleteAccountBody;
 
     return Scaffold(
       appBar: AppBar(title: Text(t.deleteAccountTitle)),

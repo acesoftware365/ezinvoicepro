@@ -745,77 +745,76 @@ class AppLocalizationsRu extends AppLocalizations {
   String get unsentLabel => 'Не отправлено';
 
   @override
-  String get servicePresetsTitle => 'Service presets';
+  String get servicePresetsTitle => 'Сохраненные услуги';
 
   @override
-  String get servicePresetsScreenTitle => 'Service Presets';
+  String get servicePresetsScreenTitle => 'Сохраненные услуги';
 
   @override
-  String get servicePresetsAddNew => 'Add new preset';
+  String get servicePresetsAddNew => 'Добавить новую услугу';
 
   @override
-  String get servicePresetsHint => 'e.g. Cleaning, Repair, Consultation...';
+  String get servicePresetsHint => 'например, уборка, ремонт, консультация...';
 
   @override
-  String get servicePresetsAddButton => 'Add';
+  String get servicePresetsAddButton => 'Добавить';
 
   @override
-  String get addServiceLabel => 'Add a service';
+  String get addServiceLabel => 'Добавить услугу';
 
   @override
-  String get yourPresets => 'Your presets';
+  String get yourPresets => 'Ваши сохраненные услуги';
 
   @override
-  String get noPresetsYet => 'No presets yet.';
+  String get noPresetsYet => 'Сохраненных услуг пока нет.';
 
   @override
-  String get notNow => 'Not now';
+  String get notNow => 'Не сейчас';
 
   @override
-  String get openPaywallPlaceholder =>
-      'Open Paywall (connect PaywallScreen here)';
+  String get openPaywallPlaceholder => 'Открыть подписки';
 
   @override
-  String get invoiceStyleTitle => 'Invoice style';
+  String get invoiceStyleTitle => 'Стиль счета';
 
   @override
   String get invoiceFreeStyleHint =>
-      'Free plan uses one invoice version (Minimal). Upgrade to Pro to unlock all layouts and palettes.';
+      'Бесплатный план использует одну версию счета (Minimal). Перейдите на Pro, чтобы открыть все макеты и палитры.';
 
   @override
-  String get invoicePaletteLabel => 'Invoice palette';
+  String get invoicePaletteLabel => 'Палитра счета';
 
   @override
-  String get invoiceLayoutLabel => 'Invoice layout';
+  String get invoiceLayoutLabel => 'Макет счета';
 
   @override
-  String get saveInvoicePaletteError => 'Could not save invoice palette.';
+  String get saveInvoicePaletteError => 'Не удалось сохранить палитру счета.';
 
   @override
-  String get saveInvoiceLayoutError => 'Could not save invoice layout.';
+  String get saveInvoiceLayoutError => 'Не удалось сохранить макет счета.';
 
   @override
-  String get reportStyleTitle => 'Report style';
+  String get reportStyleTitle => 'Стиль отчета';
 
   @override
   String get reportFreeStyleHint =>
-      'Free plan uses one report version (Minimal). Upgrade to Pro to unlock all layouts and palettes.';
+      'Бесплатный план использует одну версию отчета (Minimal). Перейдите на Pro, чтобы открыть все макеты и палитры.';
 
   @override
-  String get reportPaletteLabel => 'Report palette';
+  String get reportPaletteLabel => 'Палитра отчета';
 
   @override
-  String get reportLayoutLabel => 'Report layout';
+  String get reportLayoutLabel => 'Макет отчета';
 
   @override
-  String get saveReportPaletteError => 'Could not save report palette.';
+  String get saveReportPaletteError => 'Не удалось сохранить палитру отчета.';
 
   @override
-  String get saveReportLayoutError => 'Could not save report layout.';
+  String get saveReportLayoutError => 'Не удалось сохранить макет отчета.';
 
   @override
   String stylePaletteFootnote(Object docType, Object style, Object palette) {
-    return '$docType style: $style | Palette: $palette';
+    return 'Стиль $docType: $style | Палитра: $palette';
   }
 
   @override
@@ -864,4 +863,814 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get totalInvoicedTitle => 'Всего выставлено';
+
+  @override
+  String versionLabel(Object version) {
+    return 'Версия $version';
+  }
+
+  @override
+  String errorWithDetails(Object error) {
+    return 'Ошибка: $error';
+  }
+
+  @override
+  String get rememberEmail => 'Запомнить мой e-mail';
+
+  @override
+  String get forgotPassword => 'Забыли пароль?';
+
+  @override
+  String get passwordResetEnterEmail =>
+      'Введите e-mail, чтобы получить ссылку для сброса.';
+
+  @override
+  String get passwordResetSent =>
+      'Мы отправили письмо для сброса пароля. Проверьте папку «Спам».';
+
+  @override
+  String get passwordResetNoAccount => 'Для этого e-mail не найден аккаунт.';
+
+  @override
+  String get invalidEmail => 'Недопустимый e-mail.';
+
+  @override
+  String get passwordResetError =>
+      'Не удалось отправить e-mail. Попробуйте снова.';
+
+  @override
+  String get updateRequired => 'Требуется обновление';
+
+  @override
+  String get updateRequiredBody =>
+      'Доступна новая версия Ez Invoice. Чтобы продолжить, обновите приложение в магазине.';
+
+  @override
+  String get updateNow => 'Обновить';
+
+  @override
+  String get open => 'Открыть';
+
+  @override
+  String get share => 'Поделиться';
+
+  @override
+  String get actions => 'Действия';
+
+  @override
+  String get message => 'Сообщение';
+
+  @override
+  String get done => 'Готово';
+
+  @override
+  String get confirm => 'Подтвердить';
+
+  @override
+  String get free => 'БЕСПЛАТНО';
+
+  @override
+  String get clientInformation => 'Информация о клиенте';
+
+  @override
+  String get clientName => 'Имя клиента';
+
+  @override
+  String get notesOptional => 'Заметки (необязательно)';
+
+  @override
+  String get saveClient => 'Сохранить клиента';
+
+  @override
+  String get importFromContacts => 'Импортировать из контактов';
+
+  @override
+  String get importContactsDescription =>
+      'Мгновенно заполните имя, телефон и e-mail.';
+
+  @override
+  String get loadContacts => 'Загрузить контакты';
+
+  @override
+  String get clientPhone => 'Телефон клиента';
+
+  @override
+  String get searchContacts => 'Поиск контактов';
+
+  @override
+  String get shareClient => 'Поделиться клиентом';
+
+  @override
+  String get clientProfile => 'Профиль клиента';
+
+  @override
+  String get chooseSavedService => 'Выбрать сохраненную услугу';
+
+  @override
+  String get searchSavedServices => 'Поиск сохраненных услуг';
+
+  @override
+  String get noSavedServicesFound => 'Сохраненные услуги не найдены';
+
+  @override
+  String get noSavedServicesToUse =>
+      'Сохраненных услуг пока нет. Введите услугу выше и сохраните ее.';
+
+  @override
+  String savedServiceAlreadyExists(Object service) {
+    return 'Уже сохранено: $service';
+  }
+
+  @override
+  String savedService(Object service) {
+    return 'Услуга сохранена: $service';
+  }
+
+  @override
+  String savePresetError(Object error) {
+    return 'Не удалось сохранить услугу: $error';
+  }
+
+  @override
+  String get saveServiceForLater => 'Сохранить услугу на потом';
+
+  @override
+  String get removeClient => 'Удалить клиента';
+
+  @override
+  String get service => 'Услуга';
+
+  @override
+  String get taxAndTip => 'Налог и чаевые';
+
+  @override
+  String get totals => 'Итоги';
+
+  @override
+  String dueDate(Object date) {
+    return 'Срок оплаты: $date';
+  }
+
+  @override
+  String paidDate(Object date) {
+    return 'Дата оплаты: $date';
+  }
+
+  @override
+  String get notPaidYet => 'Еще не оплачено';
+
+  @override
+  String paymentMethodWithValue(Object method) {
+    return 'Способ: $method';
+  }
+
+  @override
+  String paymentNoteWithValue(Object note) {
+    return 'Примечание: $note';
+  }
+
+  @override
+  String get markAsPaid => 'Отметить как оплаченную';
+
+  @override
+  String get markAsUnpaid => 'Отметить как неоплаченную';
+
+  @override
+  String get editTax => 'Изменить';
+
+  @override
+  String get addClient => 'Добавить клиента';
+
+  @override
+  String get firstClientHint =>
+      'Создайте первого клиента, чтобы использовать его в будущих счетах.';
+
+  @override
+  String get searchSavedClients => 'Поиск сохраненных клиентов';
+
+  @override
+  String get paymentMethod => 'Способ оплаты';
+
+  @override
+  String get cash => 'Наличные';
+
+  @override
+  String get card => 'Карта';
+
+  @override
+  String get check => 'Чек';
+
+  @override
+  String get other => 'Другое';
+
+  @override
+  String get noteOptional => 'Примечание (необязательно)';
+
+  @override
+  String invoiceMarkPaidError(Object error) {
+    return 'Не удалось отметить счет как оплаченный: $error';
+  }
+
+  @override
+  String invoiceMarkUnpaidError(Object error) {
+    return 'Не удалось отметить счет как неоплаченный: $error';
+  }
+
+  @override
+  String deleteError(Object error) {
+    return 'Не удалось удалить счет: $error';
+  }
+
+  @override
+  String get invoiceDeleted => 'Счет удален';
+
+  @override
+  String get invoiceMarkedSent => 'Отмечено как отправленное ✅';
+
+  @override
+  String invoiceMarkSentError(Object error) {
+    return 'Не удалось отметить как отправленный: $error';
+  }
+
+  @override
+  String get invoiceMarkedUnsent => 'Отмечено как неотправленное ✅';
+
+  @override
+  String invoiceMarkUnsentError(Object error) {
+    return 'Не удалось отметить как неотправленный: $error';
+  }
+
+  @override
+  String get invoiceMarkedPaid => 'Отмечено как оплаченное ✅';
+
+  @override
+  String get invoiceMarkedUnpaid => 'Отмечено как неоплаченное ✅';
+
+  @override
+  String get invoiceLoadingError => 'Не удалось загрузить счета';
+
+  @override
+  String get tipType => 'Тип чаевых';
+
+  @override
+  String get amountOption => 'Сумма (\$)';
+
+  @override
+  String get percentageOption => 'Процент (%)';
+
+  @override
+  String get pdfPreview => 'Предпросмотр PDF';
+
+  @override
+  String get openPdf => 'Открыть PDF';
+
+  @override
+  String get sharePdf => 'Поделиться PDF';
+
+  @override
+  String get selectReportMonth => 'Выберите месяц отчета';
+
+  @override
+  String reportForBusiness(Object business) {
+    return 'Отчеты • $business';
+  }
+
+  @override
+  String get tapToChangeMonth => 'Нажмите, чтобы изменить месяц';
+
+  @override
+  String csvSaved(Object path) {
+    return 'CSV сохранен: $path';
+  }
+
+  @override
+  String csvExportError(Object error) {
+    return 'Не удалось экспортировать CSV: $error';
+  }
+
+  @override
+  String get aboutTitle => 'О приложении';
+
+  @override
+  String get aboutTagline => 'Понятные счета для динамичного бизнеса';
+
+  @override
+  String get aboutAppTitle => 'Приложение';
+
+  @override
+  String get aboutAppBody =>
+      'EzInvoice объединяет счета, клиентов, платежи и отчеты в одном простом процессе, чтобы вы видели главное и уверенно получали оплату.';
+
+  @override
+  String get aboutCompanyTitle => 'Компания';
+
+  @override
+  String get aboutCompanyBody =>
+      'Liisgo LLC создает практичные инструменты, которые помогают малому бизнесу работать организованнее, яснее и увереннее.';
+
+  @override
+  String get aboutPromiseTitle => 'Создано для вашего дня';
+
+  @override
+  String get aboutPromiseBody =>
+      'Каждое решение в EzInvoice помогает сократить шаги, держать детали на виду и упростить управление бизнесом.';
+
+  @override
+  String get visitLiisgo => 'Посетить Liisgo';
+
+  @override
+  String get contactSupport => 'Связаться с поддержкой';
+
+  @override
+  String get shareEzInvoice => 'Поделиться EzInvoice';
+
+  @override
+  String get sendIdeaOrBug => 'Отправить идею или сообщение об ошибке';
+
+  @override
+  String get feedbackTitle => 'Ваше мнение важно';
+
+  @override
+  String get feedbackSubtitle =>
+      'Расскажите, что вы хотели бы улучшить или что работало не так.';
+
+  @override
+  String get feedbackIdea => 'Идея';
+
+  @override
+  String get feedbackBug => 'Ошибка';
+
+  @override
+  String get feedbackHint => 'Опишите идею или расскажите, что произошло…';
+
+  @override
+  String get feedbackRequired => 'Напишите сообщение перед отправкой.';
+
+  @override
+  String get continueToEmail => 'Перейти к e-mail';
+
+  @override
+  String get couldNotOpenLink => 'Не удалось открыть эту ссылку.';
+
+  @override
+  String shareAppText(Object storeUrl) {
+    return 'Познакомьтесь с EzInvoice Pro: счета, клиенты и отчеты в одном месте.\n$storeUrl';
+  }
+
+  @override
+  String feedbackEmailSubject(Object kind) {
+    return '$kind для EzInvoice';
+  }
+
+  @override
+  String get supportEmailSubject => 'Поддержка EzInvoice';
+
+  @override
+  String get changePassword => 'Изменить пароль';
+
+  @override
+  String get changePasswordSubtitle => 'Обновите пароль вашего аккаунта.';
+
+  @override
+  String get confirmCurrentPasswordHint =>
+      'Для безопасности сначала подтвердите текущий пароль.';
+
+  @override
+  String get currentPassword => 'Текущий пароль';
+
+  @override
+  String get newPassword => 'Новый пароль';
+
+  @override
+  String get confirmNewPassword => 'Подтвердите новый пароль';
+
+  @override
+  String get updatePassword => 'Обновить пароль';
+
+  @override
+  String get passwordAtLeastSix => 'Должно быть не менее 6 символов.';
+
+  @override
+  String get noActiveSession => 'Нет активного сеанса.';
+
+  @override
+  String get passwordsDoNotMatch => 'Новый пароль не совпадает.';
+
+  @override
+  String get passwordMustDiffer => 'Новый пароль должен отличаться.';
+
+  @override
+  String get passwordUpdated => 'Пароль успешно обновлен.';
+
+  @override
+  String get incorrectPassword => 'Текущий пароль неверный.';
+
+  @override
+  String get weakPassword => 'Новый пароль слишком слабый.';
+
+  @override
+  String get reauthenticationNeeded =>
+      'Для безопасности войдите снова и повторите попытку.';
+
+  @override
+  String get changePasswordError => 'Не удалось изменить пароль.';
+
+  @override
+  String get confirmPassword => 'Подтвердите пароль';
+
+  @override
+  String get reauthCancelled => 'Повторная аутентификация отменена.';
+
+  @override
+  String get accountDeleted => 'Ваш аккаунт и данные удалены навсегда.';
+
+  @override
+  String get deleteAccountIncorrectPassword => 'Неверный пароль.';
+
+  @override
+  String get deleteAccountError => 'Не удалось удалить аккаунт.';
+
+  @override
+  String get deleteAccountBody =>
+      'Если удалить аккаунт:\n\n• Ваши клиенты, счета, отчеты и профиль компании будут удалены навсегда.\n• Это действие нельзя отменить.\n• Если у вас есть активная подписка, управляйте или отмените ее в App Store/Google Play.';
+
+  @override
+  String get termsConditions => 'Условия использования';
+
+  @override
+  String get agreeTermsPrivacy =>
+      'Сначала примите Условия использования и Политику конфиденциальности.';
+
+  @override
+  String get currentPlan => 'Текущий план';
+
+  @override
+  String get currentPlanFree => 'Текущий план: Бесплатный';
+
+  @override
+  String get proPlanDescription =>
+      'Бесплатный тариф включает рекламу и ограничения. Pro убирает рекламу и открывает безлимитные счета, отчеты, премиум-шаблоны, экспорт и облачное резервное копирование.';
+
+  @override
+  String get adsIncluded => 'С рекламой';
+
+  @override
+  String get limitedInvoicesPerMonth => 'Ограниченное число счетов в месяц';
+
+  @override
+  String get basicInvoiceStyle => 'Базовый стиль счета';
+
+  @override
+  String get basicReports => 'Базовые отчеты';
+
+  @override
+  String get pdfIncludesBranding => 'PDF содержит брендинг EzInvoice';
+
+  @override
+  String get unpaidLabel => 'Не оплачено';
+
+  @override
+  String get loading => 'Загрузка...';
+
+  @override
+  String get store => 'Магазин';
+
+  @override
+  String get storeProductLoadingOne =>
+      'Один продукт подписки еще загружается. Вы можете продолжить с доступным тарифом, пока загружается другой продукт.';
+
+  @override
+  String get storeProductsLoading =>
+      'Подключение к продуктам подписки в магазине. Если загрузка не завершится, проверьте готовность подписок в консоли магазина.';
+
+  @override
+  String get agreeTo => 'Я принимаю ';
+
+  @override
+  String get and => ' и ';
+
+  @override
+  String get currentProPlanDescription =>
+      'У вас уже есть Ez Invoice Pro. Ниже можно ознакомиться с обоими вариантами подписки.';
+
+  @override
+  String freeVsPro(Object pro) {
+    return 'Бесплатный и $pro';
+  }
+
+  @override
+  String get openInvoices => 'Откройте счета.';
+
+  @override
+  String get allCaughtUp => 'Все готово';
+
+  @override
+  String itemsToReview(Object count) {
+    return '$count к проверке';
+  }
+
+  @override
+  String get pdfInvoice => 'Счет';
+
+  @override
+  String get pdfReceipt => 'Квитанция';
+
+  @override
+  String get pdfBusiness => 'Компания';
+
+  @override
+  String get pdfPhone => 'Телефон';
+
+  @override
+  String get pdfEmail => 'E-mail';
+
+  @override
+  String get pdfNumber => '№';
+
+  @override
+  String get pdfDate => 'Дата';
+
+  @override
+  String get pdfDue => 'Срок';
+
+  @override
+  String get pdfPaid => 'Оплачено';
+
+  @override
+  String get pdfPaidDate => 'Дата оплаты';
+
+  @override
+  String get pdfMethod => 'Способ';
+
+  @override
+  String get pdfBillTo => 'Выставить счет';
+
+  @override
+  String get pdfClient => 'Клиент';
+
+  @override
+  String get pdfDescription => 'Описание';
+
+  @override
+  String get pdfQuantity => 'Кол-во';
+
+  @override
+  String get pdfPrice => 'Цена';
+
+  @override
+  String get pdfSubtotal => 'Промежуточный итог';
+
+  @override
+  String get pdfTax => 'Налог';
+
+  @override
+  String pdfTaxWithRate(Object rate) {
+    return 'Налог ($rate%)';
+  }
+
+  @override
+  String get pdfTip => 'Чаевые';
+
+  @override
+  String pdfTipWithRate(Object rate) {
+    return 'Чаевые ($rate%)';
+  }
+
+  @override
+  String get pdfDiscount => 'Скидка';
+
+  @override
+  String get pdfMessage => 'Сообщение';
+
+  @override
+  String get pdfPaymentNote => 'Примечание к оплате';
+
+  @override
+  String get pdfThankYou => 'Спасибо за ваш заказ.';
+
+  @override
+  String get pdfPoweredBy => 'Работает на EzInvoice';
+
+  @override
+  String get pdfFreeVersion => 'БЕСПЛАТНАЯ ВЕРСИЯ';
+
+  @override
+  String get pdfTotal => 'Итого';
+
+  @override
+  String get styleMinimal => 'Минималистичный';
+
+  @override
+  String get styleProfessional => 'Профессиональный';
+
+  @override
+  String get styleCorporate => 'Корпоративный';
+
+  @override
+  String get styleModern => 'Современный';
+
+  @override
+  String get styleSlate => 'Сланцевый';
+
+  @override
+  String get reportDocument => 'Отчет';
+
+  @override
+  String get reportPrintDocument => 'Печать отчета';
+
+  @override
+  String get reportMonth => 'Месяц';
+
+  @override
+  String get reportYear => 'Год';
+
+  @override
+  String get reportGeneratedOn => 'Создан';
+
+  @override
+  String get reportInvoices => 'Счета';
+
+  @override
+  String get reportStatus => 'Статус';
+
+  @override
+  String get reportTotals => 'Итоги';
+
+  @override
+  String get reportSales => 'Продажи';
+
+  @override
+  String get reportTotalTax => 'Всего налога';
+
+  @override
+  String get reportTotalTip => 'Всего чаевых';
+
+  @override
+  String get reportTotalInvoiced => 'Всего выставлено';
+
+  @override
+  String get reportUnsent => 'Не отправлено';
+
+  @override
+  String get reportSent => 'Отправлено';
+
+  @override
+  String get reportPaid => 'Оплачено';
+
+  @override
+  String get reportOverdue => 'Просрочено';
+
+  @override
+  String get reportInvoiceNumber => '№ счета';
+
+  @override
+  String get reportClient => 'Клиент';
+
+  @override
+  String get reportDueDate => 'Срок оплаты';
+
+  @override
+  String get reportDescription => 'Описание';
+
+  @override
+  String get reportDate => 'Дата';
+
+  @override
+  String get reportFreeVersion => 'БЕСПЛАТНАЯ ВЕРСИЯ';
+
+  @override
+  String get reportPoweredBy => 'Создано в EzInvoice';
+
+  @override
+  String reportPdfShareText(Object title) {
+    return 'PDF-отчет: $title';
+  }
+
+  @override
+  String reportCsvShareText(Object title) {
+    return 'CSV-отчет: $title';
+  }
+
+  @override
+  String reportPrintShareText(Object title) {
+    return 'Печать: $title';
+  }
+
+  @override
+  String reportFileMonthly(Object month, Object year) {
+    return 'Отчет_${month}_$year';
+  }
+
+  @override
+  String reportFileYearly(Object year) {
+    return 'Отчет_Год_$year';
+  }
+
+  @override
+  String reportTextMonthly(Object month, Object year) {
+    return 'Отчет | $month $year';
+  }
+
+  @override
+  String reportTextYearly(Object year) {
+    return 'Отчет | $year';
+  }
+
+  @override
+  String get reportBreakdown => 'Разбивка';
+
+  @override
+  String get reportInvoicesStatus => 'Статус счетов';
+
+  @override
+  String get viewReport => 'Открыть отчет';
+
+  @override
+  String get reviewBeforeExport => 'Проверьте PDF или CSV перед экспортом.';
+
+  @override
+  String get customizeReport => 'Настроить отчет';
+
+  @override
+  String get reportPreviewUpdates =>
+      'Изменения сразу появятся в предварительном просмотре.';
+
+  @override
+  String get yourReportPreview => 'Предварительный просмотр отчета';
+
+  @override
+  String get reportStyleLiveHint =>
+      'Измените дизайн и сразу посмотрите результат.';
+
+  @override
+  String get watchAdToExportReport =>
+      'Посмотрите рекламу полностью, чтобы экспортировать этот отчет. Перейдите на Pro для экспорта без рекламы.';
+
+  @override
+  String reportExportError(Object error) {
+    return 'Не удалось экспортировать отчет: $error';
+  }
+
+  @override
+  String get shareCsvFile => 'Поделиться CSV-файлом';
+
+  @override
+  String get shareCsvFileDescription =>
+      'Поделитесь вложением .csv по электронной почте, через Drive или другое приложение.';
+
+  @override
+  String get shareReportAsText => 'Поделиться как текстом (WhatsApp / SMS)';
+
+  @override
+  String get shareReportAsTextDescription => 'Отправьте сводку отчета текстом.';
+
+  @override
+  String get printCsv => 'Печать CSV';
+
+  @override
+  String get printReportDescription => 'Распечатайте отчет в виде таблицы PDF.';
+
+  @override
+  String get reportPreview => 'Предварительный просмотр';
+
+  @override
+  String get live => 'Онлайн';
+
+  @override
+  String get proFeatureUnlimitedInvoices => 'Неограниченные счета';
+
+  @override
+  String get proFeatureRemovePdfBranding => 'Убрать брендирование PDF';
+
+  @override
+  String get proFeatureExportCsv => 'Экспорт CSV';
+
+  @override
+  String get proFeaturePremiumTemplates => 'Премиум-шаблоны';
+
+  @override
+  String get proFeatureDetailedTaxReport => 'Подробный налоговый отчет';
+
+  @override
+  String proFeatureUnlimitedInvoicesDescription(Object limit) {
+    return 'Бесплатный план позволяет до $limit счетов в месяц.';
+  }
+
+  @override
+  String get proFeatureRemovePdfBrandingDescription =>
+      'Удаляет «Создано в EzInvoice» из PDF.';
+
+  @override
+  String get proFeatureExportCsvDescription => 'Экспортируйте счета в CSV.';
+
+  @override
+  String get proFeaturePremiumTemplatesDescription =>
+      'Откройте премиум-шаблоны счетов.';
+
+  @override
+  String get proFeatureDetailedTaxReportDescription =>
+      'Просматривайте подробные налоговые отчеты.';
+
+  @override
+  String get pdfShareText => 'PDF-счет от EzInvoice';
 }

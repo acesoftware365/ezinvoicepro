@@ -1,8 +1,6 @@
 {
   "@@locale": "ru",
-
   "appName": "Ez Invoice",
-
   "loginSubtitle": "Создайте аккаунт",
   "email": "Email",
   "password": "Пароль",
@@ -15,7 +13,6 @@
   "processing": "Обработка...",
   "invalidCredentials": "Введите корректный email и пароль (6+ символов)",
   "authError": "Ошибка аутентификации",
-
   "home": "Главная",
   "clients": "Клиенты",
   "invoices": "Счета",
@@ -23,35 +20,28 @@
   "settings": "Настройки",
   "logout": "Выйти",
   "business": "Бизнес",
-
   "settingsLanguage": "Язык",
   "settingsLanguageDescription": "Выберите язык приложения.",
   "systemDefault": "Язык системы",
-
   "privacyPolicy": "Политика конфиденциальности",
-
   "clientMessageTemplateMultiline": "Привет, {name}!\nОтправляю ваш счёт из EzInvoice. ✅",
   "@clientMessageTemplateMultiline": {
-    "placeholders": { "name": {} }
+    "placeholders": {
+      "name": {}
+    }
   },
-
   "invoiceEmailSubject": "Счёт - EzInvoice",
-
   "dashboardTitle": "Панель",
   "monthWord": "Месяц",
-
   "planLabel": "Тариф",
   "invoicesRemaining": "Осталось счетов",
   "proUnlimitedLabel": "PRO · Безлимит",
-
   "createNewInvoice": "Создать новый счёт",
   "limitReachedSubtitle": "Лимит достигнут • Перейдите на Pro",
   "createInvoiceFastSubtitle": "Создайте счёт + PDF за секунды",
-
   "limitReachedTitle": "Лимит достигнут",
   "limitReachedBody": "Перейдите на Pro для безлимитных счетов и удаления рекламы.",
   "upgrade": "Перейти на Pro",
-
   "monthSummaryTitle": "Итоги месяца",
   "salesTitle": "Продажи",
   "tipTitle": "Чаевые",
@@ -59,37 +49,34 @@
   "taxTitle": "Налог",
   "beforeTaxTip": "До налога/чаевых",
   "collectedThisMonth": "Собрано в этом месяце",
-
   "quickAccessTitle": "Быстрый доступ",
   "clientsManageSubtitle": "Создать / редактировать клиентов",
   "invoicesViewSendSubtitle": "Просмотр и отправка PDF",
   "monthlyYearlySubtitle": "Месячный / годовой",
   "businessProfileSubtitle": "Профиль / логотип / налог",
-
   "invoiceCount": "{count} счёт(ов)",
-  "@invoiceCount": { "placeholders": { "count": {} } },
-
+  "@invoiceCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "paywallTitle": "Ez Invoice Pro",
   "close": "Закрыть",
   "paywallHeaderTitle": "Откройте всё для вашего бизнеса",
   "paywallHeaderSubtitle": "Без рекламы • Безлимитные счета • Налоговые отчёты • Премиум-шаблоны",
-
   "bestValue": "Лучшее предложение",
   "proYearly": "Pro на год",
   "saveMoreYearly": "Экономьте, оплачивая раз в год",
   "proMonthly": "Pro на месяц",
   "flexible": "Гибко",
   "cancelAnytime": "Отмена в любое время",
-
   "processingPurchase": "Обрабатываем покупку…",
   "restoringPurchases": "Восстанавливаем покупки…",
   "restorePurchases": "Восстановить покупки",
   "continueFreeWithAds": "Продолжить бесплатно с рекламой",
-
   "alreadyProTitle": "У вас Pro ✅",
   "alreadyProBody": "Наслаждайтесь безлимитными счетами, отчётами и без рекламы.",
   "continueText": "Продолжить",
-
   "includesInPro": "В Pro включено",
   "benefitNoAds": "Без рекламы (баннер/интерстициал/вознаграждение)",
   "benefitUnlimitedInvoices": "Безлимитные счета + статусы (черновик/отправлен/оплачен)",
@@ -98,179 +85,215 @@
   "benefitTaxReports": "Налоговые отчёты: месячные и годовые (налоги/чаевые/итого)",
   "benefitExport": "Экспорт PDF/CSV/Excel (для бухгалтерии)",
   "benefitCloudBackup": "Облачный бэкап + восстановление (несколько устройств)",
-
   "continueWithPlan": "Продолжить с {plan}",
-  "@continueWithPlan": { "placeholders": { "plan": {} } },
-
+  "@continueWithPlan": {
+    "placeholders": {
+      "plan": {}
+    }
+  },
   "paywallFinePrint": "При подписке оплата будет списана с вашего аккаунта {store}. Подписка автоматически продлевается, если вы не отмените её минимум за 24 часа до окончания текущего периода. Управлять подпиской или отменить её можно в настройках магазина.",
-  "@paywallFinePrint": { "placeholders": { "store": {} } },
-
+  "@paywallFinePrint": {
+    "placeholders": {
+      "store": {}
+    }
+  },
   "reportsTitle": "Отчёты",
   "proBadge": "PRO",
-
   "byMonth": "По месяцам",
   "byYear": "По годам",
   "monthLabel": "Месяц",
   "yearLabel": "Год",
-
   "businessProfileTitle": "Профиль бизнеса",
   "save": "Сохранить",
   "uploadLogo": "Загрузить логотип",
   "remove": "Удалить",
-
   "businessNameLabel": "Название бизнеса",
   "ownerNameLabel": "Владелец / контактное лицо",
   "phoneLabel": "Телефон",
   "addressLabel": "Адрес",
-
   "currencyLabel": "Валюта",
   "taxDefaultLabel": "Налог по умолчанию (%)",
-
   "invalidNumber": "Неверное число",
   "range0to100": "Должно быть от 0 до 100",
   "requiredField": "Обязательно",
-
   "footerNoteLabel": "Примечание внизу (PDF)",
   "saveChanges": "Сохранить изменения",
-
   "businessFooterDefault": "Спасибо за ваш бизнес.",
   "businessSavedSuccess": "Профиль бизнеса успешно сохранён",
-
   "businessInfoSection": "Информация о бизнесе",
   "settingsSection": "Настройки",
   "footerSection": "Примечание внизу (PDF)",
   "upgradeToPro": "Перейти на Pro",
-
   "bestValueStar": "⭐ Лучшее предложение",
-
   "invoicesTitle": "Счета",
   "noInvoicesYet": "Пока нет счетов.",
-
   "freePlanMonthlyLimitBanner": "Бесплатный план: месячный лимит {limit} счетов • Перейдите на безлимит",
-  "@freePlanMonthlyLimitBanner": { "placeholders": { "limit": {} } },
-
+  "@freePlanMonthlyLimitBanner": {
+    "placeholders": {
+      "limit": {}
+    }
+  },
   "filtersTitle": "Фильтры",
   "clientLabel": "Клиент",
   "allMonths": "Все месяцы",
   "allClients": "Все клиенты",
   "clear": "Очистить",
-
   "invoicesSummaryLabel": "Счета",
   "totalTitle": "Итого",
   "dateLabel": "Дата",
-
   "noResultsForFilters": "Нет результатов для выбранных фильтров.",
-
   "freePlanLimitDialogBody": "Бесплатный план: {current} / {limit} счетов в этом месяце.\n\nПерейдите на Pro для безлимита.",
-  "@freePlanLimitDialogBody": { "placeholders": { "current": {}, "limit": {} } },
-
+  "@freePlanLimitDialogBody": {
+    "placeholders": {
+      "current": {},
+      "limit": {}
+    }
+  },
   "deleteInvoiceTitle": "Удалить счёт?",
   "deleteInvoiceBody": "Вы уверены, что хотите удалить {invNo}?",
-  "@deleteInvoiceBody": { "placeholders": { "invNo": {} } },
-
+  "@deleteInvoiceBody": {
+    "placeholders": {
+      "invNo": {}
+    }
+  },
   "cancel": "Отмена",
   "delete": "Удалить",
   "edit": "Редактировать",
   "sendPdf": "Отправить PDF",
-
   "shareInvoiceText": "Счёт {invNo} - {client}",
-  "@shareInvoiceText": { "placeholders": { "invNo": {}, "client": {} } },
-
+  "@shareInvoiceText": {
+    "placeholders": {
+      "invNo": {},
+      "client": {}
+    }
+  },
   "pdfSendError": "Ошибка создания/отправки PDF: {error}",
-  "@pdfSendError": { "placeholders": { "error": {} } },
-
+  "@pdfSendError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "reportTitleMonth": "Отчёт • {month} {year}",
-  "@reportTitleMonth": { "placeholders": { "month": {}, "year": {} } },
-
+  "@reportTitleMonth": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
   "reportTitleYear": "Отчёт • Год {year}",
-  "@reportTitleYear": { "placeholders": { "year": {} } },
-
+  "@reportTitleYear": {
+    "placeholders": {
+      "year": {}
+    }
+  },
   "invoicesLine": "Счета: {count}",
-  "@invoicesLine": { "placeholders": { "count": {} } },
-
+  "@invoicesLine": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "totalSalesLine": "Общие продажи: ${amount}",
-  "@totalSalesLine": { "placeholders": { "amount": {} } },
-
+  "@totalSalesLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "totalTaxLine": "Общий налог: ${amount}",
-  "@totalTaxLine": { "placeholders": { "amount": {} } },
-
+  "@totalTaxLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "totalTipLine": "Общие чаевые: ${amount}",
-  "@totalTipLine": { "placeholders": { "amount": {} } },
-
+  "@totalTipLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "netLine": "Итого (net): ${amount}",
-  "@netLine": { "placeholders": { "amount": {} } },
-
+  "@netLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "calculatedFromInvoices": "Рассчитано на основе ваших счетов в Firestore.",
   "noInvoicesInPeriod": "В этом периоде нет счетов.",
-
   "exportPdf": "Экспорт PDF",
   "exportCsv": "Экспорт CSV",
-
   "yearlyProReason": "Годовой отчёт — PRO. Перейдите на Pro, чтобы открыть.",
   "exportPdfProReason": "Экспорт PDF отчёта — PRO.",
   "exportCsvProReason": "Экспорт CSV — PRO.",
-
   "noDataToExport": "Нет данных для экспорта.",
   "freePlanReportsNote": "Бесплатный план: только месячные отчёты. Перейдите на Pro для годовых отчётов и экспорта.",
-
   "genericError": "Что-то пошло не так. Попробуйте ещё раз.",
-
   "newInvoiceTitle": "Новый счёт",
   "editInvoiceTitle": "Редактировать счёт",
   "pickClient": "Выбрать клиента",
-
   "invoiceAutoNumberLabel": "Счёт # (авто)",
   "invoiceDateLabel": "Дата счёта: {date}",
-  "@invoiceDateLabel": { "placeholders": { "date": {} } },
-
+  "@invoiceDateLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
   "clientNameLabel": "Имя клиента",
   "clientNameRequired": "Имя клиента обязательно",
   "clientEmailOptionalLabel": "Email клиента (необязательно)",
   "clientPhoneOptionalLabel": "Телефон клиента (необязательно)",
   "invalidEmailFormat": "Неверный формат email",
-
   "itemsTitle": "Позиции",
   "descriptionLabel": "Описание",
   "itemDateLabel": "Дата позиции: {date}",
-  "@itemDateLabel": { "placeholders": { "date": {} } },
-
+  "@itemDateLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
   "qtyLabel": "Кол-во",
   "priceLabel": "Цена",
   "lineTotalLabel": "Итого по строке: ${amount}",
-  "@lineTotalLabel": { "placeholders": { "amount": {} } },
-
+  "@lineTotalLabel": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "taxDefaultOwnerLabel": "Налог % (по умолчанию)",
-
   "tipPercentChip": "Чаевые %",
   "tipAmountChip": "Чаевые $",
   "tipPercentLabel": "Процент чаевых (%)",
   "tipAmountLabel": "Сумма чаевых ($)",
-
   "messageOptionalLabel": "Сообщение (необязательно)",
-
   "totalsBlock": "Подытог: ${sub}\nНалог: ${tax}\nЧаевые: ${tip}\nИтого: ${total}",
   "@totalsBlock": {
-    "placeholders": { "sub": {}, "tax": {}, "tip": {}, "total": {} }
+    "placeholders": {
+      "sub": {},
+      "tax": {},
+      "tip": {},
+      "total": {}
+    }
   },
-
   "saving": "Сохранение…",
   "saveInvoice": "Сохранить счёт",
   "updateInvoice": "Обновить счёт",
-
   "addAtLeastOneItem": "Добавьте минимум 1 позицию",
   "errorSavingInvoice": "Ошибка сохранения счёта: {error}",
-  "@errorSavingInvoice": { "placeholders": { "error": {} } },
-
+  "@errorSavingInvoice": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "savedTab": "Сохранённые",
   "contactsTab": "Контакты",
   "noSavedClients": "Нет сохранённых клиентов",
   "permissionDeniedContacts": "Доступ к контактам запрещён",
   "noContactsFound": "Контакты не найдены на этом устройстве/эмуляторе",
   "contactsError": "Ошибка контактов: {error}",
-  "@contactsError": { "placeholders": { "error": {} } },
-
+  "@contactsError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "noName": "(Без имени)",
-
   "newClientTitle": "Новый клиент",
   "editClientTitle": "Редактировать клиента",
   "clientInfoSection": "Информация о клиенте",
@@ -279,30 +302,36 @@
   "clientCreateHint": "Совет: добавьте email/телефон, чтобы быстрее отправлять счета.",
   "clientEditHint": "Вы можете обновлять данные клиента в любое время.",
   "errorSavingClient": "Ошибка сохранения клиента: {error}",
-  "@errorSavingClient": { "placeholders": { "error": {} } },
-
+  "@errorSavingClient": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "clientsTitle": "Клиенты",
   "searchClientsLabel": "Поиск клиентов",
   "clientsCount": "{count} клиент(ов)",
-  "@clientsCount": { "placeholders": { "count": {} } },
-
+  "@clientsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "noClientsYet": "Пока нет клиентов.",
   "noClientsForSearch": "Нет клиентов, подходящих под поиск.",
-
   "cannotOpenDialer": "Не удалось открыть набор номера",
   "cannotOpenSms": "Не удалось открыть SMS",
   "whatsAppNotAvailable": "WhatsApp недоступен",
   "cannotOpenEmail": "Не удалось открыть email",
-
   "deleteClientTitle": "Удалить клиента?",
   "deleteClientBody": "Удалить {name}?",
-  "@deleteClientBody": { "placeholders": { "name": {} } },
-
+  "@deleteClientBody": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "call": "Позвонить",
   "sms": "SMS",
   "whatsapp": "WhatsApp",
   "emailAction": "Email",
-
   "shareAppTitle": "Попробуйте EzInvoice 👇",
   "shareAppBody": "Создавайте счета, отправляйте PDF и легко отслеживайте отчёты.",
   "shareAppTooltip": "Поделиться приложением",
@@ -311,7 +340,6 @@
   "openWebsiteTooltip": "Открыть сайт",
   "availableLanguages": "Доступные языки",
   "usePhoneLanguage": "Использовать язык телефона",
-
   "shareReceiptText": "Квитанция {invoiceNumber} для {clientName}",
   "@shareReceiptText": {
     "placeholders": {
@@ -319,7 +347,6 @@
       "clientName": {}
     }
   },
-
   "report": "Отчёт",
   "invoicesLabel": "Счета",
   "totalSalesLabel": "Общие продажи",
@@ -337,31 +364,30 @@
   "deleteAccountWarning": "Это действие навсегда удалит ваш аккаунт и все связанные данные.",
   "deleteAccountButton": "Удалить аккаунт",
   "deleteAccountConfirmTitle": "Подтвердить удаление",
-  "deleteAccountConfirmMessage": "Вы уверены? Это действие нельзя отменить."
-,
-  "servicePresetsTitle": "Service presets",
-  "servicePresetsScreenTitle": "Service Presets",
-  "servicePresetsAddNew": "Add new preset",
-  "servicePresetsHint": "e.g. Cleaning, Repair, Consultation...",
-  "servicePresetsAddButton": "Add",
-  "addServiceLabel": "Add a service",
-  "yourPresets": "Your presets",
-  "noPresetsYet": "No presets yet.",
-  "notNow": "Not now",
-  "openPaywallPlaceholder": "Open Paywall (connect PaywallScreen here)",
-  "invoiceStyleTitle": "Invoice style",
-  "invoiceFreeStyleHint": "Free plan uses one invoice version (Minimal). Upgrade to Pro to unlock all layouts and palettes.",
-  "invoicePaletteLabel": "Invoice palette",
-  "invoiceLayoutLabel": "Invoice layout",
-  "saveInvoicePaletteError": "Could not save invoice palette.",
-  "saveInvoiceLayoutError": "Could not save invoice layout.",
-  "reportStyleTitle": "Report style",
-  "reportFreeStyleHint": "Free plan uses one report version (Minimal). Upgrade to Pro to unlock all layouts and palettes.",
-  "reportPaletteLabel": "Report palette",
-  "reportLayoutLabel": "Report layout",
-  "saveReportPaletteError": "Could not save report palette.",
-  "saveReportLayoutError": "Could not save report layout.",
-  "stylePaletteFootnote": "{docType} style: {style} | Palette: {palette}",
+  "deleteAccountConfirmMessage": "Вы уверены? Это действие нельзя отменить.",
+  "servicePresetsTitle": "Сохраненные услуги",
+  "servicePresetsScreenTitle": "Сохраненные услуги",
+  "servicePresetsAddNew": "Добавить новую услугу",
+  "servicePresetsHint": "например, уборка, ремонт, консультация...",
+  "servicePresetsAddButton": "Добавить",
+  "addServiceLabel": "Добавить услугу",
+  "yourPresets": "Ваши сохраненные услуги",
+  "noPresetsYet": "Сохраненных услуг пока нет.",
+  "notNow": "Не сейчас",
+  "openPaywallPlaceholder": "Открыть подписки",
+  "invoiceStyleTitle": "Стиль счета",
+  "invoiceFreeStyleHint": "Бесплатный план использует одну версию счета (Minimal). Перейдите на Pro, чтобы открыть все макеты и палитры.",
+  "invoicePaletteLabel": "Палитра счета",
+  "invoiceLayoutLabel": "Макет счета",
+  "saveInvoicePaletteError": "Не удалось сохранить палитру счета.",
+  "saveInvoiceLayoutError": "Не удалось сохранить макет счета.",
+  "reportStyleTitle": "Стиль отчета",
+  "reportFreeStyleHint": "Бесплатный план использует одну версию отчета (Minimal). Перейдите на Pro, чтобы открыть все макеты и палитры.",
+  "reportPaletteLabel": "Палитра отчета",
+  "reportLayoutLabel": "Макет отчета",
+  "saveReportPaletteError": "Не удалось сохранить палитру отчета.",
+  "saveReportLayoutError": "Не удалось сохранить макет отчета.",
+  "stylePaletteFootnote": "Стиль {docType}: {style} | Палитра: {palette}",
   "@stylePaletteFootnote": {
     "placeholders": {
       "docType": {},
@@ -377,5 +403,407 @@
   "profileDefaults": "Настройки счёта",
   "profileTaxInvalid": "Проверьте налог (0–100 %).",
   "metricLoadError": "Не удалось загрузить отчёт. Повторите попытку.",
-  "totalInvoicedTitle": "Всего выставлено"
+  "totalInvoicedTitle": "Всего выставлено",
+  "versionLabel": "Версия {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "errorWithDetails": "Ошибка: {error}",
+  "@errorWithDetails": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "rememberEmail": "Запомнить мой e-mail",
+  "forgotPassword": "Забыли пароль?",
+  "passwordResetEnterEmail": "Введите e-mail, чтобы получить ссылку для сброса.",
+  "passwordResetSent": "Мы отправили письмо для сброса пароля. Проверьте папку «Спам».",
+  "passwordResetNoAccount": "Для этого e-mail не найден аккаунт.",
+  "invalidEmail": "Недопустимый e-mail.",
+  "passwordResetError": "Не удалось отправить e-mail. Попробуйте снова.",
+  "updateRequired": "Требуется обновление",
+  "updateRequiredBody": "Доступна новая версия Ez Invoice. Чтобы продолжить, обновите приложение в магазине.",
+  "updateNow": "Обновить",
+  "open": "Открыть",
+  "share": "Поделиться",
+  "actions": "Действия",
+  "message": "Сообщение",
+  "done": "Готово",
+  "confirm": "Подтвердить",
+  "free": "БЕСПЛАТНО",
+  "clientInformation": "Информация о клиенте",
+  "clientName": "Имя клиента",
+  "notesOptional": "Заметки (необязательно)",
+  "saveClient": "Сохранить клиента",
+  "importFromContacts": "Импортировать из контактов",
+  "importContactsDescription": "Мгновенно заполните имя, телефон и e-mail.",
+  "loadContacts": "Загрузить контакты",
+  "clientPhone": "Телефон клиента",
+  "searchContacts": "Поиск контактов",
+  "shareClient": "Поделиться клиентом",
+  "clientProfile": "Профиль клиента",
+  "chooseSavedService": "Выбрать сохраненную услугу",
+  "searchSavedServices": "Поиск сохраненных услуг",
+  "noSavedServicesFound": "Сохраненные услуги не найдены",
+  "noSavedServicesToUse": "Сохраненных услуг пока нет. Введите услугу выше и сохраните ее.",
+  "savedServiceAlreadyExists": "Уже сохранено: {service}",
+  "@savedServiceAlreadyExists": {
+    "placeholders": {
+      "service": {}
+    }
+  },
+  "savedService": "Услуга сохранена: {service}",
+  "@savedService": {
+    "placeholders": {
+      "service": {}
+    }
+  },
+  "savePresetError": "Не удалось сохранить услугу: {error}",
+  "@savePresetError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "saveServiceForLater": "Сохранить услугу на потом",
+  "removeClient": "Удалить клиента",
+  "service": "Услуга",
+  "taxAndTip": "Налог и чаевые",
+  "totals": "Итоги",
+  "dueDate": "Срок оплаты: {date}",
+  "@dueDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "paidDate": "Дата оплаты: {date}",
+  "@paidDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "notPaidYet": "Еще не оплачено",
+  "paymentMethodWithValue": "Способ: {method}",
+  "@paymentMethodWithValue": {
+    "placeholders": {
+      "method": {}
+    }
+  },
+  "paymentNoteWithValue": "Примечание: {note}",
+  "@paymentNoteWithValue": {
+    "placeholders": {
+      "note": {}
+    }
+  },
+  "markAsPaid": "Отметить как оплаченную",
+  "markAsUnpaid": "Отметить как неоплаченную",
+  "editTax": "Изменить",
+  "addClient": "Добавить клиента",
+  "firstClientHint": "Создайте первого клиента, чтобы использовать его в будущих счетах.",
+  "searchSavedClients": "Поиск сохраненных клиентов",
+  "paymentMethod": "Способ оплаты",
+  "cash": "Наличные",
+  "card": "Карта",
+  "check": "Чек",
+  "other": "Другое",
+  "noteOptional": "Примечание (необязательно)",
+  "invoiceMarkPaidError": "Не удалось отметить счет как оплаченный: {error}",
+  "@invoiceMarkPaidError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkUnpaidError": "Не удалось отметить счет как неоплаченный: {error}",
+  "@invoiceMarkUnpaidError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "deleteError": "Не удалось удалить счет: {error}",
+  "@deleteError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceDeleted": "Счет удален",
+  "invoiceMarkedSent": "Отмечено как отправленное ✅",
+  "invoiceMarkSentError": "Не удалось отметить как отправленный: {error}",
+  "@invoiceMarkSentError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkedUnsent": "Отмечено как неотправленное ✅",
+  "invoiceMarkUnsentError": "Не удалось отметить как неотправленный: {error}",
+  "@invoiceMarkUnsentError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkedPaid": "Отмечено как оплаченное ✅",
+  "invoiceMarkedUnpaid": "Отмечено как неоплаченное ✅",
+  "invoiceLoadingError": "Не удалось загрузить счета",
+  "tipType": "Тип чаевых",
+  "amountOption": "Сумма ($)",
+  "percentageOption": "Процент (%)",
+  "pdfPreview": "Предпросмотр PDF",
+  "openPdf": "Открыть PDF",
+  "sharePdf": "Поделиться PDF",
+  "selectReportMonth": "Выберите месяц отчета",
+  "reportForBusiness": "Отчеты • {business}",
+  "@reportForBusiness": {
+    "placeholders": {
+      "business": {}
+    }
+  },
+  "tapToChangeMonth": "Нажмите, чтобы изменить месяц",
+  "csvSaved": "CSV сохранен: {path}",
+  "@csvSaved": {
+    "placeholders": {
+      "path": {}
+    }
+  },
+  "csvExportError": "Не удалось экспортировать CSV: {error}",
+  "@csvExportError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "aboutTitle": "О приложении",
+  "aboutTagline": "Понятные счета для динамичного бизнеса",
+  "aboutAppTitle": "Приложение",
+  "aboutAppBody": "EzInvoice объединяет счета, клиентов, платежи и отчеты в одном простом процессе, чтобы вы видели главное и уверенно получали оплату.",
+  "aboutCompanyTitle": "Компания",
+  "aboutCompanyBody": "Liisgo LLC создает практичные инструменты, которые помогают малому бизнесу работать организованнее, яснее и увереннее.",
+  "aboutPromiseTitle": "Создано для вашего дня",
+  "aboutPromiseBody": "Каждое решение в EzInvoice помогает сократить шаги, держать детали на виду и упростить управление бизнесом.",
+  "visitLiisgo": "Посетить Liisgo",
+  "contactSupport": "Связаться с поддержкой",
+  "shareEzInvoice": "Поделиться EzInvoice",
+  "sendIdeaOrBug": "Отправить идею или сообщение об ошибке",
+  "feedbackTitle": "Ваше мнение важно",
+  "feedbackSubtitle": "Расскажите, что вы хотели бы улучшить или что работало не так.",
+  "feedbackIdea": "Идея",
+  "feedbackBug": "Ошибка",
+  "feedbackHint": "Опишите идею или расскажите, что произошло…",
+  "feedbackRequired": "Напишите сообщение перед отправкой.",
+  "continueToEmail": "Перейти к e-mail",
+  "couldNotOpenLink": "Не удалось открыть эту ссылку.",
+  "shareAppText": "Познакомьтесь с EzInvoice Pro: счета, клиенты и отчеты в одном месте.\n{storeUrl}",
+  "@shareAppText": {
+    "placeholders": {
+      "storeUrl": {}
+    }
+  },
+  "feedbackEmailSubject": "{kind} для EzInvoice",
+  "@feedbackEmailSubject": {
+    "placeholders": {
+      "kind": {}
+    }
+  },
+  "supportEmailSubject": "Поддержка EzInvoice",
+  "changePassword": "Изменить пароль",
+  "changePasswordSubtitle": "Обновите пароль вашего аккаунта.",
+  "confirmCurrentPasswordHint": "Для безопасности сначала подтвердите текущий пароль.",
+  "currentPassword": "Текущий пароль",
+  "newPassword": "Новый пароль",
+  "confirmNewPassword": "Подтвердите новый пароль",
+  "updatePassword": "Обновить пароль",
+  "passwordAtLeastSix": "Должно быть не менее 6 символов.",
+  "noActiveSession": "Нет активного сеанса.",
+  "passwordsDoNotMatch": "Новый пароль не совпадает.",
+  "passwordMustDiffer": "Новый пароль должен отличаться.",
+  "passwordUpdated": "Пароль успешно обновлен.",
+  "incorrectPassword": "Текущий пароль неверный.",
+  "weakPassword": "Новый пароль слишком слабый.",
+  "reauthenticationNeeded": "Для безопасности войдите снова и повторите попытку.",
+  "changePasswordError": "Не удалось изменить пароль.",
+  "confirmPassword": "Подтвердите пароль",
+  "reauthCancelled": "Повторная аутентификация отменена.",
+  "accountDeleted": "Ваш аккаунт и данные удалены навсегда.",
+  "deleteAccountIncorrectPassword": "Неверный пароль.",
+  "deleteAccountError": "Не удалось удалить аккаунт.",
+  "deleteAccountBody": "Если удалить аккаунт:\n\n• Ваши клиенты, счета, отчеты и профиль компании будут удалены навсегда.\n• Это действие нельзя отменить.\n• Если у вас есть активная подписка, управляйте или отмените ее в App Store/Google Play.",
+  "termsConditions": "Условия использования",
+  "agreeTermsPrivacy": "Сначала примите Условия использования и Политику конфиденциальности.",
+  "currentPlan": "Текущий план",
+  "currentPlanFree": "Текущий план: Бесплатный",
+  "proPlanDescription": "Бесплатный тариф включает рекламу и ограничения. Pro убирает рекламу и открывает безлимитные счета, отчеты, премиум-шаблоны, экспорт и облачное резервное копирование.",
+  "adsIncluded": "С рекламой",
+  "limitedInvoicesPerMonth": "Ограниченное число счетов в месяц",
+  "basicInvoiceStyle": "Базовый стиль счета",
+  "basicReports": "Базовые отчеты",
+  "pdfIncludesBranding": "PDF содержит брендинг EzInvoice",
+  "unpaidLabel": "Не оплачено",
+  "loading": "Загрузка...",
+  "store": "Магазин",
+  "storeProductLoadingOne": "Один продукт подписки еще загружается. Вы можете продолжить с доступным тарифом, пока загружается другой продукт.",
+  "storeProductsLoading": "Подключение к продуктам подписки в магазине. Если загрузка не завершится, проверьте готовность подписок в консоли магазина.",
+  "agreeTo": "Я принимаю ",
+  "and": " и ",
+  "currentProPlanDescription": "У вас уже есть Ez Invoice Pro. Ниже можно ознакомиться с обоими вариантами подписки.",
+  "freeVsPro": "Бесплатный и {pro}",
+  "@freeVsPro": {
+    "placeholders": {
+      "pro": {}
+    }
+  },
+  "openInvoices": "Откройте счета.",
+  "allCaughtUp": "Все готово",
+  "itemsToReview": "{count} к проверке",
+  "@itemsToReview": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "pdfInvoice": "Счет",
+  "pdfReceipt": "Квитанция",
+  "pdfBusiness": "Компания",
+  "pdfPhone": "Телефон",
+  "pdfEmail": "E-mail",
+  "pdfNumber": "№",
+  "pdfDate": "Дата",
+  "pdfDue": "Срок",
+  "pdfPaid": "Оплачено",
+  "pdfPaidDate": "Дата оплаты",
+  "pdfMethod": "Способ",
+  "pdfBillTo": "Выставить счет",
+  "pdfClient": "Клиент",
+  "pdfDescription": "Описание",
+  "pdfQuantity": "Кол-во",
+  "pdfPrice": "Цена",
+  "pdfSubtotal": "Промежуточный итог",
+  "pdfTax": "Налог",
+  "pdfTaxWithRate": "Налог ({rate}%)",
+  "@pdfTaxWithRate": {
+    "placeholders": {
+      "rate": {}
+    }
+  },
+  "pdfTip": "Чаевые",
+  "pdfTipWithRate": "Чаевые ({rate}%)",
+  "@pdfTipWithRate": {
+    "placeholders": {
+      "rate": {}
+    }
+  },
+  "pdfDiscount": "Скидка",
+  "pdfMessage": "Сообщение",
+  "pdfPaymentNote": "Примечание к оплате",
+  "pdfThankYou": "Спасибо за ваш заказ.",
+  "pdfPoweredBy": "Работает на EzInvoice",
+  "pdfFreeVersion": "БЕСПЛАТНАЯ ВЕРСИЯ",
+  "pdfTotal": "Итого",
+  "styleMinimal": "Минималистичный",
+  "styleProfessional": "Профессиональный",
+  "styleCorporate": "Корпоративный",
+  "styleModern": "Современный",
+  "styleSlate": "Сланцевый",
+  "reportDocument": "Отчет",
+  "reportPrintDocument": "Печать отчета",
+  "reportMonth": "Месяц",
+  "reportYear": "Год",
+  "reportGeneratedOn": "Создан",
+  "reportInvoices": "Счета",
+  "reportStatus": "Статус",
+  "reportTotals": "Итоги",
+  "reportSales": "Продажи",
+  "reportTotalTax": "Всего налога",
+  "reportTotalTip": "Всего чаевых",
+  "reportTotalInvoiced": "Всего выставлено",
+  "reportUnsent": "Не отправлено",
+  "reportSent": "Отправлено",
+  "reportPaid": "Оплачено",
+  "reportOverdue": "Просрочено",
+  "reportInvoiceNumber": "№ счета",
+  "reportClient": "Клиент",
+  "reportDueDate": "Срок оплаты",
+  "reportDescription": "Описание",
+  "reportDate": "Дата",
+  "reportFreeVersion": "БЕСПЛАТНАЯ ВЕРСИЯ",
+  "reportPoweredBy": "Создано в EzInvoice",
+  "reportPdfShareText": "PDF-отчет: {title}",
+  "@reportPdfShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportCsvShareText": "CSV-отчет: {title}",
+  "@reportCsvShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportPrintShareText": "Печать: {title}",
+  "@reportPrintShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportFileMonthly": "Отчет_{month}_{year}",
+  "@reportFileMonthly": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
+  "reportFileYearly": "Отчет_Год_{year}",
+  "@reportFileYearly": {
+    "placeholders": {
+      "year": {}
+    }
+  },
+  "reportTextMonthly": "Отчет | {month} {year}",
+  "@reportTextMonthly": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
+  "reportTextYearly": "Отчет | {year}",
+  "@reportTextYearly": {
+    "placeholders": {
+      "year": {}
+    }
+  },
+  "reportBreakdown": "Разбивка",
+  "reportInvoicesStatus": "Статус счетов",
+  "viewReport": "Открыть отчет",
+  "reviewBeforeExport": "Проверьте PDF или CSV перед экспортом.",
+  "customizeReport": "Настроить отчет",
+  "reportPreviewUpdates": "Изменения сразу появятся в предварительном просмотре.",
+  "yourReportPreview": "Предварительный просмотр отчета",
+  "reportStyleLiveHint": "Измените дизайн и сразу посмотрите результат.",
+  "watchAdToExportReport": "Посмотрите рекламу полностью, чтобы экспортировать этот отчет. Перейдите на Pro для экспорта без рекламы.",
+  "reportExportError": "Не удалось экспортировать отчет: {error}",
+  "@reportExportError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "shareCsvFile": "Поделиться CSV-файлом",
+  "shareCsvFileDescription": "Поделитесь вложением .csv по электронной почте, через Drive или другое приложение.",
+  "shareReportAsText": "Поделиться как текстом (WhatsApp / SMS)",
+  "shareReportAsTextDescription": "Отправьте сводку отчета текстом.",
+  "printCsv": "Печать CSV",
+  "printReportDescription": "Распечатайте отчет в виде таблицы PDF.",
+  "reportPreview": "Предварительный просмотр",
+  "live": "Онлайн",
+  "proFeatureUnlimitedInvoices": "Неограниченные счета",
+  "proFeatureRemovePdfBranding": "Убрать брендирование PDF",
+  "proFeatureExportCsv": "Экспорт CSV",
+  "proFeaturePremiumTemplates": "Премиум-шаблоны",
+  "proFeatureDetailedTaxReport": "Подробный налоговый отчет",
+  "proFeatureUnlimitedInvoicesDescription": "Бесплатный план позволяет до {limit} счетов в месяц.",
+  "@proFeatureUnlimitedInvoicesDescription": {
+    "placeholders": {
+      "limit": {}
+    }
+  },
+  "proFeatureRemovePdfBrandingDescription": "Удаляет «Создано в EzInvoice» из PDF.",
+  "proFeatureExportCsvDescription": "Экспортируйте счета в CSV.",
+  "proFeaturePremiumTemplatesDescription": "Откройте премиум-шаблоны счетов.",
+  "proFeatureDetailedTaxReportDescription": "Просматривайте подробные налоговые отчеты.",
+  "pdfShareText": "PDF-счет от EzInvoice"
 }

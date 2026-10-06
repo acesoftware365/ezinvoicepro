@@ -766,7 +766,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get addServiceLabel => 'Agregar un servicio';
 
   @override
-  String get yourPresets => 'Tus servicios';
+  String get yourPresets => 'Tus servicios guardados';
 
   @override
   String get noPresetsYet => 'Aún no hay servicios guardados.';
@@ -775,21 +775,20 @@ class AppLocalizationsEs extends AppLocalizations {
   String get notNow => 'Ahora no';
 
   @override
-  String get openPaywallPlaceholder =>
-      'Abrir Paywall (conecta PaywallScreen aquí)';
+  String get openPaywallPlaceholder => 'Abrir suscripción';
 
   @override
   String get invoiceStyleTitle => 'Estilo de factura';
 
   @override
   String get invoiceFreeStyleHint =>
-      'El plan Free usa una sola versión de factura (Minimal). Actualiza a Pro para desbloquear todos los layouts y paletas.';
+      'El plan gratis usa una versión de factura (Minimal). Mejora a Pro para desbloquear todos los diseños y paletas.';
 
   @override
   String get invoicePaletteLabel => 'Paleta de factura';
 
   @override
-  String get invoiceLayoutLabel => 'Layout de factura';
+  String get invoiceLayoutLabel => 'Diseño de factura';
 
   @override
   String get saveInvoicePaletteError =>
@@ -797,20 +796,20 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get saveInvoiceLayoutError =>
-      'No se pudo guardar el layout de factura.';
+      'No se pudo guardar el diseño de factura.';
 
   @override
   String get reportStyleTitle => 'Estilo de reporte';
 
   @override
   String get reportFreeStyleHint =>
-      'El plan Free usa una sola versión de reporte (Minimal). Actualiza a Pro para desbloquear todos los layouts y paletas.';
+      'El plan gratis usa una versión de reporte (Minimal). Mejora a Pro para desbloquear todos los diseños y paletas.';
 
   @override
   String get reportPaletteLabel => 'Paleta de reporte';
 
   @override
-  String get reportLayoutLabel => 'Layout de reporte';
+  String get reportLayoutLabel => 'Diseño de reporte';
 
   @override
   String get saveReportPaletteError =>
@@ -818,7 +817,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get saveReportLayoutError =>
-      'No se pudo guardar el layout de reporte.';
+      'No se pudo guardar el diseño de reporte.';
 
   @override
   String stylePaletteFootnote(Object docType, Object style, Object palette) {
@@ -870,4 +869,816 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get totalInvoicedTitle => 'Total facturado';
+
+  @override
+  String versionLabel(Object version) {
+    return 'Versión $version';
+  }
+
+  @override
+  String errorWithDetails(Object error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get rememberEmail => 'Recordar mi email';
+
+  @override
+  String get forgotPassword => '¿Olvidaste tu contraseña?';
+
+  @override
+  String get passwordResetEnterEmail =>
+      'Ingresa tu email para enviarte el enlace.';
+
+  @override
+  String get passwordResetSent =>
+      'Te enviamos un email para restablecer tu contraseña. Revisa Spam o Correo no deseado.';
+
+  @override
+  String get passwordResetNoAccount =>
+      'No encontramos una cuenta con ese email.';
+
+  @override
+  String get invalidEmail => 'Email inválido.';
+
+  @override
+  String get passwordResetError =>
+      'No se pudo enviar el email. Intenta otra vez.';
+
+  @override
+  String get updateRequired => 'Actualización requerida';
+
+  @override
+  String get updateRequiredBody =>
+      'Hay una versión nueva de Ez Invoice. Para continuar, actualiza la app desde la tienda.';
+
+  @override
+  String get updateNow => 'Actualizar ahora';
+
+  @override
+  String get open => 'Abrir';
+
+  @override
+  String get share => 'Compartir';
+
+  @override
+  String get actions => 'Acciones';
+
+  @override
+  String get message => 'Mensaje';
+
+  @override
+  String get done => 'Listo';
+
+  @override
+  String get confirm => 'Confirmar';
+
+  @override
+  String get free => 'GRATIS';
+
+  @override
+  String get clientInformation => 'Información del cliente';
+
+  @override
+  String get clientName => 'Nombre del cliente';
+
+  @override
+  String get notesOptional => 'Notas (opcional)';
+
+  @override
+  String get saveClient => 'Guardar cliente';
+
+  @override
+  String get importFromContacts => 'Importar desde contactos';
+
+  @override
+  String get importContactsDescription =>
+      'Completa nombre, teléfono y email al instante.';
+
+  @override
+  String get loadContacts => 'Cargar contactos';
+
+  @override
+  String get clientPhone => 'Teléfono del cliente';
+
+  @override
+  String get searchContacts => 'Buscar contactos';
+
+  @override
+  String get shareClient => 'Compartir cliente';
+
+  @override
+  String get clientProfile => 'Perfil del cliente';
+
+  @override
+  String get chooseSavedService => 'Elegir servicio guardado';
+
+  @override
+  String get searchSavedServices => 'Buscar servicios guardados';
+
+  @override
+  String get noSavedServicesFound => 'No se encontraron servicios guardados';
+
+  @override
+  String get noSavedServicesToUse =>
+      'Aún no hay servicios guardados. Escribe uno arriba y guárdalo para después.';
+
+  @override
+  String savedServiceAlreadyExists(Object service) {
+    return 'Ya está guardado: $service';
+  }
+
+  @override
+  String savedService(Object service) {
+    return 'Servicio guardado: $service';
+  }
+
+  @override
+  String savePresetError(Object error) {
+    return 'No se pudo guardar el servicio: $error';
+  }
+
+  @override
+  String get saveServiceForLater => 'Guardar servicio para después';
+
+  @override
+  String get removeClient => 'Quitar cliente';
+
+  @override
+  String get service => 'Servicio';
+
+  @override
+  String get taxAndTip => 'Impuesto y propina';
+
+  @override
+  String get totals => 'Totales';
+
+  @override
+  String dueDate(Object date) {
+    return 'Fecha de vencimiento: $date';
+  }
+
+  @override
+  String paidDate(Object date) {
+    return 'Fecha de pago: $date';
+  }
+
+  @override
+  String get notPaidYet => 'Aún no pagada';
+
+  @override
+  String paymentMethodWithValue(Object method) {
+    return 'Método: $method';
+  }
+
+  @override
+  String paymentNoteWithValue(Object note) {
+    return 'Nota: $note';
+  }
+
+  @override
+  String get markAsPaid => 'Marcar como pagada';
+
+  @override
+  String get markAsUnpaid => 'Marcar como no pagada';
+
+  @override
+  String get editTax => 'Editar';
+
+  @override
+  String get addClient => 'Agregar un cliente';
+
+  @override
+  String get firstClientHint =>
+      'Crea tu primer cliente para reutilizarlo en futuras facturas.';
+
+  @override
+  String get searchSavedClients => 'Buscar clientes guardados';
+
+  @override
+  String get paymentMethod => 'Método de pago';
+
+  @override
+  String get cash => 'Efectivo';
+
+  @override
+  String get card => 'Tarjeta';
+
+  @override
+  String get check => 'Cheque';
+
+  @override
+  String get other => 'Otro';
+
+  @override
+  String get noteOptional => 'Nota (opcional)';
+
+  @override
+  String invoiceMarkPaidError(Object error) {
+    return 'No se pudo marcar la factura como pagada: $error';
+  }
+
+  @override
+  String invoiceMarkUnpaidError(Object error) {
+    return 'No se pudo marcar la factura como no pagada: $error';
+  }
+
+  @override
+  String deleteError(Object error) {
+    return 'No se pudo eliminar la factura: $error';
+  }
+
+  @override
+  String get invoiceDeleted => 'Factura eliminada';
+
+  @override
+  String get invoiceMarkedSent => 'Marcada como enviada ✅';
+
+  @override
+  String invoiceMarkSentError(Object error) {
+    return 'No se pudo marcar como enviada: $error';
+  }
+
+  @override
+  String get invoiceMarkedUnsent => 'Marcada como no enviada ✅';
+
+  @override
+  String invoiceMarkUnsentError(Object error) {
+    return 'No se pudo marcar como no enviada: $error';
+  }
+
+  @override
+  String get invoiceMarkedPaid => 'Marcada como pagada ✅';
+
+  @override
+  String get invoiceMarkedUnpaid => 'Marcada como no pagada ✅';
+
+  @override
+  String get invoiceLoadingError => 'No se pudieron cargar las facturas';
+
+  @override
+  String get tipType => 'Tipo de propina';
+
+  @override
+  String get amountOption => 'Monto (\$)';
+
+  @override
+  String get percentageOption => 'Porcentaje (%)';
+
+  @override
+  String get pdfPreview => 'Vista previa de PDF';
+
+  @override
+  String get openPdf => 'Abrir PDF';
+
+  @override
+  String get sharePdf => 'Compartir PDF';
+
+  @override
+  String get selectReportMonth => 'Seleccionar mes del reporte';
+
+  @override
+  String reportForBusiness(Object business) {
+    return 'Reportes • $business';
+  }
+
+  @override
+  String get tapToChangeMonth => 'Toca para cambiar el mes';
+
+  @override
+  String csvSaved(Object path) {
+    return 'CSV guardado: $path';
+  }
+
+  @override
+  String csvExportError(Object error) {
+    return 'No se pudo exportar CSV: $error';
+  }
+
+  @override
+  String get aboutTitle => 'Acerca de';
+
+  @override
+  String get aboutTagline => 'Facturas claras para negocios en movimiento';
+
+  @override
+  String get aboutAppTitle => 'La aplicación';
+
+  @override
+  String get aboutAppBody =>
+      'EzInvoice reúne facturas, clientes, pagos y reportes en un flujo simple, para que puedas ver lo importante y cobrar con más claridad.';
+
+  @override
+  String get aboutCompanyTitle => 'La compañía';
+
+  @override
+  String get aboutCompanyBody =>
+      'Liisgo LLC crea herramientas prácticas para ayudar a los pequeños negocios a trabajar con más orden, claridad y confianza.';
+
+  @override
+  String get aboutPromiseTitle => 'Pensado para tu día a día';
+
+  @override
+  String get aboutPromiseBody =>
+      'Cada decisión de EzInvoice busca reducir pasos, mantener los detalles visibles y hacer que administrar tu negocio se sienta más sencillo.';
+
+  @override
+  String get visitLiisgo => 'Visitar Liisgo';
+
+  @override
+  String get contactSupport => 'Contactar soporte';
+
+  @override
+  String get shareEzInvoice => 'Compartir EzInvoice';
+
+  @override
+  String get sendIdeaOrBug => 'Enviar una idea o error';
+
+  @override
+  String get feedbackTitle => 'Tu opinión cuenta';
+
+  @override
+  String get feedbackSubtitle =>
+      'Cuéntanos qué te gustaría mejorar o qué no funcionó bien.';
+
+  @override
+  String get feedbackIdea => 'Idea';
+
+  @override
+  String get feedbackBug => 'Error';
+
+  @override
+  String get feedbackHint => 'Escribe tu idea o explica lo que ocurrió…';
+
+  @override
+  String get feedbackRequired => 'Escribe un mensaje antes de enviarlo.';
+
+  @override
+  String get continueToEmail => 'Continuar al correo';
+
+  @override
+  String get couldNotOpenLink => 'No se pudo abrir este enlace.';
+
+  @override
+  String shareAppText(Object storeUrl) {
+    return 'Conoce EzInvoice Pro: facturas, clientes y reportes en un solo lugar.\n$storeUrl';
+  }
+
+  @override
+  String feedbackEmailSubject(Object kind) {
+    return '$kind para EzInvoice';
+  }
+
+  @override
+  String get supportEmailSubject => 'Soporte de EzInvoice';
+
+  @override
+  String get changePassword => 'Cambiar contraseña';
+
+  @override
+  String get changePasswordSubtitle => 'Actualiza la contraseña de tu cuenta.';
+
+  @override
+  String get confirmCurrentPasswordHint =>
+      'Por seguridad, primero confirma tu contraseña actual.';
+
+  @override
+  String get currentPassword => 'Contraseña actual';
+
+  @override
+  String get newPassword => 'Nueva contraseña';
+
+  @override
+  String get confirmNewPassword => 'Confirmar nueva contraseña';
+
+  @override
+  String get updatePassword => 'Actualizar contraseña';
+
+  @override
+  String get passwordAtLeastSix => 'Debe tener al menos 6 caracteres.';
+
+  @override
+  String get noActiveSession => 'No hay sesión activa.';
+
+  @override
+  String get passwordsDoNotMatch => 'La nueva contraseña no coincide.';
+
+  @override
+  String get passwordMustDiffer => 'La nueva contraseña debe ser diferente.';
+
+  @override
+  String get passwordUpdated => 'Contraseña actualizada correctamente.';
+
+  @override
+  String get incorrectPassword => 'La contraseña actual es incorrecta.';
+
+  @override
+  String get weakPassword => 'La nueva contraseña es muy débil.';
+
+  @override
+  String get reauthenticationNeeded =>
+      'Por seguridad, vuelve a iniciar sesión e intenta otra vez.';
+
+  @override
+  String get changePasswordError => 'No se pudo cambiar la contraseña.';
+
+  @override
+  String get confirmPassword => 'Confirmar contraseña';
+
+  @override
+  String get reauthCancelled => 'Cancelaste la confirmación.';
+
+  @override
+  String get accountDeleted =>
+      'Tu cuenta y datos fueron eliminados permanentemente.';
+
+  @override
+  String get deleteAccountIncorrectPassword => 'Contraseña incorrecta.';
+
+  @override
+  String get deleteAccountError => 'No se pudo eliminar la cuenta.';
+
+  @override
+  String get deleteAccountBody =>
+      'Si eliminas tu cuenta:\n\n• Se eliminarán permanentemente tus clientes, facturas, reportes y perfil de negocio.\n• Esta acción no se puede deshacer.\n• Si tienes una suscripción activa, debes gestionarla o cancelarla en App Store/Google Play.';
+
+  @override
+  String get termsConditions => 'Términos y condiciones';
+
+  @override
+  String get agreeTermsPrivacy =>
+      'Primero acepta los Términos y condiciones y la Política de privacidad.';
+
+  @override
+  String get currentPlan => 'Plan actual';
+
+  @override
+  String get currentPlanFree => 'Plan actual: Gratis';
+
+  @override
+  String get proPlanDescription =>
+      'Gratis incluye anuncios y uso limitado. Pro elimina anuncios y desbloquea facturas ilimitadas, reportes, plantillas premium, exportaciones y respaldo en la nube.';
+
+  @override
+  String get adsIncluded => 'Incluye anuncios';
+
+  @override
+  String get limitedInvoicesPerMonth => 'Facturas limitadas por mes';
+
+  @override
+  String get basicInvoiceStyle => 'Estilo básico de factura';
+
+  @override
+  String get basicReports => 'Reportes básicos';
+
+  @override
+  String get pdfIncludesBranding => 'El PDF incluye la marca EzInvoice';
+
+  @override
+  String get unpaidLabel => 'No pagada';
+
+  @override
+  String get loading => 'Cargando...';
+
+  @override
+  String get store => 'Tienda';
+
+  @override
+  String get storeProductLoadingOne =>
+      'Un producto de suscripción todavía está cargando. Puedes continuar con el plan disponible mientras carga el otro producto.';
+
+  @override
+  String get storeProductsLoading =>
+      'Conectando con los productos de suscripción de la tienda. Si no termina de cargar, confirma que las suscripciones estén listas en la consola de tu tienda.';
+
+  @override
+  String get agreeTo => 'Acepto los ';
+
+  @override
+  String get and => ' y la ';
+
+  @override
+  String get currentProPlanDescription =>
+      'Ya tienes Ez Invoice Pro. Puedes revisar las dos opciones de suscripción abajo.';
+
+  @override
+  String freeVsPro(Object pro) {
+    return 'Gratis vs $pro';
+  }
+
+  @override
+  String get openInvoices => 'Abre Facturas.';
+
+  @override
+  String get allCaughtUp => 'Todo al día';
+
+  @override
+  String itemsToReview(Object count) {
+    return '$count por revisar';
+  }
+
+  @override
+  String get pdfInvoice => 'Factura';
+
+  @override
+  String get pdfReceipt => 'Recibo';
+
+  @override
+  String get pdfBusiness => 'Negocio';
+
+  @override
+  String get pdfPhone => 'Teléfono';
+
+  @override
+  String get pdfEmail => 'Email';
+
+  @override
+  String get pdfNumber => 'Núm.';
+
+  @override
+  String get pdfDate => 'Fecha';
+
+  @override
+  String get pdfDue => 'Vence';
+
+  @override
+  String get pdfPaid => 'Pagada';
+
+  @override
+  String get pdfPaidDate => 'Fecha de pago';
+
+  @override
+  String get pdfMethod => 'Método';
+
+  @override
+  String get pdfBillTo => 'Facturar a';
+
+  @override
+  String get pdfClient => 'Cliente';
+
+  @override
+  String get pdfDescription => 'Descripción';
+
+  @override
+  String get pdfQuantity => 'Cant.';
+
+  @override
+  String get pdfPrice => 'Precio';
+
+  @override
+  String get pdfSubtotal => 'Subtotal';
+
+  @override
+  String get pdfTax => 'Impuesto';
+
+  @override
+  String pdfTaxWithRate(Object rate) {
+    return 'Impuesto ($rate%)';
+  }
+
+  @override
+  String get pdfTip => 'Propina';
+
+  @override
+  String pdfTipWithRate(Object rate) {
+    return 'Propina ($rate%)';
+  }
+
+  @override
+  String get pdfDiscount => 'Descuento';
+
+  @override
+  String get pdfMessage => 'Mensaje';
+
+  @override
+  String get pdfPaymentNote => 'Nota de pago';
+
+  @override
+  String get pdfThankYou => 'Gracias por su preferencia.';
+
+  @override
+  String get pdfPoweredBy => 'Desarrollado por EzInvoice';
+
+  @override
+  String get pdfFreeVersion => 'VERSIÓN GRATUITA';
+
+  @override
+  String get pdfTotal => 'Total';
+
+  @override
+  String get styleMinimal => 'Minimal';
+
+  @override
+  String get styleProfessional => 'Profesional';
+
+  @override
+  String get styleCorporate => 'Corporativo';
+
+  @override
+  String get styleModern => 'Moderno';
+
+  @override
+  String get styleSlate => 'Pizarra';
+
+  @override
+  String get reportDocument => 'Reporte';
+
+  @override
+  String get reportPrintDocument => 'Imprimir reporte';
+
+  @override
+  String get reportMonth => 'Mes';
+
+  @override
+  String get reportYear => 'Año';
+
+  @override
+  String get reportGeneratedOn => 'Generado el';
+
+  @override
+  String get reportInvoices => 'Facturas';
+
+  @override
+  String get reportStatus => 'Estado';
+
+  @override
+  String get reportTotals => 'Totales';
+
+  @override
+  String get reportSales => 'Ventas';
+
+  @override
+  String get reportTotalTax => 'Total de impuestos';
+
+  @override
+  String get reportTotalTip => 'Total de propinas';
+
+  @override
+  String get reportTotalInvoiced => 'Total facturado';
+
+  @override
+  String get reportUnsent => 'Sin enviar';
+
+  @override
+  String get reportSent => 'Enviada';
+
+  @override
+  String get reportPaid => 'Pagada';
+
+  @override
+  String get reportOverdue => 'Vencida';
+
+  @override
+  String get reportInvoiceNumber => 'Núm. de factura';
+
+  @override
+  String get reportClient => 'Cliente';
+
+  @override
+  String get reportDueDate => 'Fecha de vencimiento';
+
+  @override
+  String get reportDescription => 'Descripción';
+
+  @override
+  String get reportDate => 'Fecha';
+
+  @override
+  String get reportFreeVersion => 'VERSIÓN GRATUITA';
+
+  @override
+  String get reportPoweredBy => 'Desarrollado por EzInvoice';
+
+  @override
+  String reportPdfShareText(Object title) {
+    return 'Reporte PDF: $title';
+  }
+
+  @override
+  String reportCsvShareText(Object title) {
+    return 'Reporte CSV: $title';
+  }
+
+  @override
+  String reportPrintShareText(Object title) {
+    return 'Imprimir: $title';
+  }
+
+  @override
+  String reportFileMonthly(Object month, Object year) {
+    return 'Reporte_${month}_$year';
+  }
+
+  @override
+  String reportFileYearly(Object year) {
+    return 'Reporte_Año_$year';
+  }
+
+  @override
+  String reportTextMonthly(Object month, Object year) {
+    return 'Reporte | $month $year';
+  }
+
+  @override
+  String reportTextYearly(Object year) {
+    return 'Reporte | $year';
+  }
+
+  @override
+  String get reportBreakdown => 'Desglose';
+
+  @override
+  String get reportInvoicesStatus => 'Estado de facturas';
+
+  @override
+  String get viewReport => 'Ver reporte';
+
+  @override
+  String get reviewBeforeExport => 'Revisa el PDF o CSV antes de exportarlo.';
+
+  @override
+  String get customizeReport => 'Personaliza el reporte';
+
+  @override
+  String get reportPreviewUpdates =>
+      'Los cambios aparecen de inmediato en tu vista previa.';
+
+  @override
+  String get yourReportPreview => 'Vista de tu reporte';
+
+  @override
+  String get reportStyleLiveHint => 'Cambia el diseño y míralo en vivo.';
+
+  @override
+  String get watchAdToExportReport =>
+      'Mira el anuncio completo para exportar este reporte. Actualiza a Pro para exportar sin anuncios.';
+
+  @override
+  String reportExportError(Object error) {
+    return 'No se pudo exportar el reporte: $error';
+  }
+
+  @override
+  String get shareCsvFile => 'Compartir archivo CSV';
+
+  @override
+  String get shareCsvFileDescription =>
+      'Comparte el archivo .csv por email, Drive u otra app.';
+
+  @override
+  String get shareReportAsText => 'Compartir como texto (WhatsApp / SMS)';
+
+  @override
+  String get shareReportAsTextDescription =>
+      'Envía un resumen del reporte como texto.';
+
+  @override
+  String get printCsv => 'Imprimir CSV';
+
+  @override
+  String get printReportDescription => 'Imprime el reporte como tabla PDF.';
+
+  @override
+  String get reportPreview => 'Vista previa';
+
+  @override
+  String get live => 'En vivo';
+
+  @override
+  String get proFeatureUnlimitedInvoices => 'Facturas ilimitadas';
+
+  @override
+  String get proFeatureRemovePdfBranding => 'Eliminar marca del PDF';
+
+  @override
+  String get proFeatureExportCsv => 'Exportar CSV';
+
+  @override
+  String get proFeaturePremiumTemplates => 'Plantillas premium';
+
+  @override
+  String get proFeatureDetailedTaxReport => 'Reporte detallado de impuestos';
+
+  @override
+  String proFeatureUnlimitedInvoicesDescription(Object limit) {
+    return 'El plan gratis permite hasta $limit facturas por mes.';
+  }
+
+  @override
+  String get proFeatureRemovePdfBrandingDescription =>
+      'Elimina “Desarrollado por EzInvoice” de los PDFs.';
+
+  @override
+  String get proFeatureExportCsvDescription => 'Exporta tus facturas a CSV.';
+
+  @override
+  String get proFeaturePremiumTemplatesDescription =>
+      'Desbloquea plantillas premium de facturas.';
+
+  @override
+  String get proFeatureDetailedTaxReportDescription =>
+      'Consulta reportes detallados de impuestos.';
+
+  @override
+  String get pdfShareText => 'PDF de factura de EzInvoice';
 }

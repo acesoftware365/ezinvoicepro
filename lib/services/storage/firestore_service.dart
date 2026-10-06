@@ -11,7 +11,7 @@ class FirestoreService {
   String get _uid {
     final u = _auth.currentUser;
     if (u == null) {
-      throw Exception('Usuario no autenticado');
+      throw StateError('unauthenticated');
     }
     return u.uid;
   }
@@ -52,20 +52,18 @@ class FirestoreService {
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> watchClients() {
-    return _clientsRef
-        .orderBy('name')
-        .snapshots();
+    return _clientsRef.orderBy('name').snapshots();
   }
 
   Future<void> updateClient(
-      String clientId, {
-        String? name,
-        String? phone,
-        String? email,
-        String? address,
-        String? notes,
-        bool? isFavorite,
-      }) async {
+    String clientId, {
+    String? name,
+    String? phone,
+    String? email,
+    String? address,
+    String? notes,
+    bool? isFavorite,
+  }) async {
     await _clientsRef.doc(clientId).update({
       if (name != null) 'name': name,
       if (phone != null) 'phone': phone,
@@ -108,10 +106,10 @@ class FirestoreService {
   }
 
   Future<void> updateInvoice(
-      String invoiceId,
-      Map<String, dynamic> newData,
-      Map<String, dynamic> oldData,
-      ) async {
+    String invoiceId,
+    Map<String, dynamic> newData,
+    Map<String, dynamic> oldData,
+  ) async {
     /*
       newData = invoice NUEVA (calculada)
       oldData = snapshot ANTES del cambio
@@ -126,9 +124,9 @@ class FirestoreService {
   }
 
   Future<void> deleteInvoice(
-      String invoiceId,
-      Map<String, dynamic> oldData,
-      ) async {
+    String invoiceId,
+    Map<String, dynamic> oldData,
+  ) async {
     await _invoicesRef.doc(invoiceId).delete();
     await _updateReportsOnDelete(oldData);
   }
@@ -154,14 +152,17 @@ class FirestoreService {
   // =========================
 
   DocumentReference<Map<String, dynamic>> _monthlyReportRef(dynamic monthKey) =>
-      _db.collection('users').doc(_uid)
+      _db
+          .collection('users')
+          .doc(_uid)
           .collection('reports_monthly')
           .doc(monthKey.toString());
 
-  DocumentReference<Map<String, dynamic>> _yearlyReportRef(dynamic year) =>
-      _db.collection('users').doc(_uid)
-          .collection('reports_yearly')
-          .doc(year.toString());
+  DocumentReference<Map<String, dynamic>> _yearlyReportRef(dynamic year) => _db
+      .collection('users')
+      .doc(_uid)
+      .collection('reports_yearly')
+      .doc(year.toString());
 
   // ---------- CREATE ----------
   Future<void> _updateReportsOnCreate(Map<String, dynamic> data) async {
@@ -195,9 +196,9 @@ class FirestoreService {
 
   // ---------- UPDATE ----------
   Future<void> _updateReportsOnUpdate(
-      Map<String, dynamic> oldData,
-      Map<String, dynamic> newData,
-      ) async {
+    Map<String, dynamic> oldData,
+    Map<String, dynamic> newData,
+  ) async {
     final batch = _db.batch();
 
     final oldMonth = oldData['monthKey'];
@@ -257,14 +258,16 @@ class FirestoreService {
   // =========================
 
   Map<String, dynamic> _monthlyDelta(
-      Map<String, dynamic> d, {
-        required bool isCreate,
-      }) {
+    Map<String, dynamic> d, {
+    required bool isCreate,
+  }) {
     final s = isCreate ? 1 : -1;
 
     final monthKey = d['monthKey']?.toString() ?? '';
     final monthParts = monthKey.split('-');
-    final month = monthParts.length > 1 ? (int.tryParse(monthParts[1]) ?? 1) : 1;
+    final month = monthParts.length > 1
+        ? (int.tryParse(monthParts[1]) ?? 1)
+        : 1;
 
     return {
       'monthKey': monthKey,
@@ -275,7 +278,8 @@ class FirestoreService {
       'taxSum': FieldValue.increment(s * (d['taxTotal'] ?? 0)),
       'tipSum': FieldValue.increment(s * (d['tipTotal'] ?? 0)),
       'discountSum': FieldValue.increment(
-          s * ((d['discount']?['amount']) ?? 0)),
+        s * ((d['discount']?['amount']) ?? 0),
+      ),
       'totalSum': FieldValue.increment(s * (d['total'] ?? 0)),
       'netSum': FieldValue.increment(s * (d['net'] ?? 0)),
       'updatedAt': Timestamp.now(),
@@ -283,13 +287,15 @@ class FirestoreService {
   }
 
   Map<String, dynamic> _yearlyDelta(
-      Map<String, dynamic> d, {
-        required bool isCreate,
-      }) {
+    Map<String, dynamic> d, {
+    required bool isCreate,
+  }) {
     final s = isCreate ? 1 : -1;
 
     final yearRaw = d['year'];
-    final year = yearRaw is num ? yearRaw.toInt() : (int.tryParse(yearRaw?.toString() ?? '') ?? DateTime.now().year);
+    final year = yearRaw is num
+        ? yearRaw.toInt()
+        : (int.tryParse(yearRaw?.toString() ?? '') ?? DateTime.now().year);
 
     return {
       'year': year,
@@ -298,7 +304,8 @@ class FirestoreService {
       'taxSum': FieldValue.increment(s * (d['taxTotal'] ?? 0)),
       'tipSum': FieldValue.increment(s * (d['tipTotal'] ?? 0)),
       'discountSum': FieldValue.increment(
-          s * ((d['discount']?['amount']) ?? 0)),
+        s * ((d['discount']?['amount']) ?? 0),
+      ),
       'totalSum': FieldValue.increment(s * (d['total'] ?? 0)),
       'netSum': FieldValue.increment(s * (d['net'] ?? 0)),
       'updatedAt': Timestamp.now(),

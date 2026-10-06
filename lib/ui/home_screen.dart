@@ -38,7 +38,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const String _forcedVersionText = 'Version 1.0.113';
+  static const String _forcedVersionText = 'Version 1.0.114';
   // ---- Brand tokens ----
   static const Color brandGreen = Color(0xFF1F6E5C);
   static const Color pageBg = Color(0xFFF6F7F9);
@@ -657,7 +657,7 @@ class _PlanPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = isPro ? proLabel : 'FREE';
+    final text = isPro ? proLabel : AppLocalizations.of(context).free;
     final bg = isPro ? brandGreen : Colors.black87;
 
     return Container(

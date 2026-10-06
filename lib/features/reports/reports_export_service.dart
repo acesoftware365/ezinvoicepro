@@ -16,6 +16,7 @@ import 'package:ezinvoice/services/style/app_theme_presets.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -36,9 +37,10 @@ class ReportsExportService {
     BuildContext? context,
     Rect? sharePositionOrigin,
   }) async {
+    final labels = _ReportLabels(context);
     final title = byMonth
-        ? 'Report_${_monthName(month ?? 1)}_$year'
-        : 'Report_Year_$year';
+        ? labels.fileMonthly(month ?? 1, year)
+        : labels.fileYearly(year);
 
     final invoices = byMonth
         ? await ReportsService.loadMonthlyInvoices(
@@ -71,7 +73,7 @@ class ReportsExportService {
       context: context,
       sharePositionOrigin: sharePositionOrigin,
       files: [XFile(file.path, mimeType: 'application/pdf')],
-      text: 'PDF Report: $title',
+      text: labels.pdfShareText(title),
       subject: title,
     );
   }
@@ -85,9 +87,10 @@ class ReportsExportService {
     int? month,
     BuildContext? context,
   }) async {
+    final labels = _ReportLabels(context);
     final title = byMonth
-        ? 'Report_${_monthName(month ?? 1)}_$year'
-        : 'Report_Year_$year';
+        ? labels.fileMonthly(month ?? 1, year)
+        : labels.fileYearly(year);
     final invoices = byMonth
         ? await ReportsService.loadMonthlyInvoices(
             year: year,
@@ -122,9 +125,10 @@ class ReportsExportService {
     BuildContext? context,
     Rect? sharePositionOrigin,
   }) async {
+    final labels = _ReportLabels(context);
     final title = byMonth
-        ? 'Report_${_monthName(month ?? 1)}_$year'
-        : 'Report_Year_$year';
+        ? labels.fileMonthly(month ?? 1, year)
+        : labels.fileYearly(year);
 
     final invoices = byMonth
         ? await ReportsService.loadMonthlyInvoices(
@@ -141,6 +145,7 @@ class ReportsExportService {
       report: report,
       invoices: invoices,
       isFree: isFree,
+      labels: labels,
     );
     final file = await _writeFile(
       folderName: 'ez_invoice',
@@ -153,7 +158,7 @@ class ReportsExportService {
       context: context,
       sharePositionOrigin: sharePositionOrigin,
       files: [XFile(file.path, mimeType: 'text/plain', name: '$title.csv')],
-      text: 'CSV Report: $title',
+      text: labels.csvShareText(title),
       subject: title,
     );
   }
@@ -168,9 +173,10 @@ class ReportsExportService {
     BuildContext? context,
     Rect? sharePositionOrigin,
   }) async {
+    final labels = _ReportLabels(context);
     final title = byMonth
-        ? 'Report | ${_monthName(month ?? 1)} $year'
-        : 'Report | $year';
+        ? labels.textMonthly(month ?? 1, year)
+        : labels.textYearly(year);
 
     final invoices = byMonth
         ? await ReportsService.loadMonthlyInvoices(
@@ -182,7 +188,12 @@ class ReportsExportService {
     final r = ReportsService.computeReport(invoices);
     final isFree = !FeatureGate.allowed(ProFeature.removePdfBranding);
 
-    final text = _buildSummaryText(title: title, r: r, isFree: isFree);
+    final text = _buildSummaryText(
+      title: title,
+      r: r,
+      isFree: isFree,
+      labels: labels,
+    );
 
     // Share.share no pide origin, pero igual lo dejamos simple.
     await Share.share(
@@ -205,9 +216,10 @@ class ReportsExportService {
     BuildContext? context,
     Rect? sharePositionOrigin,
   }) async {
+    final labels = _ReportLabels(context);
     final title = byMonth
-        ? 'Report_${_monthName(month ?? 1)}_${year}_PRINT'
-        : 'Report_Year_${year}_PRINT';
+        ? '${labels.fileMonthly(month ?? 1, year)}_PRINT'
+        : '${labels.fileYearly(year)}_PRINT';
 
     final invoices = byMonth
         ? await ReportsService.loadMonthlyInvoices(
@@ -240,7 +252,7 @@ class ReportsExportService {
       context: context,
       sharePositionOrigin: sharePositionOrigin,
       files: [XFile(file.path, mimeType: 'application/pdf')],
-      text: 'Print: $title',
+      text: labels.printShareText(title),
       subject: title,
     );
   }
@@ -318,6 +330,7 @@ class ReportsExportService {
     required bool isFree,
     required BuildContext? context,
   }) async {
+    final labels = _ReportLabels(context);
     final bp = await BusinessProfileRepository().load();
     final logo = await _loadReportLogo(bp);
     final isProTemplates = FeatureGate.allowed(ProFeature.premiumTemplates);
@@ -329,23 +342,23 @@ class ReportsExportService {
         : AppThemePresets.layoutMinimal;
     final style = _styleForPalette(paletteId);
     final chart = _chartForPalette(paletteId);
-    final layoutLabel = AppThemePresets.layoutLabel(reportLayout);
-    final paletteLabel = AppThemePresets.paletteLabel(paletteId);
+    final layoutLabel = labels.layoutLabel(reportLayout);
+    final paletteLabel = labels.paletteLabel(paletteId);
     final stylePaletteLine = _stylePaletteLine(
       context: context,
-      docType: 'Report',
+      docType: labels.document,
       style: layoutLabel,
       palette: paletteLabel,
     );
 
     final doc = pw.Document();
     final now = DateTime.now();
-    final dateStr = _fmtDate(now);
+    final dateStr = labels.formatDate(now);
 
     // ✅ Cambiado "•" por "|" para evitar el cuadrito con X
     final headerTitle = byMonth
-        ? 'Report | ${_monthName(month ?? 1)} $year'
-        : 'Report | $year';
+        ? labels.textMonthly(month ?? 1, year)
+        : labels.textYearly(year);
 
     final sortedInvoices = invoices.toList()
       ..sort((a, b) => a.createdAtMs.compareTo(b.createdAtMs));
@@ -365,7 +378,7 @@ class ReportsExportService {
         pageTheme: pw.PageTheme(
           pageFormat: PdfPageFormat.letter,
           margin: const pw.EdgeInsets.fromLTRB(28, 28, 28, 28),
-          buildBackground: isFree ? (_) => _freeWatermark() : null,
+          buildBackground: isFree ? (_) => _freeWatermark(labels) : null,
         ),
         build: (context) => [
           _buildReportHeader(
@@ -375,6 +388,7 @@ class ReportsExportService {
             dateStr: dateStr,
             style: style,
             layoutId: reportLayout,
+            labels: labels,
           ),
 
           pw.SizedBox(height: 16),
@@ -391,7 +405,7 @@ class ReportsExportService {
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
                       pw.Text(
-                        'Breakdown',
+                        labels.breakdown,
                         style: pw.TextStyle(
                           fontSize: 11,
                           fontWeight: pw.FontWeight.bold,
@@ -413,24 +427,24 @@ class ReportsExportService {
                               children: [
                                 _legendRow(
                                   color: chart.sales,
-                                  label: 'Sales',
+                                  label: labels.sales,
                                   value: report.sales,
                                 ),
                                 _legendRow(
                                   color: chart.tax,
-                                  label: 'Total Tax',
+                                  label: labels.totalTax,
                                   value: report.totalTax,
                                 ),
                                 _legendRow(
                                   color: chart.tip,
-                                  label: 'Total Tip',
+                                  label: labels.totalTip,
                                   value: report.totalTip,
                                 ),
                                 pw.SizedBox(height: 8),
                                 pw.Divider(color: style.border),
                                 _legendRow(
                                   color: style.primary,
-                                  label: 'Total invoiced',
+                                  label: labels.totalInvoiced,
                                   value: report.totalInvoiced,
                                   bold: true,
                                 ),
@@ -453,18 +467,18 @@ class ReportsExportService {
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
                       pw.Text(
-                        'Invoices status',
+                        labels.invoicesStatus,
                         style: pw.TextStyle(
                           fontSize: 11,
                           fontWeight: pw.FontWeight.bold,
                         ),
                       ),
                       pw.SizedBox(height: 8),
-                      _kv('Invoices', report.invoicesCount.toString()),
-                      _kv('Unsent', report.unsentCount.toString()),
-                      _kv('Sent', report.sentCount.toString()),
-                      _kv('Paid', report.paidCount.toString()),
-                      _kv('Overdue', report.overdueCount.toString()),
+                      _kv(labels.invoices, report.invoicesCount.toString()),
+                      _kv(labels.unsent, report.unsentCount.toString()),
+                      _kv(labels.sent, report.sentCount.toString()),
+                      _kv(labels.paid, report.paidCount.toString()),
+                      _kv(labels.overdue, report.overdueCount.toString()),
                     ],
                   ),
                 ),
@@ -481,7 +495,7 @@ class ReportsExportService {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text(
-                  'Totals',
+                  labels.totals,
                   style: pw.TextStyle(
                     fontSize: 11,
                     fontWeight: pw.FontWeight.bold,
@@ -501,24 +515,24 @@ class ReportsExportService {
                   },
                   children: [
                     _tableHeader(
-                      ['Description', 'Total'],
+                      [labels.description, labels.total],
                       style: style,
                       layoutId: reportLayout,
                     ),
                     _tableRow([
-                      'Sales',
+                      labels.sales,
                       _money(report.sales),
                     ], layoutId: reportLayout),
                     _tableRow([
-                      'Total Tax',
+                      labels.totalTax,
                       _money(report.totalTax),
                     ], layoutId: reportLayout),
                     _tableRow([
-                      'Total Tip',
+                      labels.totalTip,
                       _money(report.totalTip),
                     ], layoutId: reportLayout),
                     _tableRow(
-                      ['Total invoiced', _money(report.totalInvoiced)],
+                      [labels.totalInvoiced, _money(report.totalInvoiced)],
                       bold: true,
                       layoutId: reportLayout,
                     ),
@@ -537,7 +551,7 @@ class ReportsExportService {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text(
-                  'Invoices',
+                  labels.invoices,
                   style: pw.TextStyle(
                     fontSize: 11,
                     fontWeight: pw.FontWeight.bold,
@@ -559,7 +573,12 @@ class ReportsExportService {
                   },
                   children: [
                     _tableHeader(
-                      ['Description', 'Date', 'Status', 'Total'],
+                      [
+                        labels.description,
+                        labels.date,
+                        labels.status,
+                        labels.total,
+                      ],
                       style: style,
                       layoutId: reportLayout,
                     ),
@@ -570,8 +589,8 @@ class ReportsExportService {
                           : '${inv.invoiceNumber} | ${inv.clientName}';
                       return _tableRow([
                         desc,
-                        _fmtDateMs(inv.createdAtMs),
-                        _statusLabel(inv),
+                        labels.formatDateMs(inv.createdAtMs),
+                        labels.statusLabel(inv),
                         _money(inv.total),
                       ], layoutId: reportLayout);
                     }).toList(),
@@ -588,7 +607,7 @@ class ReportsExportService {
           ),
           pw.SizedBox(height: 10),
           pw.Text(
-            'Powered by EzInvoice',
+            labels.poweredBy,
             style: pw.TextStyle(fontSize: 8, color: PdfColors.grey700),
           ),
         ],
@@ -608,6 +627,7 @@ class ReportsExportService {
     required bool isFree,
     required BuildContext? context,
   }) async {
+    final labels = _ReportLabels(context);
     final bp = await BusinessProfileRepository().load();
     final logo = await _loadReportLogo(bp);
     final isProTemplates = FeatureGate.allowed(ProFeature.premiumTemplates);
@@ -619,11 +639,11 @@ class ReportsExportService {
         : AppThemePresets.layoutMinimal;
     final style = _styleForPalette(paletteId);
     final chart = _chartForPalette(paletteId);
-    final layoutLabel = AppThemePresets.layoutLabel(reportLayout);
-    final paletteLabel = AppThemePresets.paletteLabel(paletteId);
+    final layoutLabel = labels.layoutLabel(reportLayout);
+    final paletteLabel = labels.paletteLabel(paletteId);
     final stylePaletteLine = _stylePaletteLine(
       context: context,
-      docType: 'Report',
+      docType: labels.document,
       style: layoutLabel,
       palette: paletteLabel,
     );
@@ -631,8 +651,8 @@ class ReportsExportService {
 
     // ✅ Cambiado "•" por "|" para evitar el cuadrito con X
     final headerTitle = byMonth
-        ? 'Print Report | ${_monthName(month ?? 1)} $year'
-        : 'Print Report | $year';
+        ? labels.printMonthly(month ?? 1, year)
+        : labels.printYearly(year);
 
     final sortedInvoices = invoices.toList()
       ..sort((a, b) => a.createdAtMs.compareTo(b.createdAtMs));
@@ -642,16 +662,17 @@ class ReportsExportService {
         pageTheme: pw.PageTheme(
           pageFormat: PdfPageFormat.letter,
           margin: const pw.EdgeInsets.fromLTRB(28, 28, 28, 28),
-          buildBackground: isFree ? (_) => _freeWatermark() : null,
+          buildBackground: isFree ? (_) => _freeWatermark(labels) : null,
         ),
         build: (_) => [
           _buildReportHeader(
             businessName: bp.businessName,
             logo: logo,
             headerTitle: headerTitle,
-            dateStr: _fmtDate(DateTime.now()),
+            dateStr: labels.formatDate(DateTime.now()),
             style: style,
             layoutId: reportLayout,
+            labels: labels,
           ),
           pw.SizedBox(height: 12),
 
@@ -662,7 +683,7 @@ class ReportsExportService {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text(
-                  'Totals',
+                  labels.totals,
                   style: pw.TextStyle(
                     fontSize: 11,
                     fontWeight: pw.FontWeight.bold,
@@ -682,24 +703,24 @@ class ReportsExportService {
                   },
                   children: [
                     _tableHeader(
-                      ['Description', 'Total'],
+                      [labels.description, labels.total],
                       style: style,
                       layoutId: reportLayout,
                     ),
                     _tableRow([
-                      'Sales',
+                      labels.sales,
                       _money(report.sales),
                     ], layoutId: reportLayout),
                     _tableRow([
-                      'Total Tax',
+                      labels.totalTax,
                       _money(report.totalTax),
                     ], layoutId: reportLayout),
                     _tableRow([
-                      'Total Tip',
+                      labels.totalTip,
                       _money(report.totalTip),
                     ], layoutId: reportLayout),
                     _tableRow(
-                      ['Total invoiced', _money(report.totalInvoiced)],
+                      [labels.totalInvoiced, _money(report.totalInvoiced)],
                       bold: true,
                       layoutId: reportLayout,
                     ),
@@ -718,7 +739,7 @@ class ReportsExportService {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text(
-                  'Invoices',
+                  labels.invoices,
                   style: pw.TextStyle(
                     fontSize: 11,
                     fontWeight: pw.FontWeight.bold,
@@ -740,7 +761,12 @@ class ReportsExportService {
                   },
                   children: [
                     _tableHeader(
-                      ['Description', 'Date', 'Status', 'Total'],
+                      [
+                        labels.description,
+                        labels.date,
+                        labels.status,
+                        labels.total,
+                      ],
                       style: style,
                       layoutId: reportLayout,
                     ),
@@ -751,8 +777,8 @@ class ReportsExportService {
                           : '${inv.invoiceNumber} | ${inv.clientName}';
                       return _tableRow([
                         desc,
-                        _fmtDateMs(inv.createdAtMs),
-                        _statusLabel(inv),
+                        labels.formatDateMs(inv.createdAtMs),
+                        labels.statusLabel(inv),
                         _money(inv.total),
                       ], layoutId: reportLayout);
                     }).toList(),
@@ -782,38 +808,53 @@ class ReportsExportService {
     required ReportResult report,
     required List<Invoice> invoices,
     required bool isFree,
+    required _ReportLabels labels,
   }) {
     final b = StringBuffer();
 
     if (isFree) {
-      b.writeln('FREE VERSION');
+      b.writeln(labels.freeVersion);
       b.writeln('');
     }
 
-    b.writeln('Report,$title');
-    b.writeln('Invoices,${report.invoicesCount}');
-    b.writeln('Unsent,${report.unsentCount}');
-    b.writeln('Sent,${report.sentCount}');
-    b.writeln('Paid,${report.paidCount}');
-    b.writeln('Overdue,${report.overdueCount}');
+    b.writeln('${labels.document},$title');
+    b.writeln('${labels.invoices},${report.invoicesCount}');
+    b.writeln('${labels.unsent},${report.unsentCount}');
+    b.writeln('${labels.sent},${report.sentCount}');
+    b.writeln('${labels.paid},${report.paidCount}');
+    b.writeln('${labels.overdue},${report.overdueCount}');
     b.writeln('');
 
-    b.writeln('Sales,${report.sales.toStringAsFixed(2)}');
-    b.writeln('Total Tax,${report.totalTax.toStringAsFixed(2)}');
-    b.writeln('Total Tip,${report.totalTip.toStringAsFixed(2)}');
-    b.writeln('Total invoiced,${report.totalInvoiced.toStringAsFixed(2)}');
+    b.writeln('${labels.sales},${report.sales.toStringAsFixed(2)}');
+    b.writeln('${labels.totalTax},${report.totalTax.toStringAsFixed(2)}');
+    b.writeln('${labels.totalTip},${report.totalTip.toStringAsFixed(2)}');
+    b.writeln(
+      '${labels.totalInvoiced},${report.totalInvoiced.toStringAsFixed(2)}',
+    );
     b.writeln('');
 
-    b.writeln('Invoice No,Client,Date,Status,Total,Tax,Tip,Subtotal,Due Date');
+    b.writeln(
+      [
+        labels.invoiceNumber,
+        labels.client,
+        labels.date,
+        labels.status,
+        labels.total,
+        labels.tax,
+        labels.tip,
+        labels.subtotal,
+        labels.dueDate,
+      ].join(','),
+    );
 
     for (final inv in invoices) {
-      final due = inv.dueAtMs != null ? _fmtDateMs(inv.dueAtMs!) : '';
+      final due = inv.dueAtMs != null ? labels.formatDateMs(inv.dueAtMs!) : '';
       b.writeln(
         [
           _csv(inv.invoiceNumber),
           _csv(inv.clientName),
-          _csv(_fmtDateMs(inv.createdAtMs)),
-          _csv(_statusLabel(inv)),
+          _csv(labels.formatDateMs(inv.createdAtMs)),
+          _csv(labels.statusLabel(inv)),
           inv.total.toStringAsFixed(2),
           inv.taxAmount.toStringAsFixed(2),
           inv.tip.toStringAsFixed(2),
@@ -830,22 +871,23 @@ class ReportsExportService {
     required String title,
     required ReportResult r,
     required bool isFree,
+    required _ReportLabels labels,
   }) {
     final lines = <String>[
-      if (isFree) 'FREE VERSION',
+      if (isFree) labels.freeVersion,
       if (isFree) '',
       title,
       '',
-      'Invoices: ${r.invoicesCount}',
-      'Unsent: ${r.unsentCount}',
-      'Sent: ${r.sentCount}',
-      'Paid: ${r.paidCount}',
-      'Overdue: ${r.overdueCount}',
+      '${labels.invoices}: ${r.invoicesCount}',
+      '${labels.unsent}: ${r.unsentCount}',
+      '${labels.sent}: ${r.sentCount}',
+      '${labels.paid}: ${r.paidCount}',
+      '${labels.overdue}: ${r.overdueCount}',
       '',
-      'Sales: ${_money(r.sales)}',
-      'Total Tax: ${_money(r.totalTax)}',
-      'Total Tip: ${_money(r.totalTip)}',
-      'Total invoiced: ${_money(r.totalInvoiced)}',
+      '${labels.sales}: ${_money(r.sales)}',
+      '${labels.totalTax}: ${_money(r.totalTax)}',
+      '${labels.totalTip}: ${_money(r.totalTip)}',
+      '${labels.totalInvoiced}: ${_money(r.totalInvoiced)}',
     ];
     return lines.join('\n');
   }
@@ -971,13 +1013,13 @@ class ReportsExportService {
     );
   }
 
-  static pw.Widget _freeWatermark() {
+  static pw.Widget _freeWatermark(_ReportLabels labels) {
     return pw.Align(
       alignment: pw.Alignment.bottomCenter,
       child: pw.Padding(
         padding: const pw.EdgeInsets.only(bottom: 10),
         child: pw.Text(
-          'FREE VERSION',
+          labels.freeVersion,
           textAlign: pw.TextAlign.center,
           style: pw.TextStyle(
             fontSize: 28,
@@ -1143,8 +1185,11 @@ class ReportsExportService {
     required String dateStr,
     required _ReportPdfStyle style,
     required String layoutId,
+    required _ReportLabels labels,
   }) {
-    final name = businessName.trim().isEmpty ? 'Business' : businessName.trim();
+    final name = businessName.trim().isEmpty
+        ? labels.business
+        : businessName.trim();
     final businessDetails = pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
@@ -1154,7 +1199,7 @@ class ReportsExportService {
         ),
         pw.SizedBox(height: 4),
         pw.Text(
-          'Reports',
+          labels.document,
           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
         ),
       ],
@@ -1190,7 +1235,10 @@ class ReportsExportService {
             color: style.primary,
           ),
         ),
-        pw.Text('Date: $dateStr', style: const pw.TextStyle(fontSize: 9)),
+        pw.Text(
+          '${labels.date}: $dateStr',
+          style: const pw.TextStyle(fontSize: 9),
+        ),
       ],
     );
 
@@ -1354,52 +1402,6 @@ class ReportsExportService {
 
   static String _money(double v) => '\$${v.toStringAsFixed(2)}';
 
-  static String _fmtDate(DateTime d) {
-    final m = d.month.toString().padLeft(2, '0');
-    final day = d.day.toString().padLeft(2, '0');
-    return '${d.year}-$m-$day';
-  }
-
-  static String _fmtDateMs(int ms) =>
-      _fmtDate(DateTime.fromMillisecondsSinceEpoch(ms));
-
-  static String _monthName(int m) {
-    const names = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    final mm = max(1, min(12, m));
-    return names[mm - 1];
-  }
-
-  static String _statusLabel(Invoice inv) {
-    if (inv.isPaid) return 'Paid';
-
-    final due = inv.dueAtMs;
-    final now = DateTime.now();
-    final today0 = DateTime(
-      now.year,
-      now.month,
-      now.day,
-    ).millisecondsSinceEpoch;
-
-    final isOverdue = due != null && due < today0;
-    if (isOverdue) return 'Overdue';
-
-    if (inv.isSent) return 'Sent';
-    return 'Unsent';
-  }
-
   static String _stylePaletteLine({
     required BuildContext? context,
     required String docType,
@@ -1411,6 +1413,105 @@ class ReportsExportService {
       return t.stylePaletteFootnote(docType, style, palette);
     }
     return '$docType style: $style | Palette: $palette';
+  }
+}
+
+class _ReportLabels {
+  _ReportLabels(BuildContext? context)
+    : _t = context == null ? null : AppLocalizations.of(context);
+
+  final AppLocalizations? _t;
+
+  String get document => _t?.reportDocument ?? 'Report';
+  String get printDocument => _t?.reportPrintDocument ?? 'Print report';
+  String get breakdown => _t?.reportBreakdown ?? 'Breakdown';
+  String get invoicesStatus => _t?.reportInvoicesStatus ?? 'Invoice status';
+  String get invoices => _t?.reportInvoices ?? 'Invoices';
+  String get status => _t?.reportStatus ?? 'Status';
+  String get totals => _t?.reportTotals ?? 'Totals';
+  String get sales => _t?.reportSales ?? 'Sales';
+  String get totalTax => _t?.reportTotalTax ?? 'Total tax';
+  String get totalTip => _t?.reportTotalTip ?? 'Total tip';
+  String get totalInvoiced => _t?.reportTotalInvoiced ?? 'Total invoiced';
+  String get unsent => _t?.reportUnsent ?? 'Unsent';
+  String get sent => _t?.reportSent ?? 'Sent';
+  String get paid => _t?.reportPaid ?? 'Paid';
+  String get overdue => _t?.reportOverdue ?? 'Overdue';
+  String get invoiceNumber => _t?.reportInvoiceNumber ?? 'Invoice no.';
+  String get client => _t?.reportClient ?? 'Client';
+  String get dueDate => _t?.reportDueDate ?? 'Due date';
+  String get description => _t?.reportDescription ?? 'Description';
+  String get date => _t?.reportDate ?? 'Date';
+  String get total => _t?.pdfTotal ?? 'Total';
+  String get tax => _t?.pdfTax ?? 'Tax';
+  String get tip => _t?.pdfTip ?? 'Tip';
+  String get subtotal => _t?.pdfSubtotal ?? 'Subtotal';
+  String get freeVersion => _t?.reportFreeVersion ?? 'FREE VERSION';
+  String get poweredBy => _t?.reportPoweredBy ?? 'Powered by EzInvoice';
+  String get business => _t?.pdfBusiness ?? 'Business';
+
+  String fileMonthly(int month, int year) =>
+      _t?.reportFileMonthly(monthName(month), year) ??
+      'Report_${monthName(month)}_$year';
+  String fileYearly(int year) =>
+      _t?.reportFileYearly(year) ?? 'Report_Year_$year';
+  String textMonthly(int month, int year) =>
+      _t?.reportTextMonthly(monthName(month), year) ??
+      'Report | ${monthName(month)} $year';
+  String textYearly(int year) => _t?.reportTextYearly(year) ?? 'Report | $year';
+  String printMonthly(int month, int year) =>
+      '$printDocument | ${monthName(month)} $year';
+  String printYearly(int year) => '$printDocument | $year';
+  String pdfShareText(String title) =>
+      _t?.reportPdfShareText(title) ?? 'PDF report: $title';
+  String csvShareText(String title) =>
+      _t?.reportCsvShareText(title) ?? 'CSV report: $title';
+  String printShareText(String title) =>
+      _t?.reportPrintShareText(title) ?? 'Print: $title';
+
+  String formatDate(DateTime date) =>
+      DateFormat.yMMMd(_t?.localeName ?? 'en').format(date);
+  String formatDateMs(int milliseconds) =>
+      formatDate(DateTime.fromMillisecondsSinceEpoch(milliseconds));
+  String monthName(int month) => DateFormat.MMM(
+    _t?.localeName ?? 'en',
+  ).format(DateTime(2026, month.clamp(1, 12)));
+
+  String statusLabel(Invoice invoice) {
+    if (invoice.isPaid) return paid;
+    final due = invoice.dueAtMs;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day).millisecondsSinceEpoch;
+    if (due != null && due < today) return overdue;
+    return invoice.isSent ? sent : unsent;
+  }
+
+  String layoutLabel(String layoutId) {
+    switch (AppThemePresets.normalizeLayout(layoutId)) {
+      case AppThemePresets.layoutProfessional:
+        return _t?.styleProfessional ?? 'Professional';
+      case AppThemePresets.layoutCorporate:
+        return _t?.styleCorporate ?? 'Corporate';
+      case AppThemePresets.layoutModern:
+        return _t?.styleModern ?? 'Modern';
+      default:
+        return _t?.styleMinimal ?? 'Minimal';
+    }
+  }
+
+  String paletteLabel(String paletteId) {
+    switch (AppThemePresets.normalizePalette(paletteId)) {
+      case AppThemePresets.paletteProfessional:
+        return _t?.styleProfessional ?? 'Professional';
+      case AppThemePresets.paletteCorporate:
+        return _t?.styleCorporate ?? 'Corporate';
+      case AppThemePresets.paletteModern:
+        return _t?.styleModern ?? 'Modern';
+      case AppThemePresets.paletteSlate:
+        return _t?.styleSlate ?? 'Slate';
+      default:
+        return _t?.styleMinimal ?? 'Minimal';
+    }
   }
 }
 

@@ -1248,3 +1248,10 @@ The app should be reviewed in Apple's sandbox environment. If the products do no
 - Versión fuente `1.0.113+138`; etiquetas visibles sincronizadas.
 - Alertas incluye siempre el atajo `Overdue` para que las tres categorías lleven a un filtro real.
 - Si no hay facturas vencidas, se muestra el conteo cero y un mensaje claro; el atajo sigue abriendo el filtro correspondiente.
+
+## 2026-10-05 - Localización completa de la aplicación
+
+- Versión fuente 1.0.114+139; etiquetas visibles sincronizadas.
+- Los diez idiomas compatibles (árabe, alemán, inglés, español, francés, hindi, japonés, portugués, ruso y chino) ahora cubren la experiencia completa, incluidos acceso, clientes, facturas, pagos, ajustes, planes y ayuda.
+- Reportes, exportaciones PDF/CSV/texto, estilos, mensajes Pro y documentos de privacidad/términos usan el idioma elegido.
+- Se añadió una prueba que comprueba que cada catálogo contiene todas las claves y que el contenido legal existe para cada idioma.

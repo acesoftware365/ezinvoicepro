@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'subscription_manager.dart';
 
 /// Features que son SOLO Pro
@@ -40,34 +41,36 @@ class FeatureGate {
     }
   }
 
-  /// Helpers para UI
-  static String title(ProFeature f) {
-    switch (f) {
+  /// Localized labels used by the Pro gate dialog.
+  static String title(AppLocalizations t, ProFeature feature) {
+    switch (feature) {
       case ProFeature.unlimitedInvoices:
-        return 'Unlimited invoices';
+        return t.proFeatureUnlimitedInvoices;
       case ProFeature.removePdfBranding:
-        return 'Remove PDF branding';
+        return t.proFeatureRemovePdfBranding;
       case ProFeature.exportCsv:
-        return 'Export CSV';
+        return t.proFeatureExportCsv;
       case ProFeature.premiumTemplates:
-        return 'Premium templates';
+        return t.proFeaturePremiumTemplates;
       case ProFeature.detailedTaxReport:
-        return 'Detailed tax report';
+        return t.proFeatureDetailedTaxReport;
     }
   }
 
-  static String subtitle(ProFeature f) {
-    switch (f) {
+  static String subtitle(AppLocalizations t, ProFeature feature) {
+    switch (feature) {
       case ProFeature.unlimitedInvoices:
-        return 'Free plan allows up to $freeMonthlyInvoiceLimit invoices per month.';
+        return t.proFeatureUnlimitedInvoicesDescription(
+          freeMonthlyInvoiceLimit,
+        );
       case ProFeature.removePdfBranding:
-        return 'Remove “Powered by EzInvoice” from PDFs.';
+        return t.proFeatureRemovePdfBrandingDescription;
       case ProFeature.exportCsv:
-        return 'Export your invoices to CSV.';
+        return t.proFeatureExportCsvDescription;
       case ProFeature.premiumTemplates:
-        return 'Unlock premium invoice templates.';
+        return t.proFeaturePremiumTemplatesDescription;
       case ProFeature.detailedTaxReport:
-        return 'See detailed tax breakdown reports.';
+        return t.proFeatureDetailedTaxReportDescription;
     }
   }
 

@@ -113,10 +113,11 @@ class InvoicePdfService {
         ? AppThemePresets.normalizeLayout(business.invoiceLayoutId)
         : AppThemePresets.layoutMinimal;
     final isReceipt = type == PdfDocType.receipt;
+    final labels = _InvoicePdfLabels(context);
     final style = _styleForPalette(paletteId);
-    final layoutLabel = AppThemePresets.layoutLabel(layoutId);
-    final paletteLabel = AppThemePresets.paletteLabel(paletteId);
-    final docTypeLabel = isReceipt ? 'Receipt' : 'Invoice';
+    final layoutLabel = labels.layoutLabel(layoutId);
+    final paletteLabel = labels.paletteLabel(paletteId);
+    final docTypeLabel = isReceipt ? labels.receipt : labels.invoice;
     final stylePaletteLine = _stylePaletteLine(
       context: context,
       docType: docTypeLabel,
@@ -155,7 +156,9 @@ class InvoicePdfService {
         pageTheme: pw.PageTheme(
           pageFormat: PdfPageFormat.letter,
           margin: const pw.EdgeInsets.all(24),
-          buildBackground: showFreeWatermark ? (_) => _freeWatermark() : null,
+          buildBackground: showFreeWatermark
+              ? (_) => _freeWatermark(labels)
+              : null,
         ),
         build: (_) => [
           _buildHeader(
@@ -165,6 +168,7 @@ class InvoicePdfService {
             isReceipt: isReceipt,
             style: style,
             layoutId: layoutId,
+            labels: labels,
           ),
           if (isReceipt) ...[
             pw.SizedBox(height: 12),
@@ -174,16 +178,23 @@ class InvoicePdfService {
               paymentMethod: invoice.paymentMethod,
               style: style,
               layoutId: layoutId,
+              labels: labels,
             ),
           ],
           pw.SizedBox(height: 16),
-          _buildBillTo(invoice, style: style, layoutId: layoutId),
+          _buildBillTo(
+            invoice,
+            style: style,
+            layoutId: layoutId,
+            labels: labels,
+          ),
           pw.SizedBox(height: 16),
           _buildItemsTable(
             invoice: invoice,
             currency: currency,
             style: style,
             layoutId: layoutId,
+            labels: labels,
           ),
           pw.SizedBox(height: 16),
           _buildTotals(
@@ -198,11 +209,12 @@ class InvoicePdfService {
             total: total,
             style: style,
             layoutId: layoutId,
+            labels: labels,
           ),
           if (invoice.note.trim().isNotEmpty) ...[
             pw.SizedBox(height: 14),
             pw.Text(
-              'Message:',
+              '${labels.message}:',
               style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
             ),
             pw.SizedBox(height: 6),
@@ -213,7 +225,7 @@ class InvoicePdfService {
               invoice.paymentNote.trim().isNotEmpty) ...[
             pw.SizedBox(height: 14),
             pw.Text(
-              'Payment Note:',
+              '${labels.paymentNote}:',
               style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
             ),
             pw.SizedBox(height: 6),
@@ -225,6 +237,7 @@ class InvoicePdfService {
             showBranding: showBranding,
             style: style,
             stylePaletteLine: stylePaletteLine,
+            labels: labels,
           ),
         ],
       ),
@@ -270,23 +283,24 @@ class InvoicePdfService {
     required bool isReceipt,
     required _InvoicePdfStyle style,
     required String layoutId,
+    required _InvoicePdfLabels labels,
   }) {
-    final title = isReceipt ? 'RECEIPT' : 'INVOICE';
+    final title = (isReceipt ? labels.receipt : labels.invoice).toUpperCase();
     final company = pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         pw.Text(
           business.businessName.trim().isEmpty
-              ? 'Business'
+              ? labels.business
               : business.businessName.trim(),
           style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
         ),
         if (business.ownerName.trim().isNotEmpty)
           pw.Text(business.ownerName.trim()),
         if (business.phone.trim().isNotEmpty)
-          pw.Text('Tel: ${business.phone.trim()}'),
+          pw.Text('${labels.phone}: ${business.phone.trim()}'),
         if (business.email.trim().isNotEmpty)
-          pw.Text('Email: ${business.email.trim()}'),
+          pw.Text('${labels.email}: ${business.email.trim()}'),
         if (business.address.trim().isNotEmpty)
           pw.Text(business.address.trim()),
       ],
@@ -304,12 +318,12 @@ class InvoicePdfService {
           ),
         ),
         pw.SizedBox(height: 6),
-        pw.Text('No: ${invoice.invoiceNumber}'),
-        pw.Text('Date: ${_fmtDate(invoice.createdAt)}'),
+        pw.Text('${labels.number}: ${invoice.invoiceNumber}'),
+        pw.Text('${labels.date}: ${_fmtDate(invoice.createdAt)}'),
         if (!isReceipt && invoice.dueDate != null)
-          pw.Text('Due: ${_fmtDate(invoice.dueDate!)}'),
+          pw.Text('${labels.due}: ${_fmtDate(invoice.dueDate!)}'),
         if (isReceipt && invoice.isPaid && invoice.paidAt != null)
-          pw.Text('Paid: ${_fmtDate(invoice.paidAt!)}'),
+          pw.Text('${labels.paid}: ${_fmtDate(invoice.paidAt!)}'),
       ],
     );
 
@@ -420,23 +434,9 @@ class InvoicePdfService {
     required String paymentMethod,
     required _InvoicePdfStyle style,
     required String layoutId,
+    required _InvoicePdfLabels labels,
   }) {
     if (!isPaid) return pw.Container();
-
-    String methodLabel(String m) {
-      switch (m.toLowerCase().trim()) {
-        case 'cash':
-          return 'Cash';
-        case 'zelle':
-          return 'Zelle';
-        case 'card':
-          return 'Card';
-        case 'check':
-          return 'Check';
-        default:
-          return 'Other';
-      }
-    }
 
     final paidDate = paidAt != null ? _fmtDate(paidAt) : '';
     final borderColor = layoutId == AppThemePresets.layoutModern
@@ -465,7 +465,7 @@ class InvoicePdfService {
               border: pw.Border.all(color: borderColor, width: 2),
             ),
             child: pw.Text(
-              'PAID',
+              labels.paid.toUpperCase(),
               style: pw.TextStyle(
                 fontSize: 18,
                 fontWeight: pw.FontWeight.bold,
@@ -481,12 +481,12 @@ class InvoicePdfService {
               children: [
                 if (paidDate.isNotEmpty)
                   pw.Text(
-                    'Paid Date: $paidDate',
+                    '${labels.paidDate}: $paidDate',
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 pw.SizedBox(height: 4),
                 pw.Text(
-                  'Method: ${methodLabel(paymentMethod)}',
+                  '${labels.method}: ${labels.paymentMethod(paymentMethod)}',
                   style: const pw.TextStyle(fontSize: 10),
                 ),
               ],
@@ -501,6 +501,7 @@ class InvoicePdfService {
     InvoiceData invoice, {
     required _InvoicePdfStyle style,
     required String layoutId,
+    required _InvoicePdfLabels labels,
   }) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(12),
@@ -520,13 +521,13 @@ class InvoicePdfService {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Text(
-            'Bill To',
+            labels.billTo,
             style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
           ),
           pw.SizedBox(height: 6),
           pw.Text(
             invoice.customerName.trim().isEmpty
-                ? 'Cliente'
+                ? labels.client
                 : invoice.customerName.trim(),
           ),
         ],
@@ -539,14 +540,15 @@ class InvoicePdfService {
     required String currency,
     required _InvoicePdfStyle style,
     required String layoutId,
+    required _InvoicePdfLabels labels,
   }) {
     final headers = <String>[
       '#',
-      'Descripción',
-      'Fecha',
-      'Qty',
-      'Precio',
-      'Total',
+      labels.description,
+      labels.date,
+      labels.quantity,
+      labels.price,
+      labels.total,
     ];
 
     final data = <List<String>>[];
@@ -624,6 +626,7 @@ class InvoicePdfService {
     required double total,
     required _InvoicePdfStyle style,
     required String layoutId,
+    required _InvoicePdfLabels labels,
   }) {
     pw.Row line(String label, String value, {bool bold = false}) {
       return pw.Row(
@@ -645,9 +648,9 @@ class InvoicePdfService {
       );
     }
 
-    String tipLabel = 'Tip';
+    var tipLabel = labels.tip;
     if (tipIsPercent == true && (tipPercent ?? 0) > 0) {
-      tipLabel = 'Tip (${(tipPercent!).toStringAsFixed(2)}%)';
+      tipLabel = labels.tipWithRate((tipPercent!).toStringAsFixed(2));
     }
 
     return pw.Align(
@@ -670,20 +673,20 @@ class InvoicePdfService {
         child: pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.stretch,
           children: [
-            line('Subtotal', '$currency${_fmtMoney(subtotal)}'),
+            line(labels.subtotal, '$currency${_fmtMoney(subtotal)}'),
             pw.SizedBox(height: 6),
             line(
-              'Tax (${taxRate.toStringAsFixed(2)}%)',
+              labels.taxWithRate(taxRate.toStringAsFixed(2)),
               '$currency${_fmtMoney(taxAmount)}',
             ),
             pw.SizedBox(height: 6),
             line(tipLabel, '$currency${_fmtMoney(tip)}'),
             if (discount > 0) ...[
               pw.SizedBox(height: 6),
-              line('Discount', '- $currency${_fmtMoney(discount)}'),
+              line(labels.discount, '- $currency${_fmtMoney(discount)}'),
             ],
             pw.Divider(),
-            line('Total', '$currency${_fmtMoney(total)}', bold: true),
+            line(labels.total, '$currency${_fmtMoney(total)}', bold: true),
           ],
         ),
       ),
@@ -695,9 +698,10 @@ class InvoicePdfService {
     required bool showBranding,
     required _InvoicePdfStyle style,
     required String stylePaletteLine,
+    required _InvoicePdfLabels labels,
   }) {
     final footerText = business.footerNote.trim().isEmpty
-        ? 'Gracias por su preferencia.'
+        ? labels.thankYou
         : business.footerNote.trim();
 
     return pw.Container(
@@ -714,7 +718,7 @@ class InvoicePdfService {
           if (showBranding) ...[
             pw.SizedBox(height: 8),
             pw.Text(
-              'Powered by EzInvoice',
+              labels.poweredBy,
               style: pw.TextStyle(fontSize: 9, color: style.primary),
             ),
           ],
@@ -727,13 +731,13 @@ class InvoicePdfService {
   // HELPERS
   // =======================================================
 
-  static pw.Widget _freeWatermark() {
+  static pw.Widget _freeWatermark(_InvoicePdfLabels labels) {
     return pw.Align(
       alignment: pw.Alignment.bottomCenter,
       child: pw.Padding(
         padding: const pw.EdgeInsets.only(bottom: 10),
         child: pw.Text(
-          'FREE VERSION',
+          labels.freeVersion,
           textAlign: pw.TextAlign.center,
           style: pw.TextStyle(
             fontSize: 28,
@@ -837,6 +841,86 @@ class InvoicePdfService {
       return t.stylePaletteFootnote(docType, style, palette);
     }
     return '$docType style: $style | Palette: $palette';
+  }
+}
+
+class _InvoicePdfLabels {
+  _InvoicePdfLabels(BuildContext? context)
+    : _t = context == null ? null : AppLocalizations.of(context);
+
+  final AppLocalizations? _t;
+
+  String get invoice => _t?.pdfInvoice ?? 'Invoice';
+  String get receipt => _t?.pdfReceipt ?? 'Receipt';
+  String get business => _t?.pdfBusiness ?? 'Business';
+  String get phone => _t?.pdfPhone ?? 'Phone';
+  String get email => _t?.pdfEmail ?? 'Email';
+  String get number => _t?.pdfNumber ?? 'No.';
+  String get date => _t?.pdfDate ?? 'Date';
+  String get due => _t?.pdfDue ?? 'Due';
+  String get paid => _t?.pdfPaid ?? 'Paid';
+  String get paidDate => _t?.pdfPaidDate ?? 'Paid date';
+  String get method => _t?.pdfMethod ?? 'Method';
+  String get billTo => _t?.pdfBillTo ?? 'Bill to';
+  String get client => _t?.pdfClient ?? 'Client';
+  String get description => _t?.pdfDescription ?? 'Description';
+  String get quantity => _t?.pdfQuantity ?? 'Qty';
+  String get price => _t?.pdfPrice ?? 'Price';
+  String get subtotal => _t?.pdfSubtotal ?? 'Subtotal';
+  String get tax => _t?.pdfTax ?? 'Tax';
+  String get tip => _t?.pdfTip ?? 'Tip';
+  String get discount => _t?.pdfDiscount ?? 'Discount';
+  String get total => _t?.pdfTotal ?? 'Total';
+  String get message => _t?.pdfMessage ?? 'Message';
+  String get paymentNote => _t?.pdfPaymentNote ?? 'Payment note';
+  String get thankYou => _t?.pdfThankYou ?? 'Thank you for your business.';
+  String get poweredBy => _t?.pdfPoweredBy ?? 'Powered by EzInvoice';
+  String get freeVersion => _t?.pdfFreeVersion ?? 'FREE VERSION';
+
+  String taxWithRate(String rate) => _t?.pdfTaxWithRate(rate) ?? 'Tax ($rate%)';
+  String tipWithRate(String rate) => _t?.pdfTipWithRate(rate) ?? 'Tip ($rate%)';
+
+  String paymentMethod(String value) {
+    switch (value.toLowerCase().trim()) {
+      case 'cash':
+        return _t?.cash ?? 'Cash';
+      case 'zelle':
+        return 'Zelle';
+      case 'card':
+        return _t?.card ?? 'Card';
+      case 'check':
+        return _t?.check ?? 'Check';
+      default:
+        return _t?.other ?? 'Other';
+    }
+  }
+
+  String layoutLabel(String layoutId) {
+    switch (AppThemePresets.normalizeLayout(layoutId)) {
+      case AppThemePresets.layoutProfessional:
+        return _t?.styleProfessional ?? 'Professional';
+      case AppThemePresets.layoutCorporate:
+        return _t?.styleCorporate ?? 'Corporate';
+      case AppThemePresets.layoutModern:
+        return _t?.styleModern ?? 'Modern';
+      default:
+        return _t?.styleMinimal ?? 'Minimal';
+    }
+  }
+
+  String paletteLabel(String paletteId) {
+    switch (AppThemePresets.normalizePalette(paletteId)) {
+      case AppThemePresets.paletteProfessional:
+        return _t?.styleProfessional ?? 'Professional';
+      case AppThemePresets.paletteCorporate:
+        return _t?.styleCorporate ?? 'Corporate';
+      case AppThemePresets.paletteModern:
+        return _t?.styleModern ?? 'Modern';
+      case AppThemePresets.paletteSlate:
+        return _t?.styleSlate ?? 'Slate';
+      default:
+        return _t?.styleMinimal ?? 'Minimal';
+    }
   }
 }
 

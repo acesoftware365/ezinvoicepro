@@ -25,7 +25,11 @@
   "systemDefault": "Predeterminado del sistema",
   "privacyPolicy": "Política de privacidad",
   "clientMessageTemplateMultiline": "Hola {name},\nte envío tu factura desde EzInvoice. ✅",
-  "@clientMessageTemplateMultiline": { "placeholders": { "name": {} } },
+  "@clientMessageTemplateMultiline": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "invoiceEmailSubject": "Factura - EzInvoice",
   "dashboardTitle": "Panel",
   "monthWord": "Mes",
@@ -51,7 +55,11 @@
   "monthlyYearlySubtitle": "Mensual / anual",
   "businessProfileSubtitle": "Perfil / logo / impuesto",
   "invoiceCount": "{count} factura(s)",
-  "@invoiceCount": { "placeholders": { "count": {} } },
+  "@invoiceCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "paywallTitle": "Ez Invoice Pro",
   "close": "Cerrar",
   "paywallHeaderTitle": "Desbloquea todo para tu negocio",
@@ -78,9 +86,17 @@
   "benefitExport": "Exportar PDF/CSV/Excel (contabilidad)",
   "benefitCloudBackup": "Respaldo en la nube + restaurar (multi-dispositivo)",
   "continueWithPlan": "Continuar con {plan}",
-  "@continueWithPlan": { "placeholders": { "plan": {} } },
+  "@continueWithPlan": {
+    "placeholders": {
+      "plan": {}
+    }
+  },
   "paywallFinePrint": "Al suscribirte, el pago se cargará a tu cuenta de {store}. La suscripción se renueva automáticamente a menos que la canceles al menos 24 horas antes de que termine el período actual. Puedes administrar o cancelar tu suscripción en la configuración de tu tienda.",
-  "@paywallFinePrint": { "placeholders": { "store": {} } },
+  "@paywallFinePrint": {
+    "placeholders": {
+      "store": {}
+    }
+  },
   "reportsTitle": "Reportes",
   "proBadge": "PRO",
   "byMonth": "Por mes",
@@ -112,7 +128,11 @@
   "invoicesTitle": "Facturas",
   "noInvoicesYet": "Aún no hay facturas.",
   "freePlanMonthlyLimitBanner": "Plan gratis: límite mensual {limit} facturas • Actualiza para ilimitadas",
-  "@freePlanMonthlyLimitBanner": { "placeholders": { "limit": {} } },
+  "@freePlanMonthlyLimitBanner": {
+    "placeholders": {
+      "limit": {}
+    }
+  },
   "filtersTitle": "Filtros",
   "clientLabel": "Cliente",
   "allMonths": "Todos los meses",
@@ -123,32 +143,79 @@
   "dateLabel": "Fecha",
   "noResultsForFilters": "No hay resultados para los filtros seleccionados.",
   "freePlanLimitDialogBody": "Plan gratis: {current} / {limit} facturas este mes.\n\nActualiza a Pro para ilimitadas.",
-  "@freePlanLimitDialogBody": { "placeholders": { "current": {}, "limit": {} } },
+  "@freePlanLimitDialogBody": {
+    "placeholders": {
+      "current": {},
+      "limit": {}
+    }
+  },
   "deleteInvoiceTitle": "¿Eliminar factura?",
   "deleteInvoiceBody": "¿Seguro que quieres eliminar {invNo}?",
-  "@deleteInvoiceBody": { "placeholders": { "invNo": {} } },
+  "@deleteInvoiceBody": {
+    "placeholders": {
+      "invNo": {}
+    }
+  },
   "cancel": "Cancelar",
   "delete": "Eliminar",
   "edit": "Editar",
   "sendPdf": "Enviar PDF",
   "shareInvoiceText": "Factura {invNo} - {client}",
-  "@shareInvoiceText": { "placeholders": { "invNo": {}, "client": {} } },
+  "@shareInvoiceText": {
+    "placeholders": {
+      "invNo": {},
+      "client": {}
+    }
+  },
   "pdfSendError": "Error al crear/enviar PDF: {error}",
-  "@pdfSendError": { "placeholders": { "error": {} } },
+  "@pdfSendError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "reportTitleMonth": "Reporte • {month} {year}",
-  "@reportTitleMonth": { "placeholders": { "month": {}, "year": {} } },
+  "@reportTitleMonth": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
   "reportTitleYear": "Reporte • Año {year}",
-  "@reportTitleYear": { "placeholders": { "year": {} } },
+  "@reportTitleYear": {
+    "placeholders": {
+      "year": {}
+    }
+  },
   "invoicesLine": "Facturas: {count}",
-  "@invoicesLine": { "placeholders": { "count": {} } },
+  "@invoicesLine": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "totalSalesLine": "Ventas totales: ${amount}",
-  "@totalSalesLine": { "placeholders": { "amount": {} } },
+  "@totalSalesLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "totalTaxLine": "Impuesto total: ${amount}",
-  "@totalTaxLine": { "placeholders": { "amount": {} } },
+  "@totalTaxLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "totalTipLine": "Propina total: ${amount}",
-  "@totalTipLine": { "placeholders": { "amount": {} } },
+  "@totalTipLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "netLine": "Neto: ${amount}",
-  "@netLine": { "placeholders": { "amount": {} } },
+  "@netLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "calculatedFromInvoices": "Calculado desde tus facturas en Firestore.",
   "noInvoicesInPeriod": "No hay facturas en ese período.",
   "exportPdf": "Exportar PDF",
@@ -164,7 +231,11 @@
   "pickClient": "Elegir cliente",
   "invoiceAutoNumberLabel": "Factura # (auto)",
   "invoiceDateLabel": "Fecha de factura: {date}",
-  "@invoiceDateLabel": { "placeholders": { "date": {} } },
+  "@invoiceDateLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
   "clientNameLabel": "Nombre del cliente",
   "clientNameRequired": "Nombre del cliente requerido",
   "clientEmailOptionalLabel": "Email del cliente (opcional)",
@@ -173,11 +244,19 @@
   "itemsTitle": "Items",
   "descriptionLabel": "Descripción",
   "itemDateLabel": "Fecha del item: {date}",
-  "@itemDateLabel": { "placeholders": { "date": {} } },
+  "@itemDateLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
   "qtyLabel": "Cant.",
   "priceLabel": "Precio",
   "lineTotalLabel": "Total de línea: ${amount}",
-  "@lineTotalLabel": { "placeholders": { "amount": {} } },
+  "@lineTotalLabel": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "taxDefaultOwnerLabel": "Impuesto % (dueño predeterminado)",
   "tipPercentChip": "Propina %",
   "tipAmountChip": "Propina $",
@@ -185,20 +264,35 @@
   "tipAmountLabel": "Monto de propina ($)",
   "messageOptionalLabel": "Mensaje (opcional)",
   "totalsBlock": "Subtotal: ${sub}\nImpuesto: ${tax}\nPropina: ${tip}\nTotal: ${total}",
-  "@totalsBlock": { "placeholders": { "sub": {}, "tax": {}, "tip": {}, "total": {} } },
+  "@totalsBlock": {
+    "placeholders": {
+      "sub": {},
+      "tax": {},
+      "tip": {},
+      "total": {}
+    }
+  },
   "saving": "Guardando…",
   "saveInvoice": "Guardar factura",
   "updateInvoice": "Actualizar factura",
   "addAtLeastOneItem": "Agrega al menos 1 item",
   "errorSavingInvoice": "Error al guardar factura: {error}",
-  "@errorSavingInvoice": { "placeholders": { "error": {} } },
+  "@errorSavingInvoice": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "savedTab": "Guardados",
   "contactsTab": "Contactos",
   "noSavedClients": "No hay clientes guardados",
   "permissionDeniedContacts": "Permiso denegado: Contactos",
   "noContactsFound": "No se encontraron contactos en este dispositivo/emulador",
   "contactsError": "Error de contactos: {error}",
-  "@contactsError": { "placeholders": { "error": {} } },
+  "@contactsError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "noName": "(Sin nombre)",
   "newClientTitle": "Nuevo cliente",
   "editClientTitle": "Editar cliente",
@@ -208,11 +302,19 @@
   "clientCreateHint": "Tip: Agrega email/teléfono para enviar facturas más rápido.",
   "clientEditHint": "Puedes actualizar la info del cliente cuando quieras.",
   "errorSavingClient": "Error al guardar cliente: {error}",
-  "@errorSavingClient": { "placeholders": { "error": {} } },
+  "@errorSavingClient": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "clientsTitle": "Clientes",
   "searchClientsLabel": "Buscar clientes",
   "clientsCount": "{count} cliente(s)",
-  "@clientsCount": { "placeholders": { "count": {} } },
+  "@clientsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "noClientsYet": "Aún no hay clientes.",
   "noClientsForSearch": "No hay clientes que coincidan con tu búsqueda.",
   "cannotOpenDialer": "No se puede abrir el marcador",
@@ -221,7 +323,11 @@
   "cannotOpenEmail": "No se puede abrir email",
   "deleteClientTitle": "¿Eliminar cliente?",
   "deleteClientBody": "¿Quitar a {name}?",
-  "@deleteClientBody": { "placeholders": { "name": {} } },
+  "@deleteClientBody": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "call": "Llamar",
   "sms": "SMS",
   "whatsapp": "WhatsApp",
@@ -235,7 +341,12 @@
   "availableLanguages": "Idiomas disponibles",
   "usePhoneLanguage": "Usar el idioma del teléfono",
   "shareReceiptText": "Recibo {invoiceNumber} para {clientName}",
-  "@shareReceiptText": { "placeholders": { "invoiceNumber": {}, "clientName": {} } },
+  "@shareReceiptText": {
+    "placeholders": {
+      "invoiceNumber": {},
+      "clientName": {}
+    }
+  },
   "report": "Reporte",
   "invoicesLabel": "Facturas",
   "totalSalesLabel": "Ventas totales",
@@ -255,22 +366,22 @@
   "servicePresetsHint": "ej. Limpieza, Reparación, Consultoría...",
   "servicePresetsAddButton": "Agregar",
   "addServiceLabel": "Agregar un servicio",
-  "yourPresets": "Tus servicios",
+  "yourPresets": "Tus servicios guardados",
   "noPresetsYet": "Aún no hay servicios guardados.",
   "notNow": "Ahora no",
-  "openPaywallPlaceholder": "Abrir Paywall (conecta PaywallScreen aquí)",
+  "openPaywallPlaceholder": "Abrir suscripción",
   "invoiceStyleTitle": "Estilo de factura",
-  "invoiceFreeStyleHint": "El plan Free usa una sola versión de factura (Minimal). Actualiza a Pro para desbloquear todos los layouts y paletas.",
+  "invoiceFreeStyleHint": "El plan gratis usa una versión de factura (Minimal). Mejora a Pro para desbloquear todos los diseños y paletas.",
   "invoicePaletteLabel": "Paleta de factura",
-  "invoiceLayoutLabel": "Layout de factura",
+  "invoiceLayoutLabel": "Diseño de factura",
   "saveInvoicePaletteError": "No se pudo guardar la paleta de factura.",
-  "saveInvoiceLayoutError": "No se pudo guardar el layout de factura.",
+  "saveInvoiceLayoutError": "No se pudo guardar el diseño de factura.",
   "reportStyleTitle": "Estilo de reporte",
-  "reportFreeStyleHint": "El plan Free usa una sola versión de reporte (Minimal). Actualiza a Pro para desbloquear todos los layouts y paletas.",
+  "reportFreeStyleHint": "El plan gratis usa una versión de reporte (Minimal). Mejora a Pro para desbloquear todos los diseños y paletas.",
   "reportPaletteLabel": "Paleta de reporte",
-  "reportLayoutLabel": "Layout de reporte",
+  "reportLayoutLabel": "Diseño de reporte",
   "saveReportPaletteError": "No se pudo guardar la paleta de reporte.",
-  "saveReportLayoutError": "No se pudo guardar el layout de reporte.",
+  "saveReportLayoutError": "No se pudo guardar el diseño de reporte.",
   "stylePaletteFootnote": "Estilo de {docType}: {style} | Paleta: {palette}",
   "@stylePaletteFootnote": {
     "placeholders": {
@@ -292,5 +403,407 @@
   "profileDefaults": "Valores de factura",
   "profileTaxInvalid": "Revisa el impuesto (0–100 %).",
   "metricLoadError": "No se pudo cargar el reporte. Inténtalo de nuevo.",
-  "totalInvoicedTitle": "Total facturado"
+  "totalInvoicedTitle": "Total facturado",
+  "versionLabel": "Versión {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "errorWithDetails": "Error: {error}",
+  "@errorWithDetails": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "rememberEmail": "Recordar mi email",
+  "forgotPassword": "¿Olvidaste tu contraseña?",
+  "passwordResetEnterEmail": "Ingresa tu email para enviarte el enlace.",
+  "passwordResetSent": "Te enviamos un email para restablecer tu contraseña. Revisa Spam o Correo no deseado.",
+  "passwordResetNoAccount": "No encontramos una cuenta con ese email.",
+  "invalidEmail": "Email inválido.",
+  "passwordResetError": "No se pudo enviar el email. Intenta otra vez.",
+  "updateRequired": "Actualización requerida",
+  "updateRequiredBody": "Hay una versión nueva de Ez Invoice. Para continuar, actualiza la app desde la tienda.",
+  "updateNow": "Actualizar ahora",
+  "open": "Abrir",
+  "share": "Compartir",
+  "actions": "Acciones",
+  "message": "Mensaje",
+  "done": "Listo",
+  "confirm": "Confirmar",
+  "free": "GRATIS",
+  "clientInformation": "Información del cliente",
+  "clientName": "Nombre del cliente",
+  "notesOptional": "Notas (opcional)",
+  "saveClient": "Guardar cliente",
+  "importFromContacts": "Importar desde contactos",
+  "importContactsDescription": "Completa nombre, teléfono y email al instante.",
+  "loadContacts": "Cargar contactos",
+  "clientPhone": "Teléfono del cliente",
+  "searchContacts": "Buscar contactos",
+  "shareClient": "Compartir cliente",
+  "clientProfile": "Perfil del cliente",
+  "chooseSavedService": "Elegir servicio guardado",
+  "searchSavedServices": "Buscar servicios guardados",
+  "noSavedServicesFound": "No se encontraron servicios guardados",
+  "noSavedServicesToUse": "Aún no hay servicios guardados. Escribe uno arriba y guárdalo para después.",
+  "savedServiceAlreadyExists": "Ya está guardado: {service}",
+  "@savedServiceAlreadyExists": {
+    "placeholders": {
+      "service": {}
+    }
+  },
+  "savedService": "Servicio guardado: {service}",
+  "@savedService": {
+    "placeholders": {
+      "service": {}
+    }
+  },
+  "savePresetError": "No se pudo guardar el servicio: {error}",
+  "@savePresetError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "saveServiceForLater": "Guardar servicio para después",
+  "removeClient": "Quitar cliente",
+  "service": "Servicio",
+  "taxAndTip": "Impuesto y propina",
+  "totals": "Totales",
+  "dueDate": "Fecha de vencimiento: {date}",
+  "@dueDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "paidDate": "Fecha de pago: {date}",
+  "@paidDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "notPaidYet": "Aún no pagada",
+  "paymentMethodWithValue": "Método: {method}",
+  "@paymentMethodWithValue": {
+    "placeholders": {
+      "method": {}
+    }
+  },
+  "paymentNoteWithValue": "Nota: {note}",
+  "@paymentNoteWithValue": {
+    "placeholders": {
+      "note": {}
+    }
+  },
+  "markAsPaid": "Marcar como pagada",
+  "markAsUnpaid": "Marcar como no pagada",
+  "editTax": "Editar",
+  "addClient": "Agregar un cliente",
+  "firstClientHint": "Crea tu primer cliente para reutilizarlo en futuras facturas.",
+  "searchSavedClients": "Buscar clientes guardados",
+  "paymentMethod": "Método de pago",
+  "cash": "Efectivo",
+  "card": "Tarjeta",
+  "check": "Cheque",
+  "other": "Otro",
+  "noteOptional": "Nota (opcional)",
+  "invoiceMarkPaidError": "No se pudo marcar la factura como pagada: {error}",
+  "@invoiceMarkPaidError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkUnpaidError": "No se pudo marcar la factura como no pagada: {error}",
+  "@invoiceMarkUnpaidError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "deleteError": "No se pudo eliminar la factura: {error}",
+  "@deleteError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceDeleted": "Factura eliminada",
+  "invoiceMarkedSent": "Marcada como enviada ✅",
+  "invoiceMarkSentError": "No se pudo marcar como enviada: {error}",
+  "@invoiceMarkSentError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkedUnsent": "Marcada como no enviada ✅",
+  "invoiceMarkUnsentError": "No se pudo marcar como no enviada: {error}",
+  "@invoiceMarkUnsentError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkedPaid": "Marcada como pagada ✅",
+  "invoiceMarkedUnpaid": "Marcada como no pagada ✅",
+  "invoiceLoadingError": "No se pudieron cargar las facturas",
+  "tipType": "Tipo de propina",
+  "amountOption": "Monto ($)",
+  "percentageOption": "Porcentaje (%)",
+  "pdfPreview": "Vista previa de PDF",
+  "openPdf": "Abrir PDF",
+  "sharePdf": "Compartir PDF",
+  "selectReportMonth": "Seleccionar mes del reporte",
+  "reportForBusiness": "Reportes • {business}",
+  "@reportForBusiness": {
+    "placeholders": {
+      "business": {}
+    }
+  },
+  "tapToChangeMonth": "Toca para cambiar el mes",
+  "csvSaved": "CSV guardado: {path}",
+  "@csvSaved": {
+    "placeholders": {
+      "path": {}
+    }
+  },
+  "csvExportError": "No se pudo exportar CSV: {error}",
+  "@csvExportError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "aboutTitle": "Acerca de",
+  "aboutTagline": "Facturas claras para negocios en movimiento",
+  "aboutAppTitle": "La aplicación",
+  "aboutAppBody": "EzInvoice reúne facturas, clientes, pagos y reportes en un flujo simple, para que puedas ver lo importante y cobrar con más claridad.",
+  "aboutCompanyTitle": "La compañía",
+  "aboutCompanyBody": "Liisgo LLC crea herramientas prácticas para ayudar a los pequeños negocios a trabajar con más orden, claridad y confianza.",
+  "aboutPromiseTitle": "Pensado para tu día a día",
+  "aboutPromiseBody": "Cada decisión de EzInvoice busca reducir pasos, mantener los detalles visibles y hacer que administrar tu negocio se sienta más sencillo.",
+  "visitLiisgo": "Visitar Liisgo",
+  "contactSupport": "Contactar soporte",
+  "shareEzInvoice": "Compartir EzInvoice",
+  "sendIdeaOrBug": "Enviar una idea o error",
+  "feedbackTitle": "Tu opinión cuenta",
+  "feedbackSubtitle": "Cuéntanos qué te gustaría mejorar o qué no funcionó bien.",
+  "feedbackIdea": "Idea",
+  "feedbackBug": "Error",
+  "feedbackHint": "Escribe tu idea o explica lo que ocurrió…",
+  "feedbackRequired": "Escribe un mensaje antes de enviarlo.",
+  "continueToEmail": "Continuar al correo",
+  "couldNotOpenLink": "No se pudo abrir este enlace.",
+  "shareAppText": "Conoce EzInvoice Pro: facturas, clientes y reportes en un solo lugar.\n{storeUrl}",
+  "@shareAppText": {
+    "placeholders": {
+      "storeUrl": {}
+    }
+  },
+  "feedbackEmailSubject": "{kind} para EzInvoice",
+  "@feedbackEmailSubject": {
+    "placeholders": {
+      "kind": {}
+    }
+  },
+  "supportEmailSubject": "Soporte de EzInvoice",
+  "changePassword": "Cambiar contraseña",
+  "changePasswordSubtitle": "Actualiza la contraseña de tu cuenta.",
+  "confirmCurrentPasswordHint": "Por seguridad, primero confirma tu contraseña actual.",
+  "currentPassword": "Contraseña actual",
+  "newPassword": "Nueva contraseña",
+  "confirmNewPassword": "Confirmar nueva contraseña",
+  "updatePassword": "Actualizar contraseña",
+  "passwordAtLeastSix": "Debe tener al menos 6 caracteres.",
+  "noActiveSession": "No hay sesión activa.",
+  "passwordsDoNotMatch": "La nueva contraseña no coincide.",
+  "passwordMustDiffer": "La nueva contraseña debe ser diferente.",
+  "passwordUpdated": "Contraseña actualizada correctamente.",
+  "incorrectPassword": "La contraseña actual es incorrecta.",
+  "weakPassword": "La nueva contraseña es muy débil.",
+  "reauthenticationNeeded": "Por seguridad, vuelve a iniciar sesión e intenta otra vez.",
+  "changePasswordError": "No se pudo cambiar la contraseña.",
+  "confirmPassword": "Confirmar contraseña",
+  "reauthCancelled": "Cancelaste la confirmación.",
+  "accountDeleted": "Tu cuenta y datos fueron eliminados permanentemente.",
+  "deleteAccountIncorrectPassword": "Contraseña incorrecta.",
+  "deleteAccountError": "No se pudo eliminar la cuenta.",
+  "deleteAccountBody": "Si eliminas tu cuenta:\n\n• Se eliminarán permanentemente tus clientes, facturas, reportes y perfil de negocio.\n• Esta acción no se puede deshacer.\n• Si tienes una suscripción activa, debes gestionarla o cancelarla en App Store/Google Play.",
+  "termsConditions": "Términos y condiciones",
+  "agreeTermsPrivacy": "Primero acepta los Términos y condiciones y la Política de privacidad.",
+  "currentPlan": "Plan actual",
+  "currentPlanFree": "Plan actual: Gratis",
+  "proPlanDescription": "Gratis incluye anuncios y uso limitado. Pro elimina anuncios y desbloquea facturas ilimitadas, reportes, plantillas premium, exportaciones y respaldo en la nube.",
+  "adsIncluded": "Incluye anuncios",
+  "limitedInvoicesPerMonth": "Facturas limitadas por mes",
+  "basicInvoiceStyle": "Estilo básico de factura",
+  "basicReports": "Reportes básicos",
+  "pdfIncludesBranding": "El PDF incluye la marca EzInvoice",
+  "unpaidLabel": "No pagada",
+  "loading": "Cargando...",
+  "store": "Tienda",
+  "storeProductLoadingOne": "Un producto de suscripción todavía está cargando. Puedes continuar con el plan disponible mientras carga el otro producto.",
+  "storeProductsLoading": "Conectando con los productos de suscripción de la tienda. Si no termina de cargar, confirma que las suscripciones estén listas en la consola de tu tienda.",
+  "agreeTo": "Acepto los ",
+  "and": " y la ",
+  "currentProPlanDescription": "Ya tienes Ez Invoice Pro. Puedes revisar las dos opciones de suscripción abajo.",
+  "freeVsPro": "Gratis vs {pro}",
+  "@freeVsPro": {
+    "placeholders": {
+      "pro": {}
+    }
+  },
+  "openInvoices": "Abre Facturas.",
+  "allCaughtUp": "Todo al día",
+  "itemsToReview": "{count} por revisar",
+  "@itemsToReview": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "pdfInvoice": "Factura",
+  "pdfReceipt": "Recibo",
+  "pdfBusiness": "Negocio",
+  "pdfPhone": "Teléfono",
+  "pdfEmail": "Email",
+  "pdfNumber": "Núm.",
+  "pdfDate": "Fecha",
+  "pdfDue": "Vence",
+  "pdfPaid": "Pagada",
+  "pdfPaidDate": "Fecha de pago",
+  "pdfMethod": "Método",
+  "pdfBillTo": "Facturar a",
+  "pdfClient": "Cliente",
+  "pdfDescription": "Descripción",
+  "pdfQuantity": "Cant.",
+  "pdfPrice": "Precio",
+  "pdfSubtotal": "Subtotal",
+  "pdfTax": "Impuesto",
+  "pdfTaxWithRate": "Impuesto ({rate}%)",
+  "@pdfTaxWithRate": {
+    "placeholders": {
+      "rate": {}
+    }
+  },
+  "pdfTip": "Propina",
+  "pdfTipWithRate": "Propina ({rate}%)",
+  "@pdfTipWithRate": {
+    "placeholders": {
+      "rate": {}
+    }
+  },
+  "pdfDiscount": "Descuento",
+  "pdfMessage": "Mensaje",
+  "pdfPaymentNote": "Nota de pago",
+  "pdfThankYou": "Gracias por su preferencia.",
+  "pdfPoweredBy": "Desarrollado por EzInvoice",
+  "pdfFreeVersion": "VERSIÓN GRATUITA",
+  "pdfTotal": "Total",
+  "styleMinimal": "Minimal",
+  "styleProfessional": "Profesional",
+  "styleCorporate": "Corporativo",
+  "styleModern": "Moderno",
+  "styleSlate": "Pizarra",
+  "reportDocument": "Reporte",
+  "reportPrintDocument": "Imprimir reporte",
+  "reportMonth": "Mes",
+  "reportYear": "Año",
+  "reportGeneratedOn": "Generado el",
+  "reportInvoices": "Facturas",
+  "reportStatus": "Estado",
+  "reportTotals": "Totales",
+  "reportSales": "Ventas",
+  "reportTotalTax": "Total de impuestos",
+  "reportTotalTip": "Total de propinas",
+  "reportTotalInvoiced": "Total facturado",
+  "reportUnsent": "Sin enviar",
+  "reportSent": "Enviada",
+  "reportPaid": "Pagada",
+  "reportOverdue": "Vencida",
+  "reportInvoiceNumber": "Núm. de factura",
+  "reportClient": "Cliente",
+  "reportDueDate": "Fecha de vencimiento",
+  "reportDescription": "Descripción",
+  "reportDate": "Fecha",
+  "reportFreeVersion": "VERSIÓN GRATUITA",
+  "reportPoweredBy": "Desarrollado por EzInvoice",
+  "reportPdfShareText": "Reporte PDF: {title}",
+  "@reportPdfShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportCsvShareText": "Reporte CSV: {title}",
+  "@reportCsvShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportPrintShareText": "Imprimir: {title}",
+  "@reportPrintShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportFileMonthly": "Reporte_{month}_{year}",
+  "@reportFileMonthly": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
+  "reportFileYearly": "Reporte_Año_{year}",
+  "@reportFileYearly": {
+    "placeholders": {
+      "year": {}
+    }
+  },
+  "reportTextMonthly": "Reporte | {month} {year}",
+  "@reportTextMonthly": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
+  "reportTextYearly": "Reporte | {year}",
+  "@reportTextYearly": {
+    "placeholders": {
+      "year": {}
+    }
+  },
+  "reportBreakdown": "Desglose",
+  "reportInvoicesStatus": "Estado de facturas",
+  "viewReport": "Ver reporte",
+  "reviewBeforeExport": "Revisa el PDF o CSV antes de exportarlo.",
+  "customizeReport": "Personaliza el reporte",
+  "reportPreviewUpdates": "Los cambios aparecen de inmediato en tu vista previa.",
+  "yourReportPreview": "Vista de tu reporte",
+  "reportStyleLiveHint": "Cambia el diseño y míralo en vivo.",
+  "watchAdToExportReport": "Mira el anuncio completo para exportar este reporte. Actualiza a Pro para exportar sin anuncios.",
+  "reportExportError": "No se pudo exportar el reporte: {error}",
+  "@reportExportError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "shareCsvFile": "Compartir archivo CSV",
+  "shareCsvFileDescription": "Comparte el archivo .csv por email, Drive u otra app.",
+  "shareReportAsText": "Compartir como texto (WhatsApp / SMS)",
+  "shareReportAsTextDescription": "Envía un resumen del reporte como texto.",
+  "printCsv": "Imprimir CSV",
+  "printReportDescription": "Imprime el reporte como tabla PDF.",
+  "reportPreview": "Vista previa",
+  "live": "En vivo",
+  "proFeatureUnlimitedInvoices": "Facturas ilimitadas",
+  "proFeatureRemovePdfBranding": "Eliminar marca del PDF",
+  "proFeatureExportCsv": "Exportar CSV",
+  "proFeaturePremiumTemplates": "Plantillas premium",
+  "proFeatureDetailedTaxReport": "Reporte detallado de impuestos",
+  "proFeatureUnlimitedInvoicesDescription": "El plan gratis permite hasta {limit} facturas por mes.",
+  "@proFeatureUnlimitedInvoicesDescription": {
+    "placeholders": {
+      "limit": {}
+    }
+  },
+  "proFeatureRemovePdfBrandingDescription": "Elimina “Desarrollado por EzInvoice” de los PDFs.",
+  "proFeatureExportCsvDescription": "Exporta tus facturas a CSV.",
+  "proFeaturePremiumTemplatesDescription": "Desbloquea plantillas premium de facturas.",
+  "proFeatureDetailedTaxReportDescription": "Consulta reportes detallados de impuestos.",
+  "pdfShareText": "PDF de factura de EzInvoice"
 }

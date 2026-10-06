@@ -1,8 +1,6 @@
 {
   "@@locale": "hi",
-
   "appName": "Ez Invoice",
-
   "loginSubtitle": "अपना अकाउंट बनाएं",
   "email": "ईमेल",
   "password": "पासवर्ड",
@@ -15,7 +13,6 @@
   "processing": "प्रोसेस हो रहा है...",
   "invalidCredentials": "एक वैध ईमेल और पासवर्ड दर्ज करें (6+ अक्षर)",
   "authError": "ऑथेंटिकेशन त्रुटि",
-
   "home": "होम",
   "clients": "क्लाइंट्स",
   "invoices": "इनवॉइस",
@@ -23,35 +20,28 @@
   "settings": "सेटिंग्स",
   "logout": "लॉग आउट",
   "business": "बिज़नेस",
-
   "settingsLanguage": "भाषा",
   "settingsLanguageDescription": "ऐप की भाषा चुनें।",
   "systemDefault": "सिस्टम डिफ़ॉल्ट",
-
   "privacyPolicy": "प्राइवेसी पॉलिसी",
-
   "clientMessageTemplateMultiline": "Hi {name},\nEzInvoice से आपका इनवॉइस भेज रहा हूँ। ✅",
   "@clientMessageTemplateMultiline": {
-    "placeholders": { "name": {} }
+    "placeholders": {
+      "name": {}
+    }
   },
-
   "invoiceEmailSubject": "Invoice - EzInvoice",
-
   "dashboardTitle": "डैशबोर्ड",
   "monthWord": "महीना",
-
   "planLabel": "प्लान",
   "invoicesRemaining": "बचे हुए इनवॉइस",
   "proUnlimitedLabel": "PRO · अनलिमिटेड",
-
   "createNewInvoice": "नया इनवॉइस बनाएं",
   "limitReachedSubtitle": "लिमिट पूरी • Pro में अपग्रेड करें",
   "createInvoiceFastSubtitle": "सेकंडों में इनवॉइस + PDF बनाएं",
-
   "limitReachedTitle": "लिमिट पूरी हो गई",
   "limitReachedBody": "अनलिमिटेड इनवॉइस और विज्ञापन हटाने के लिए Pro में अपग्रेड करें।",
   "upgrade": "अपग्रेड",
-
   "monthSummaryTitle": "महीने का सारांश",
   "salesTitle": "सेल्स",
   "tipTitle": "टिप",
@@ -59,37 +49,34 @@
   "taxTitle": "टैक्स",
   "beforeTaxTip": "टैक्स/टिप से पहले",
   "collectedThisMonth": "इस महीने कलेक्ट किया",
-
   "quickAccessTitle": "क्विक एक्सेस",
   "clientsManageSubtitle": "क्लाइंट बनाएं / एडिट करें",
   "invoicesViewSendSubtitle": "PDF देखें और भेजें",
   "monthlyYearlySubtitle": "मासिक / वार्षिक",
   "businessProfileSubtitle": "प्रोफाइल / लोगो / टैक्स",
-
   "invoiceCount": "{count} इनवॉइस",
-  "@invoiceCount": { "placeholders": { "count": {} } },
-
+  "@invoiceCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "paywallTitle": "Ez Invoice Pro",
   "close": "बंद करें",
   "paywallHeaderTitle": "अपने बिज़नेस के लिए सब कुछ अनलॉक करें",
   "paywallHeaderSubtitle": "कोई विज्ञापन नहीं • अनलिमिटेड इनवॉइस • टैक्स रिपोर्ट्स • प्रीमियम टेम्पलेट्स",
-
   "bestValue": "सबसे बढ़िया",
   "proYearly": "Pro वार्षिक",
   "saveMoreYearly": "सालाना भुगतान पर अधिक बचत",
   "proMonthly": "Pro मासिक",
   "flexible": "लचीला",
   "cancelAnytime": "कभी भी कैंसिल करें",
-
   "processingPurchase": "खरीद प्रोसेस हो रही है…",
   "restoringPurchases": "खरीदें रिस्टोर हो रही हैं…",
   "restorePurchases": "खरीदें रिस्टोर करें",
   "continueFreeWithAds": "विज्ञापनों के साथ फ्री वर्ज़न जारी रखें",
-
   "alreadyProTitle": "आप Pro हैं ✅",
   "alreadyProBody": "अनलिमिटेड इनवॉइस, रिपोर्ट्स और बिना विज्ञापन का आनंद लें।",
   "continueText": "जारी रखें",
-
   "includesInPro": "Pro में शामिल",
   "benefitNoAds": "कोई विज्ञापन नहीं (Banner/Interstitial/Rewarded)",
   "benefitUnlimitedInvoices": "अनलिमिटेड इनवॉइस + स्टेटस (ड्राफ्ट/सेंट/पेड)",
@@ -98,179 +85,215 @@
   "benefitTaxReports": "टैक्स रिपोर्ट्स: मासिक और वार्षिक (टैक्स/टिप/नेट)",
   "benefitExport": "PDF/CSV/Excel एक्सपोर्ट (अकाउंटिंग के लिए)",
   "benefitCloudBackup": "क्लाउड बैकअप + रिस्टोर (मल्टी-डिवाइस)",
-
   "continueWithPlan": "{plan} के साथ जारी रखें",
-  "@continueWithPlan": { "placeholders": { "plan": {} } },
-
+  "@continueWithPlan": {
+    "placeholders": {
+      "plan": {}
+    }
+  },
   "paywallFinePrint": "सब्सक्राइब करने पर भुगतान आपके {store} अकाउंट से लिया जाएगा। सब्सक्रिप्शन अपने आप रिन्यू होता है जब तक कि आप वर्तमान अवधि खत्म होने से कम से कम 24 घंटे पहले कैंसिल न करें। आप स्टोर सेटिंग्स में सब्सक्रिप्शन मैनेज या कैंसिल कर सकते हैं।",
-  "@paywallFinePrint": { "placeholders": { "store": {} } },
-
+  "@paywallFinePrint": {
+    "placeholders": {
+      "store": {}
+    }
+  },
   "reportsTitle": "रिपोर्ट्स",
   "proBadge": "PRO",
-
   "byMonth": "महीने के अनुसार",
   "byYear": "साल के अनुसार",
   "monthLabel": "महीना",
   "yearLabel": "साल",
-
   "businessProfileTitle": "बिज़नेस प्रोफाइल",
   "save": "सेव करें",
   "uploadLogo": "लोगो अपलोड करें",
   "remove": "हटाएं",
-
   "businessNameLabel": "बिज़नेस नाम",
   "ownerNameLabel": "ओनर / कॉन्टैक्ट नाम",
   "phoneLabel": "फ़ोन",
   "addressLabel": "पता",
-
   "currencyLabel": "मुद्रा",
   "taxDefaultLabel": "डिफ़ॉल्ट टैक्स (%)",
-
   "invalidNumber": "अमान्य संख्या",
   "range0to100": "0 से 100 के बीच होना चाहिए",
   "requiredField": "आवश्यक",
-
   "footerNoteLabel": "फुटर नोट (PDF)",
   "saveChanges": "परिवर्तन सेव करें",
-
   "businessFooterDefault": "आपके बिज़नेस के लिए धन्यवाद।",
   "businessSavedSuccess": "बिज़नेस प्रोफाइल सफलतापूर्वक सेव हुआ",
-
   "businessInfoSection": "बिज़नेस जानकारी",
   "settingsSection": "सेटिंग्स",
   "footerSection": "फुटर नोट (PDF)",
   "upgradeToPro": "Pro में अपग्रेड करें",
-
   "bestValueStar": "⭐ सबसे बढ़िया",
-
   "invoicesTitle": "इनवॉइस",
   "noInvoicesYet": "अभी कोई इनवॉइस नहीं।",
-
   "freePlanMonthlyLimitBanner": "फ्री प्लान: मासिक सीमा {limit} इनवॉइस • अनलिमिटेड के लिए अपग्रेड",
-  "@freePlanMonthlyLimitBanner": { "placeholders": { "limit": {} } },
-
+  "@freePlanMonthlyLimitBanner": {
+    "placeholders": {
+      "limit": {}
+    }
+  },
   "filtersTitle": "फ़िल्टर",
   "clientLabel": "क्लाइंट",
   "allMonths": "सभी महीने",
   "allClients": "सभी क्लाइंट",
   "clear": "क्लियर",
-
   "invoicesSummaryLabel": "इनवॉइस",
   "totalTitle": "कुल",
   "dateLabel": "तारीख",
-
   "noResultsForFilters": "चुने हुए फ़िल्टर के लिए कोई परिणाम नहीं।",
-
   "freePlanLimitDialogBody": "फ्री प्लान: {current} / {limit} इनवॉइस इस महीने।\n\nअनलिमिटेड के लिए Pro में अपग्रेड करें।",
-  "@freePlanLimitDialogBody": { "placeholders": { "current": {}, "limit": {} } },
-
+  "@freePlanLimitDialogBody": {
+    "placeholders": {
+      "current": {},
+      "limit": {}
+    }
+  },
   "deleteInvoiceTitle": "इनवॉइस हटाएं?",
   "deleteInvoiceBody": "क्या आप वाकई {invNo} हटाना चाहते हैं?",
-  "@deleteInvoiceBody": { "placeholders": { "invNo": {} } },
-
+  "@deleteInvoiceBody": {
+    "placeholders": {
+      "invNo": {}
+    }
+  },
   "cancel": "रद्द करें",
   "delete": "हटाएं",
   "edit": "एडिट",
   "sendPdf": "PDF भेजें",
-
   "shareInvoiceText": "इनवॉइस {invNo} - {client}",
-  "@shareInvoiceText": { "placeholders": { "invNo": {}, "client": {} } },
-
+  "@shareInvoiceText": {
+    "placeholders": {
+      "invNo": {},
+      "client": {}
+    }
+  },
   "pdfSendError": "PDF बनाने/भेजने में त्रुटि: {error}",
-  "@pdfSendError": { "placeholders": { "error": {} } },
-
+  "@pdfSendError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "reportTitleMonth": "रिपोर्ट • {month} {year}",
-  "@reportTitleMonth": { "placeholders": { "month": {}, "year": {} } },
-
+  "@reportTitleMonth": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
   "reportTitleYear": "रिपोर्ट • वर्ष {year}",
-  "@reportTitleYear": { "placeholders": { "year": {} } },
-
+  "@reportTitleYear": {
+    "placeholders": {
+      "year": {}
+    }
+  },
   "invoicesLine": "इनवॉइस: {count}",
-  "@invoicesLine": { "placeholders": { "count": {} } },
-
+  "@invoicesLine": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "totalSalesLine": "कुल सेल्स: ${amount}",
-  "@totalSalesLine": { "placeholders": { "amount": {} } },
-
+  "@totalSalesLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "totalTaxLine": "कुल टैक्स: ${amount}",
-  "@totalTaxLine": { "placeholders": { "amount": {} } },
-
+  "@totalTaxLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "totalTipLine": "कुल टिप: ${amount}",
-  "@totalTipLine": { "placeholders": { "amount": {} } },
-
+  "@totalTipLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "netLine": "नेट: ${amount}",
-  "@netLine": { "placeholders": { "amount": {} } },
-
+  "@netLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "calculatedFromInvoices": "Firestore में आपके इनवॉइस से गणना की गई।",
   "noInvoicesInPeriod": "उस अवधि में कोई इनवॉइस नहीं।",
-
   "exportPdf": "PDF एक्सपोर्ट",
   "exportCsv": "CSV एक्सपोर्ट",
-
   "yearlyProReason": "वार्षिक रिपोर्ट PRO है। अनलॉक करने के लिए अपग्रेड करें।",
   "exportPdfProReason": "रिपोर्ट PDF एक्सपोर्ट PRO है।",
   "exportCsvProReason": "CSV एक्सपोर्ट PRO है।",
-
   "noDataToExport": "एक्सपोर्ट करने के लिए कोई डेटा नहीं।",
   "freePlanReportsNote": "फ्री प्लान: केवल मासिक रिपोर्ट्स। वार्षिक रिपोर्ट्स और एक्सपोर्ट के लिए अपग्रेड करें।",
-
   "genericError": "कुछ गलत हो गया। फिर से कोशिश करें।",
-
   "newInvoiceTitle": "नया इनवॉइस",
   "editInvoiceTitle": "इनवॉइस एडिट करें",
   "pickClient": "क्लाइंट चुनें",
-
   "invoiceAutoNumberLabel": "इनवॉइस # (ऑटो)",
   "invoiceDateLabel": "इनवॉइस तारीख: {date}",
-  "@invoiceDateLabel": { "placeholders": { "date": {} } },
-
+  "@invoiceDateLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
   "clientNameLabel": "क्लाइंट नाम",
   "clientNameRequired": "क्लाइंट नाम आवश्यक है",
   "clientEmailOptionalLabel": "क्लाइंट ईमेल (वैकल्पिक)",
   "clientPhoneOptionalLabel": "क्लाइंट फ़ोन (वैकल्पिक)",
   "invalidEmailFormat": "अमान्य ईमेल फ़ॉर्मेट",
-
   "itemsTitle": "आइटम्स",
   "descriptionLabel": "विवरण",
   "itemDateLabel": "आइटम तारीख: {date}",
-  "@itemDateLabel": { "placeholders": { "date": {} } },
-
+  "@itemDateLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
   "qtyLabel": "मात्रा",
   "priceLabel": "कीमत",
   "lineTotalLabel": "लाइन टोटल: ${amount}",
-  "@lineTotalLabel": { "placeholders": { "amount": {} } },
-
+  "@lineTotalLabel": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "taxDefaultOwnerLabel": "टैक्स % (डिफ़ॉल्ट ओनर)",
-
   "tipPercentChip": "टिप %",
   "tipAmountChip": "टिप $",
   "tipPercentLabel": "टिप प्रतिशत (%)",
   "tipAmountLabel": "टिप राशि ($)",
-
   "messageOptionalLabel": "मैसेज (वैकल्पिक)",
-
   "totalsBlock": "सबटोटल: ${sub}\nटैक्स: ${tax}\nटिप: ${tip}\nटोटल: ${total}",
   "@totalsBlock": {
-    "placeholders": { "sub": {}, "tax": {}, "tip": {}, "total": {} }
+    "placeholders": {
+      "sub": {},
+      "tax": {},
+      "tip": {},
+      "total": {}
+    }
   },
-
   "saving": "सेव हो रहा है…",
   "saveInvoice": "इनवॉइस सेव करें",
   "updateInvoice": "इनवॉइस अपडेट करें",
-
   "addAtLeastOneItem": "कम से कम 1 आइटम जोड़ें",
   "errorSavingInvoice": "इनवॉइस सेव करने में त्रुटि: {error}",
-  "@errorSavingInvoice": { "placeholders": { "error": {} } },
-
+  "@errorSavingInvoice": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "savedTab": "सेव्ड",
   "contactsTab": "कॉन्टैक्ट्स",
   "noSavedClients": "कोई सेव्ड क्लाइंट नहीं",
   "permissionDeniedContacts": "परमिशन डिनाइड: कॉन्टैक्ट्स",
   "noContactsFound": "इस डिवाइस/एमुलेटर पर कोई कॉन्टैक्ट नहीं मिला",
   "contactsError": "कॉन्टैक्ट त्रुटि: {error}",
-  "@contactsError": { "placeholders": { "error": {} } },
-
+  "@contactsError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "noName": "(कोई नाम नहीं)",
-
   "newClientTitle": "नया क्लाइंट",
   "editClientTitle": "क्लाइंट एडिट करें",
   "clientInfoSection": "क्लाइंट जानकारी",
@@ -279,30 +302,36 @@
   "clientCreateHint": "टिप: तेज़ी से इनवॉइस भेजने के लिए ईमेल/फ़ोन जोड़ें।",
   "clientEditHint": "आप कभी भी क्लाइंट जानकारी अपडेट कर सकते हैं।",
   "errorSavingClient": "क्लाइंट सेव करने में त्रुटि: {error}",
-  "@errorSavingClient": { "placeholders": { "error": {} } },
-
+  "@errorSavingClient": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "clientsTitle": "क्लाइंट्स",
   "searchClientsLabel": "क्लाइंट खोजें",
   "clientsCount": "{count} क्लाइंट",
-  "@clientsCount": { "placeholders": { "count": {} } },
-
+  "@clientsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "noClientsYet": "अभी कोई क्लाइंट नहीं।",
   "noClientsForSearch": "आपकी खोज से कोई क्लाइंट मेल नहीं खाता।",
-
   "cannotOpenDialer": "डायलर नहीं खुल सका",
   "cannotOpenSms": "SMS नहीं खुल सका",
   "whatsAppNotAvailable": "WhatsApp उपलब्ध नहीं",
   "cannotOpenEmail": "ईमेल नहीं खुल सका",
-
   "deleteClientTitle": "क्लाइंट हटाएं?",
   "deleteClientBody": "{name} हटाएं?",
-  "@deleteClientBody": { "placeholders": { "name": {} } },
-
+  "@deleteClientBody": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "call": "कॉल",
   "sms": "SMS",
   "whatsapp": "WhatsApp",
   "emailAction": "ईमेल",
-
   "shareAppTitle": "EzInvoice आज़माएं 👇",
   "shareAppBody": "इनवॉइस बनाएं, PDFs भेजें, और रिपोर्ट्स आसानी से ट्रैक करें।",
   "shareAppTooltip": "ऐप शेयर करें",
@@ -311,7 +340,6 @@
   "openWebsiteTooltip": "वेबसाइट खोलें",
   "availableLanguages": "उपलब्ध भाषाएँ",
   "usePhoneLanguage": "फोन की भाषा उपयोग करें",
-
   "shareReceiptText": "रसीद {invoiceNumber} — {clientName} के लिए",
   "@shareReceiptText": {
     "placeholders": {
@@ -319,7 +347,6 @@
       "clientName": {}
     }
   },
-
   "report": "रिपोर्ट",
   "invoicesLabel": "इनवॉइस",
   "totalSalesLabel": "कुल सेल्स",
@@ -337,31 +364,30 @@
   "deleteAccountWarning": "この操作を行うと、アカウントおよび関連するすべてのデータが完全に削除されます。",
   "deleteAccountButton": "アカウントを削除",
   "deleteAccountConfirmTitle": "削除の確認",
-  "deleteAccountConfirmMessage": "本当に削除しますか？この操作は元に戻せません。"
-,
-  "servicePresetsTitle": "Service presets",
-  "servicePresetsScreenTitle": "Service Presets",
-  "servicePresetsAddNew": "Add new preset",
-  "servicePresetsHint": "e.g. Cleaning, Repair, Consultation...",
-  "servicePresetsAddButton": "Add",
-  "addServiceLabel": "Add a service",
-  "yourPresets": "Your presets",
-  "noPresetsYet": "No presets yet.",
-  "notNow": "Not now",
-  "openPaywallPlaceholder": "Open Paywall (connect PaywallScreen here)",
-  "invoiceStyleTitle": "Invoice style",
-  "invoiceFreeStyleHint": "Free plan uses one invoice version (Minimal). Upgrade to Pro to unlock all layouts and palettes.",
-  "invoicePaletteLabel": "Invoice palette",
-  "invoiceLayoutLabel": "Invoice layout",
-  "saveInvoicePaletteError": "Could not save invoice palette.",
-  "saveInvoiceLayoutError": "Could not save invoice layout.",
-  "reportStyleTitle": "Report style",
-  "reportFreeStyleHint": "Free plan uses one report version (Minimal). Upgrade to Pro to unlock all layouts and palettes.",
-  "reportPaletteLabel": "Report palette",
-  "reportLayoutLabel": "Report layout",
-  "saveReportPaletteError": "Could not save report palette.",
-  "saveReportLayoutError": "Could not save report layout.",
-  "stylePaletteFootnote": "{docType} style: {style} | Palette: {palette}",
+  "deleteAccountConfirmMessage": "本当に削除しますか？この操作は元に戻せません。",
+  "servicePresetsTitle": "सहेजी गई सेवाएँ",
+  "servicePresetsScreenTitle": "सहेजी गई सेवाएँ",
+  "servicePresetsAddNew": "नई सेवा जोड़ें",
+  "servicePresetsHint": "जैसे सफाई, मरम्मत, परामर्श...",
+  "servicePresetsAddButton": "जोड़ें",
+  "addServiceLabel": "सेवा जोड़ें",
+  "yourPresets": "आपकी सहेजी गई सेवाएँ",
+  "noPresetsYet": "अभी कोई सहेजी गई सेवा नहीं है।",
+  "notNow": "अभी नहीं",
+  "openPaywallPlaceholder": "सदस्यताएँ खोलें",
+  "invoiceStyleTitle": "इनवॉइस शैली",
+  "invoiceFreeStyleHint": "मुफ्त योजना में एक इनवॉइस संस्करण (Minimal) है। सभी लेआउट और पैलेट खोलने के लिए Pro में अपग्रेड करें।",
+  "invoicePaletteLabel": "इनवॉइस पैलेट",
+  "invoiceLayoutLabel": "इनवॉइस लेआउट",
+  "saveInvoicePaletteError": "इनवॉइस पैलेट सहेजा नहीं जा सका।",
+  "saveInvoiceLayoutError": "इनवॉइस लेआउट सहेजा नहीं जा सका।",
+  "reportStyleTitle": "रिपोर्ट शैली",
+  "reportFreeStyleHint": "मुफ्त योजना में एक रिपोर्ट संस्करण (Minimal) है। सभी लेआउट और पैलेट खोलने के लिए Pro में अपग्रेड करें।",
+  "reportPaletteLabel": "रिपोर्ट पैलेट",
+  "reportLayoutLabel": "रिपोर्ट लेआउट",
+  "saveReportPaletteError": "रिपोर्ट पैलेट सहेजा नहीं जा सका।",
+  "saveReportLayoutError": "रिपोर्ट लेआउट सहेजा नहीं जा सका।",
+  "stylePaletteFootnote": "{docType} शैली: {style} | पैलेट: {palette}",
   "@stylePaletteFootnote": {
     "placeholders": {
       "docType": {},
@@ -377,5 +403,407 @@
   "profileDefaults": "इनवॉइस के डिफ़ॉल्ट",
   "profileTaxInvalid": "कर दर जाँचें (0–100%)।",
   "metricLoadError": "रिपोर्ट लोड नहीं हो सकी। फिर कोशिश करें।",
-  "totalInvoicedTitle": "कुल बिल राशि"
+  "totalInvoicedTitle": "कुल बिल राशि",
+  "versionLabel": "संस्करण {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "errorWithDetails": "त्रुटि: {error}",
+  "@errorWithDetails": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "rememberEmail": "मेरा ईमेल याद रखें",
+  "forgotPassword": "पासवर्ड भूल गए?",
+  "passwordResetEnterEmail": "रीसेट लिंक भेजने के लिए अपना ईमेल दर्ज करें।",
+  "passwordResetSent": "हमने पासवर्ड रीसेट करने के लिए ईमेल भेजा है। स्पैम या जंक फ़ोल्डर देखें।",
+  "passwordResetNoAccount": "इस ईमेल के लिए कोई खाता नहीं मिला।",
+  "invalidEmail": "अमान्य ईमेल।",
+  "passwordResetError": "ईमेल भेजा नहीं जा सका। फिर से प्रयास करें।",
+  "updateRequired": "अपडेट आवश्यक है",
+  "updateRequiredBody": "Ez Invoice का नया संस्करण उपलब्ध है। जारी रखने के लिए स्टोर से ऐप अपडेट करें।",
+  "updateNow": "अभी अपडेट करें",
+  "open": "खोलें",
+  "share": "साझा करें",
+  "actions": "क्रियाएं",
+  "message": "संदेश",
+  "done": "हो गया",
+  "confirm": "पुष्टि करें",
+  "free": "मुफ़्त",
+  "clientInformation": "ग्राहक जानकारी",
+  "clientName": "ग्राहक का नाम",
+  "notesOptional": "नोट्स (वैकल्पिक)",
+  "saveClient": "ग्राहक सहेजें",
+  "importFromContacts": "संपर्कों से आयात करें",
+  "importContactsDescription": "नाम, फोन और ईमेल तुरंत भरें।",
+  "loadContacts": "संपर्क लोड करें",
+  "clientPhone": "ग्राहक का फ़ोन",
+  "searchContacts": "संपर्क खोजें",
+  "shareClient": "ग्राहक साझा करें",
+  "clientProfile": "ग्राहक प्रोफ़ाइल",
+  "chooseSavedService": "सहेजी गई सेवा चुनें",
+  "searchSavedServices": "सहेजी गई सेवाएं खोजें",
+  "noSavedServicesFound": "कोई सहेजी गई सेवा नहीं मिली",
+  "noSavedServicesToUse": "अभी कोई सहेजी गई सेवा नहीं है। ऊपर एक लिखें और बाद के लिए सहेजें।",
+  "savedServiceAlreadyExists": "पहले से सहेजा गया: {service}",
+  "@savedServiceAlreadyExists": {
+    "placeholders": {
+      "service": {}
+    }
+  },
+  "savedService": "सेवा सहेजी गई: {service}",
+  "@savedService": {
+    "placeholders": {
+      "service": {}
+    }
+  },
+  "savePresetError": "सेवा सहेजी नहीं जा सकी: {error}",
+  "@savePresetError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "saveServiceForLater": "सेवा को बाद के लिए सहेजें",
+  "removeClient": "ग्राहक हटाएं",
+  "service": "सेवा",
+  "taxAndTip": "कर और टिप",
+  "totals": "योग",
+  "dueDate": "देय तिथि: {date}",
+  "@dueDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "paidDate": "भुगतान तिथि: {date}",
+  "@paidDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "notPaidYet": "अभी भुगतान नहीं हुआ",
+  "paymentMethodWithValue": "तरीका: {method}",
+  "@paymentMethodWithValue": {
+    "placeholders": {
+      "method": {}
+    }
+  },
+  "paymentNoteWithValue": "नोट: {note}",
+  "@paymentNoteWithValue": {
+    "placeholders": {
+      "note": {}
+    }
+  },
+  "markAsPaid": "भुगतान के रूप में चिह्नित करें",
+  "markAsUnpaid": "अवैतनिक के रूप में चिह्नित करें",
+  "editTax": "संपादित करें",
+  "addClient": "ग्राहक जोड़ें",
+  "firstClientHint": "भविष्य के चालानों में उपयोग के लिए अपना पहला ग्राहक बनाएं।",
+  "searchSavedClients": "सहेजे गए ग्राहक खोजें",
+  "paymentMethod": "भुगतान का तरीका",
+  "cash": "नकद",
+  "card": "कार्ड",
+  "check": "चेक",
+  "other": "अन्य",
+  "noteOptional": "नोट (वैकल्पिक)",
+  "invoiceMarkPaidError": "चालान को भुगतान के रूप में चिह्नित नहीं किया जा सका: {error}",
+  "@invoiceMarkPaidError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkUnpaidError": "चालान को अवैतनिक के रूप में चिह्नित नहीं किया जा सका: {error}",
+  "@invoiceMarkUnpaidError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "deleteError": "चालान हटाया नहीं जा सका: {error}",
+  "@deleteError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceDeleted": "चालान हटा दिया गया",
+  "invoiceMarkedSent": "भेजा गया के रूप में चिह्नित ✅",
+  "invoiceMarkSentError": "भेजा गया के रूप में चिह्नित नहीं किया जा सका: {error}",
+  "@invoiceMarkSentError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkedUnsent": "न भेजे गए के रूप में चिह्नित ✅",
+  "invoiceMarkUnsentError": "न भेजे गए के रूप में चिह्नित नहीं किया जा सका: {error}",
+  "@invoiceMarkUnsentError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkedPaid": "भुगतान के रूप में चिह्नित ✅",
+  "invoiceMarkedUnpaid": "अवैतनिक के रूप में चिह्नित ✅",
+  "invoiceLoadingError": "चालान लोड नहीं किए जा सके",
+  "tipType": "टिप का प्रकार",
+  "amountOption": "राशि ($)",
+  "percentageOption": "प्रतिशत (%)",
+  "pdfPreview": "PDF पूर्वावलोकन",
+  "openPdf": "PDF खोलें",
+  "sharePdf": "PDF साझा करें",
+  "selectReportMonth": "रिपोर्ट माह चुनें",
+  "reportForBusiness": "रिपोर्ट • {business}",
+  "@reportForBusiness": {
+    "placeholders": {
+      "business": {}
+    }
+  },
+  "tapToChangeMonth": "महीना बदलने के लिए टैप करें",
+  "csvSaved": "CSV सहेजा गया: {path}",
+  "@csvSaved": {
+    "placeholders": {
+      "path": {}
+    }
+  },
+  "csvExportError": "CSV निर्यात नहीं किया जा सका: {error}",
+  "@csvExportError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "aboutTitle": "ऐप के बारे में",
+  "aboutTagline": "गतिशील व्यवसायों के लिए स्पष्ट इनवॉइस",
+  "aboutAppTitle": "ऐप",
+  "aboutAppBody": "EzInvoice चालान, ग्राहक, भुगतान और रिपोर्ट को एक सरल प्रवाह में लाता है, ताकि आप महत्वपूर्ण चीजें देख सकें और आत्मविश्वास से भुगतान पा सकें।",
+  "aboutCompanyTitle": "कंपनी",
+  "aboutCompanyBody": "Liisgo LLC छोटे व्यवसायों को अधिक व्यवस्थित, स्पष्ट और आत्मविश्वास से काम करने में मदद करने वाले व्यावहारिक उपकरण बनाती है।",
+  "aboutPromiseTitle": "आपके रोज़मर्रा के लिए बनाया गया",
+  "aboutPromiseBody": "EzInvoice का हर निर्णय चरणों को कम करने, विवरणों को दिखाई देने और आपके व्यवसाय को चलाना आसान बनाने के लिए है।",
+  "visitLiisgo": "Liisgo पर जाएँ",
+  "contactSupport": "सहायता से संपर्क करें",
+  "shareEzInvoice": "EzInvoice साझा करें",
+  "sendIdeaOrBug": "विचार या बग भेजें",
+  "feedbackTitle": "आपकी प्रतिक्रिया मायने रखती है",
+  "feedbackSubtitle": "हमें बताएं कि आप क्या सुधारना चाहेंगे या क्या ठीक से काम नहीं किया।",
+  "feedbackIdea": "विचार",
+  "feedbackBug": "बग",
+  "feedbackHint": "अपना विचार लिखें या बताएं कि क्या हुआ…",
+  "feedbackRequired": "भेजने से पहले एक संदेश लिखें।",
+  "continueToEmail": "ईमेल पर जारी रखें",
+  "couldNotOpenLink": "यह लिंक नहीं खोला जा सका।",
+  "shareAppText": "EzInvoice Pro देखें: चालान, ग्राहक और रिपोर्ट एक ही जगह।\n{storeUrl}",
+  "@shareAppText": {
+    "placeholders": {
+      "storeUrl": {}
+    }
+  },
+  "feedbackEmailSubject": "EzInvoice के लिए {kind}",
+  "@feedbackEmailSubject": {
+    "placeholders": {
+      "kind": {}
+    }
+  },
+  "supportEmailSubject": "EzInvoice सहायता",
+  "changePassword": "पासवर्ड बदलें",
+  "changePasswordSubtitle": "अपने खाते का पासवर्ड अपडेट करें।",
+  "confirmCurrentPasswordHint": "सुरक्षा के लिए पहले अपना वर्तमान पासवर्ड पुष्टि करें।",
+  "currentPassword": "वर्तमान पासवर्ड",
+  "newPassword": "नया पासवर्ड",
+  "confirmNewPassword": "नए पासवर्ड की पुष्टि करें",
+  "updatePassword": "पासवर्ड अपडेट करें",
+  "passwordAtLeastSix": "कम से कम 6 वर्ण होने चाहिए।",
+  "noActiveSession": "कोई सक्रिय सत्र नहीं है।",
+  "passwordsDoNotMatch": "नया पासवर्ड मेल नहीं खाता।",
+  "passwordMustDiffer": "नया पासवर्ड अलग होना चाहिए।",
+  "passwordUpdated": "पासवर्ड सफलतापूर्वक अपडेट हो गया।",
+  "incorrectPassword": "वर्तमान पासवर्ड गलत है।",
+  "weakPassword": "नया पासवर्ड बहुत कमजोर है।",
+  "reauthenticationNeeded": "सुरक्षा के लिए फिर से साइन इन करें और दोबारा प्रयास करें।",
+  "changePasswordError": "पासवर्ड बदला नहीं जा सका।",
+  "confirmPassword": "पासवर्ड की पुष्टि करें",
+  "reauthCancelled": "पुनः प्रमाणीकरण रद्द कर दिया गया।",
+  "accountDeleted": "आपका खाता और डेटा स्थायी रूप से हटा दिया गया।",
+  "deleteAccountIncorrectPassword": "पासवर्ड गलत है।",
+  "deleteAccountError": "खाता हटाया नहीं जा सका।",
+  "deleteAccountBody": "यदि आप अपना खाता हटाते हैं:\n\n• आपके ग्राहक, चालान, रिपोर्ट और व्यावसायिक प्रोफ़ाइल स्थायी रूप से हटा दिए जाएंगे।\n• इस कार्रवाई को वापस नहीं किया जा सकता।\n• यदि आपकी सदस्यता सक्रिय है, तो उसे App Store/Google Play में प्रबंधित या रद्द करें।",
+  "termsConditions": "नियम और शर्तें",
+  "agreeTermsPrivacy": "कृपया पहले नियम और शर्तों तथा गोपनीयता नीति से सहमत हों।",
+  "currentPlan": "वर्तमान योजना",
+  "currentPlanFree": "वर्तमान योजना: मुफ़्त",
+  "proPlanDescription": "मुफ़्त योजना में विज्ञापन और सीमित उपयोग शामिल है। Pro विज्ञापन हटाता है और असीमित चालान, रिपोर्ट, प्रीमियम टेम्पलेट, निर्यात और क्लाउड बैकअप खोलता है।",
+  "adsIncluded": "विज्ञापन शामिल",
+  "limitedInvoicesPerMonth": "हर महीने सीमित चालान",
+  "basicInvoiceStyle": "मूल चालान शैली",
+  "basicReports": "मूल रिपोर्ट",
+  "pdfIncludesBranding": "PDF में EzInvoice ब्रांडिंग शामिल है",
+  "unpaidLabel": "अवैतनिक",
+  "loading": "लोड हो रहा है...",
+  "store": "स्टोर",
+  "storeProductLoadingOne": "एक सदस्यता उत्पाद अभी लोड हो रहा है। दूसरा उत्पाद लोड होने तक आप उपलब्ध योजना के साथ जारी रख सकते हैं।",
+  "storeProductsLoading": "स्टोर सदस्यता उत्पादों से कनेक्ट किया जा रहा है। यदि लोडिंग पूरी नहीं होती, तो अपने स्टोर कंसोल में सदस्यताओं की तैयारी जांचें।",
+  "agreeTo": "मैं सहमत हूं ",
+  "and": " और ",
+  "currentProPlanDescription": "आपके पास पहले से Ez Invoice Pro है। आप नीचे दोनों सदस्यता विकल्पों की समीक्षा कर सकते हैं।",
+  "freeVsPro": "मुफ़्त बनाम {pro}",
+  "@freeVsPro": {
+    "placeholders": {
+      "pro": {}
+    }
+  },
+  "openInvoices": "चालान खोलें।",
+  "allCaughtUp": "सब ठीक है",
+  "itemsToReview": "{count} समीक्षा के लिए",
+  "@itemsToReview": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "pdfInvoice": "चालान",
+  "pdfReceipt": "रसीद",
+  "pdfBusiness": "व्यवसाय",
+  "pdfPhone": "फ़ोन",
+  "pdfEmail": "ईमेल",
+  "pdfNumber": "संख्या",
+  "pdfDate": "तारीख",
+  "pdfDue": "देय",
+  "pdfPaid": "भुगतान किया",
+  "pdfPaidDate": "भुगतान तिथि",
+  "pdfMethod": "तरीका",
+  "pdfBillTo": "बिल भेजें",
+  "pdfClient": "ग्राहक",
+  "pdfDescription": "विवरण",
+  "pdfQuantity": "मात्रा",
+  "pdfPrice": "कीमत",
+  "pdfSubtotal": "उप-योग",
+  "pdfTax": "कर",
+  "pdfTaxWithRate": "कर ({rate}%)",
+  "@pdfTaxWithRate": {
+    "placeholders": {
+      "rate": {}
+    }
+  },
+  "pdfTip": "टिप",
+  "pdfTipWithRate": "टिप ({rate}%)",
+  "@pdfTipWithRate": {
+    "placeholders": {
+      "rate": {}
+    }
+  },
+  "pdfDiscount": "छूट",
+  "pdfMessage": "संदेश",
+  "pdfPaymentNote": "भुगतान नोट",
+  "pdfThankYou": "आपके व्यवसाय के लिए धन्यवाद।",
+  "pdfPoweredBy": "EzInvoice द्वारा संचालित",
+  "pdfFreeVersion": "मुफ़्त संस्करण",
+  "pdfTotal": "कुल",
+  "styleMinimal": "न्यूनतम",
+  "styleProfessional": "पेशेवर",
+  "styleCorporate": "कॉर्पोरेट",
+  "styleModern": "आधुनिक",
+  "styleSlate": "स्लेट",
+  "reportDocument": "रिपोर्ट",
+  "reportPrintDocument": "रिपोर्ट प्रिंट करें",
+  "reportMonth": "माह",
+  "reportYear": "वर्ष",
+  "reportGeneratedOn": "जनरेट किया गया",
+  "reportInvoices": "इनवॉइस",
+  "reportStatus": "स्थिति",
+  "reportTotals": "कुल",
+  "reportSales": "बिक्री",
+  "reportTotalTax": "कुल कर",
+  "reportTotalTip": "कुल टिप",
+  "reportTotalInvoiced": "कुल इनवॉइस",
+  "reportUnsent": "नहीं भेजा गया",
+  "reportSent": "भेजा गया",
+  "reportPaid": "भुगतान किया गया",
+  "reportOverdue": "अतिदेय",
+  "reportInvoiceNumber": "इनवॉइस नं.",
+  "reportClient": "ग्राहक",
+  "reportDueDate": "देय तिथि",
+  "reportDescription": "विवरण",
+  "reportDate": "तारीख",
+  "reportFreeVersion": "मुफ्त संस्करण",
+  "reportPoweredBy": "EzInvoice द्वारा संचालित",
+  "reportPdfShareText": "PDF रिपोर्ट: {title}",
+  "@reportPdfShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportCsvShareText": "CSV रिपोर्ट: {title}",
+  "@reportCsvShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportPrintShareText": "प्रिंट: {title}",
+  "@reportPrintShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportFileMonthly": "रिपोर्ट_{month}_{year}",
+  "@reportFileMonthly": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
+  "reportFileYearly": "रिपोर्ट_वर्ष_{year}",
+  "@reportFileYearly": {
+    "placeholders": {
+      "year": {}
+    }
+  },
+  "reportTextMonthly": "रिपोर्ट | {month} {year}",
+  "@reportTextMonthly": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
+  "reportTextYearly": "रिपोर्ट | {year}",
+  "@reportTextYearly": {
+    "placeholders": {
+      "year": {}
+    }
+  },
+  "reportBreakdown": "विवरण",
+  "reportInvoicesStatus": "इनवॉइस स्थिति",
+  "viewReport": "रिपोर्ट देखें",
+  "reviewBeforeExport": "निर्यात करने से पहले PDF या CSV देखें।",
+  "customizeReport": "रिपोर्ट को अनुकूलित करें",
+  "reportPreviewUpdates": "बदलाव आपकी झलक में तुरंत दिखाई देंगे।",
+  "yourReportPreview": "आपकी रिपोर्ट की झलक",
+  "reportStyleLiveHint": "डिज़ाइन बदलें और उसे लाइव देखें।",
+  "watchAdToExportReport": "इस रिपोर्ट को निर्यात करने के लिए पूरा विज्ञापन देखें। बिना विज्ञापन निर्यात करने के लिए Pro में अपग्रेड करें।",
+  "reportExportError": "रिपोर्ट निर्यात नहीं की जा सकी: {error}",
+  "@reportExportError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "shareCsvFile": "CSV फ़ाइल साझा करें",
+  "shareCsvFileDescription": "ईमेल, Drive या किसी अन्य ऐप से .csv संलग्नक साझा करें।",
+  "shareReportAsText": "टेक्स्ट के रूप में साझा करें (WhatsApp / SMS)",
+  "shareReportAsTextDescription": "रिपोर्ट सारांश टेक्स्ट के रूप में भेजें।",
+  "printCsv": "CSV प्रिंट करें",
+  "printReportDescription": "रिपोर्ट को PDF तालिका के रूप में प्रिंट करें।",
+  "reportPreview": "पूर्वावलोकन",
+  "live": "लाइव",
+  "proFeatureUnlimitedInvoices": "असीमित इनवॉइस",
+  "proFeatureRemovePdfBranding": "PDF ब्रांडिंग हटाएँ",
+  "proFeatureExportCsv": "CSV निर्यात करें",
+  "proFeaturePremiumTemplates": "प्रीमियम टेम्पलेट",
+  "proFeatureDetailedTaxReport": "विस्तृत कर रिपोर्ट",
+  "proFeatureUnlimitedInvoicesDescription": "मुफ्त योजना में प्रति माह {limit} तक इनवॉइस की अनुमति है।",
+  "@proFeatureUnlimitedInvoicesDescription": {
+    "placeholders": {
+      "limit": {}
+    }
+  },
+  "proFeatureRemovePdfBrandingDescription": "PDF से “Powered by EzInvoice” हटाता है।",
+  "proFeatureExportCsvDescription": "अपने इनवॉइस CSV में निर्यात करें।",
+  "proFeaturePremiumTemplatesDescription": "प्रीमियम इनवॉइस टेम्पलेट अनलॉक करें।",
+  "proFeatureDetailedTaxReportDescription": "विस्तृत कर विवरण रिपोर्ट देखें।",
+  "pdfShareText": "EzInvoice से इनवॉइस PDF"
 }

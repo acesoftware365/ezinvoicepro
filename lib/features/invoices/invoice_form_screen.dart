@@ -120,29 +120,31 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
   }
 
   Future<void> _savePresetFromText(String text) async {
+    final t = AppLocalizations.of(context);
     final v = text.trim();
     if (v.isEmpty) return;
     if (_presets.any((preset) => preset.toLowerCase() == v.toLowerCase())) {
-      _snack('Already saved: $v');
+      _snack(t.savedServiceAlreadyExists(v));
       return;
     }
     try {
       await _bpRepo.addPreset(v);
       await _refreshPresets();
-      _snack('Saved service: $v');
+      _snack(t.savedService(v));
     } catch (e) {
-      _snack('Error saving preset: $e');
+      _snack(t.savePresetError(e));
     }
   }
 
   Future<void> _selectPresetForItem(int index) async {
+    final t = AppLocalizations.of(context);
     if (_presets.isEmpty) {
       await _refreshPresets();
     }
     if (!mounted) return;
 
     if (_presets.isEmpty) {
-      _snack('No saved services yet. Type one above, then save it for later.');
+      _snack(t.noSavedServicesToUse);
       return;
     }
 
@@ -220,7 +222,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                 ? inv.items
                 : [
                     InvoiceItem(
-                      description: 'Service',
+                      description: AppLocalizations.of(context).service,
                       dateMs: _createdAtMs,
                       qty: 1,
                       price: 0,
@@ -267,7 +269,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           ..clear()
           ..add(
             InvoiceItem(
-              description: 'Service',
+              description: AppLocalizations.of(context).service,
               dateMs: _createdAtMs,
               qty: 1,
               price: 0,
@@ -422,7 +424,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         _paymentNoteCtrl.text = res.note;
       });
     } catch (e) {
-      _snack('Error marking paid: $e');
+      _snack(AppLocalizations.of(context).invoiceMarkPaidError(e));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -443,7 +445,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
         _paymentNoteCtrl.text = '';
       });
     } catch (e) {
-      _snack('Error marking unpaid: $e');
+      _snack(AppLocalizations.of(context).invoiceMarkUnpaidError(e));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -691,7 +693,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                                     Icons.playlist_add_check_outlined,
                                     size: 18,
                                   ),
-                                  label: const Text('Choose saved service'),
+                                  label: Text(t.chooseSavedService),
                                   style: OutlinedButton.styleFrom(
                                     minimumSize: const Size.fromHeight(48),
                                     textStyle: const TextStyle(
@@ -806,7 +808,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                     }),
 
                     const SizedBox(height: 8),
-                    _sectionTitle('Tax & Tip'),
+                    _sectionTitle(t.taxAndTip),
                     const SizedBox(height: 8),
 
                     _card(child: _taxAndTipControls(t)),
@@ -827,7 +829,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                     ),
 
                     const SizedBox(height: 12),
-                    _sectionTitle('Totals'),
+                    _sectionTitle(t.totals),
                     const SizedBox(height: 8),
 
                     _card(
@@ -925,7 +927,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Due Date: ${_dueAtMs == null ? '-' : _formatDate(_dueAtMs!)}',
+                      t.dueDate(
+                        _dueAtMs == null ? '-' : _formatDate(_dueAtMs!),
+                      ),
                       style: const TextStyle(fontWeight: FontWeight.w800),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -1016,7 +1020,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
             },
             itemBuilder: (context) => [
               PopupMenuItem(value: 'change', child: Text(t.pickClient)),
-              const PopupMenuItem(value: 'clear', child: Text('Remove client')),
+              PopupMenuItem(value: 'clear', child: Text(t.removeClient)),
             ],
             icon: const Icon(Icons.more_horiz),
           ),
@@ -1025,8 +1029,24 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
     );
   }
 
+  String _paymentMethodLabel(AppLocalizations t, String method) {
+    switch (method) {
+      case PaymentMethod.cash:
+        return t.cash;
+      case PaymentMethod.zelle:
+        return 'Zelle';
+      case PaymentMethod.card:
+        return t.card;
+      case PaymentMethod.check:
+        return t.check;
+      default:
+        return t.other;
+    }
+  }
+
   // ✅ Payment UI card
   Widget _paymentCard({required bool isPaid}) {
+    final t = AppLocalizations.of(context);
     final paidDate = (_paidAtMs ?? 0) > 0 ? _formatDate(_paidAtMs!) : '-';
 
     Color badgeColor;
@@ -1034,10 +1054,10 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
 
     if (isPaid) {
       badgeColor = Colors.green.shade700;
-      badgeText = 'PAID';
+      badgeText = t.paidLabel;
     } else {
       badgeColor = Colors.orange.shade800;
-      badgeText = 'UNPAID';
+      badgeText = t.unpaidLabel;
     }
 
     return Container(
@@ -1074,7 +1094,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  isPaid ? 'Paid date: $paidDate' : 'Not paid yet',
+                  isPaid ? t.paidDate(paidDate) : t.notPaidYet,
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
                     color: Colors.black.withOpacity(0.70),
@@ -1092,7 +1112,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    'Method: ${_paymentMethod.toUpperCase()}',
+                    t.paymentMethodWithValue(
+                      _paymentMethodLabel(t, _paymentMethod),
+                    ),
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                       color: Colors.black.withOpacity(0.70),
@@ -1108,7 +1130,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Note: ${_paymentNoteCtrl.text.trim()}',
+                  t.paymentNoteWithValue(_paymentNoteCtrl.text.trim()),
                   style: TextStyle(
                     color: Colors.black.withOpacity(0.60),
                     fontWeight: FontWeight.w600,
@@ -1122,7 +1144,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
               child: OutlinedButton.icon(
                 onPressed: _saving ? null : _markUnpaid,
                 icon: const Icon(Icons.undo),
-                label: const Text('Mark as Unpaid'),
+                label: Text(t.markAsUnpaid),
               ),
             ),
           ] else ...[
@@ -1131,7 +1153,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
               child: FilledButton.icon(
                 onPressed: _saving ? null : _markPaidFlow,
                 icon: const Icon(Icons.check_circle_outline),
-                label: const Text('Mark as Paid'),
+                label: Text(t.markAsPaid),
                 style: FilledButton.styleFrom(
                   backgroundColor: brandGreen,
                   foregroundColor: Colors.white,
@@ -1364,7 +1386,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
               key: const ValueKey('edit-tax-rate'),
               onPressed: () => setState(() => _editingTaxRate = true),
               icon: const Icon(Icons.edit_outlined, size: 18),
-              label: const Text('Edit'),
+              label: Text(t.editTax),
               style: TextButton.styleFrom(
                 foregroundColor: brandGreen,
                 textStyle: const TextStyle(fontWeight: FontWeight.w800),
@@ -1392,7 +1414,7 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
           key: const ValueKey('done-editing-tax-rate'),
           onPressed: () => setState(() => _editingTaxRate = false),
           icon: const Icon(Icons.check, size: 18),
-          label: const Text('Done'),
+          label: Text(t.done),
           style: OutlinedButton.styleFrom(
             foregroundColor: brandGreen,
             minimumSize: const Size(0, 48),
@@ -1736,10 +1758,10 @@ class _ServicePresetPickerSheetState extends State<_ServicePresetPickerSheet> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'Choose saved service',
-                          style: TextStyle(
+                          AppLocalizations.of(context).chooseSavedService,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
                           ),
@@ -1750,18 +1772,22 @@ class _ServicePresetPickerSheetState extends State<_ServicePresetPickerSheet> {
                   const SizedBox(height: 14),
                   TextField(
                     onChanged: (value) => setState(() => _query = value),
-                    decoration: const InputDecoration(
-                      labelText: 'Search saved services',
-                      prefixIcon: Icon(Icons.search),
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(
+                        context,
+                      ).searchSavedServices,
+                      prefixIcon: const Icon(Icons.search),
                     ),
                   ),
                   const SizedBox(height: 12),
                   Expanded(
                     child: filtered.isEmpty
-                        ? const Center(
+                        ? Center(
                             child: Text(
-                              'No saved services found',
-                              style: TextStyle(fontWeight: FontWeight.w700),
+                              AppLocalizations.of(context).noSavedServicesFound,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           )
                         : ListView.separated(
@@ -1865,7 +1891,7 @@ class _ItemDescriptionFieldState extends State<_ItemDescriptionField> {
         labelText: widget.label,
         prefixIcon: const Icon(Icons.subject_outlined),
         suffixIcon: IconButton(
-          tooltip: 'Save service for later',
+          tooltip: AppLocalizations.of(context).saveServiceForLater,
           onPressed: widget.onSavePreset,
           icon: const Icon(Icons.bookmark_add_outlined),
         ),
@@ -1932,7 +1958,7 @@ class _ClientPickerSheetState extends State<_ClientPickerSheet> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Add a client',
+                        t.addClient,
                         style: const TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 16,
@@ -1970,7 +1996,7 @@ class _ClientPickerSheetState extends State<_ClientPickerSheet> {
                 child: TextField(
                   onChanged: (v) => setState(() => _q = v),
                   decoration: InputDecoration(
-                    hintText: 'Search saved clients',
+                    hintText: t.searchSavedClients,
                     prefixIcon: const Icon(Icons.search),
                     filled: true,
                     fillColor: Colors.black.withOpacity(0.04),
@@ -2001,7 +2027,7 @@ class _ClientPickerSheetState extends State<_ClientPickerSheet> {
                           padding: const EdgeInsets.all(24),
                           child: Text(
                             _q.trim().isEmpty
-                                ? 'Create your first client to reuse it in future invoices.'
+                                ? t.firstClientHint
                                 : t.noResultsForFilters,
                             textAlign: TextAlign.center,
                           ),
@@ -2127,30 +2153,36 @@ class _MarkPaidDialogState extends State<_MarkPaidDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Mark as Paid'),
+      title: Text(AppLocalizations.of(context).markAsPaid),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           DropdownButtonFormField<String>(
             initialValue: _method,
-            decoration: const InputDecoration(
-              labelText: 'Payment method',
-              prefixIcon: Icon(Icons.payments_outlined),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).paymentMethod,
+              prefixIcon: const Icon(Icons.payments_outlined),
             ),
-            items: const [
-              DropdownMenuItem(value: PaymentMethod.cash, child: Text('Cash')),
+            items: [
+              DropdownMenuItem(
+                value: PaymentMethod.cash,
+                child: Text(AppLocalizations.of(context).cash),
+              ),
               DropdownMenuItem(
                 value: PaymentMethod.zelle,
-                child: Text('Zelle'),
+                child: const Text('Zelle'),
               ),
-              DropdownMenuItem(value: PaymentMethod.card, child: Text('Card')),
+              DropdownMenuItem(
+                value: PaymentMethod.card,
+                child: Text(AppLocalizations.of(context).card),
+              ),
               DropdownMenuItem(
                 value: PaymentMethod.check,
-                child: Text('Check'),
+                child: Text(AppLocalizations.of(context).check),
               ),
               DropdownMenuItem(
                 value: PaymentMethod.other,
-                child: Text('Other'),
+                child: Text(AppLocalizations.of(context).other),
               ),
             ],
             onChanged: (v) =>
@@ -2160,9 +2192,9 @@ class _MarkPaidDialogState extends State<_MarkPaidDialog> {
           TextField(
             controller: _note,
             maxLines: 2,
-            decoration: const InputDecoration(
-              labelText: 'Note (optional)',
-              prefixIcon: Icon(Icons.edit_note_outlined),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).noteOptional,
+              prefixIcon: const Icon(Icons.edit_note_outlined),
             ),
           ),
         ],
@@ -2170,7 +2202,7 @@ class _MarkPaidDialogState extends State<_MarkPaidDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).cancel),
         ),
         FilledButton(
           onPressed: () {
@@ -2179,7 +2211,7 @@ class _MarkPaidDialogState extends State<_MarkPaidDialog> {
               _PayResult(method: _method, note: _note.text.trim()),
             );
           },
-          child: const Text('Confirm'),
+          child: Text(AppLocalizations.of(context).confirm),
         ),
       ],
     );

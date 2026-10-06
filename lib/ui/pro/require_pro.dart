@@ -19,8 +19,8 @@ class RequirePro {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text('${FeatureGate.title(feature)} (Pro)'),
-        content: Text(FeatureGate.subtitle(feature)),
+        title: Text('${FeatureGate.title(t, feature)} (${t.proBadge})'),
+        content: Text(FeatureGate.subtitle(t, feature)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),

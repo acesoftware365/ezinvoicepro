@@ -65,16 +65,14 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
   bool _requireLegalAgreement() {
     if (_acceptedLegal) return true;
-    _showSnack(
-      'Please agree to the Terms & Conditions and Privacy Policy first.',
-    );
+    _showSnack(AppLocalizations.of(context).agreeTermsPrivacy);
     return false;
   }
 
   String _platformStoreName() {
     if (Platform.isIOS) return 'App Store';
     if (Platform.isAndroid) return 'Google Play';
-    return 'Store';
+    return AppLocalizations.of(context).store;
   }
 
   @override
@@ -137,10 +135,10 @@ class _PaywallScreenState extends State<PaywallScreen> {
           final isCurrentYearly = state.isPro && currentPlan == ProPlan.yearly;
           final monthlyPrice = monthlyReady
               ? (state.priceMonthly ?? r'$3.99')
-              : 'Loading...';
+              : t.loading;
           final yearlyPrice = yearlyReady
               ? (state.priceYearly ?? r'$29.99')
-              : 'Loading...';
+              : t.loading;
 
           return Scaffold(
             appBar: AppBar(
@@ -226,7 +224,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                           !isCurrentYearly &&
                           _acceptedLegal,
                       buttonText: isCurrentYearly
-                          ? 'Current plan'
+                          ? t.currentPlan
                           : t.continueWithPlan(t.proYearly),
                       onPressed: () => _runBusy(() async {
                         if (!_requireLegalAgreement()) return;
@@ -247,7 +245,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                           !isCurrentMonthly &&
                           _acceptedLegal,
                       buttonText: isCurrentMonthly
-                          ? 'Current plan'
+                          ? t.currentPlan
                           : t.continueWithPlan(t.proMonthly),
                       onPressed: () => _runBusy(() async {
                         if (!_requireLegalAgreement()) return;
@@ -315,9 +313,10 @@ class _StoreProductsNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loadedAny = monthlyReady || yearlyReady;
+    final t = AppLocalizations.of(context);
     final message = loadedAny
-        ? 'One subscription product is still loading. You can continue with the available plan while App Store Connect finishes returning the other product.'
-        : 'Connecting to App Store subscription products. If this does not finish loading, confirm the subscriptions are Ready to Submit in App Store Connect.';
+        ? t.storeProductLoadingOne
+        : t.storeProductsLoading;
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -363,6 +362,7 @@ class _LegalAgreementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -386,31 +386,31 @@ class _LegalAgreementCard extends StatelessWidget {
               child: Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  const Text(
-                    'I agree to the ',
-                    style: TextStyle(
+                  Text(
+                    t.agreeTo,
+                    style: const TextStyle(
                       color: Colors.black87,
                       height: 1.3,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   _InlineLegalButton(
-                    label: 'Terms & Conditions',
+                    label: t.termsConditions,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const TermsScreen()),
                     ),
                   ),
-                  const Text(
-                    ' and ',
-                    style: TextStyle(
+                  Text(
+                    t.and,
+                    style: const TextStyle(
                       color: Colors.black87,
                       height: 1.3,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   _InlineLegalButton(
-                    label: 'Privacy Policy',
+                    label: t.privacyPolicy,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const PrivacyScreen()),
@@ -468,14 +468,14 @@ class _PlanStatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final title = state.isPro ? 'Current plan' : 'Current plan: Free';
+    final title = state.isPro ? t.currentPlan : t.currentPlanFree;
     final body = state.isPro
-        ? 'You already have Ez Invoice Pro. You can review both subscription options below.'
-        : 'Free includes ads and limited usage. Pro removes ads and unlocks unlimited invoices, reports, premium templates, exports, and cloud backup.';
+        ? t.currentProPlanDescription
+        : t.proPlanDescription;
     final planLabel = switch (state.plan) {
       ProPlan.yearly => t.proYearly,
       ProPlan.monthly => t.proMonthly,
-      ProPlan.none => 'Free',
+      ProPlan.none => t.free,
     };
 
     return Container(
@@ -609,7 +609,7 @@ class _PlanComparisonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final current = state.isPro ? t.proBadge : 'FREE';
+    final current = state.isPro ? t.proBadge : t.free;
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -627,7 +627,7 @@ class _PlanComparisonCard extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Free vs ${t.proBadge}',
+                  t.freeVsPro(t.proBadge),
                   style: const TextStyle(
                     color: Colors.black87,
                     fontSize: 16,
@@ -659,13 +659,13 @@ class _PlanComparisonCard extends StatelessWidget {
           LayoutBuilder(
             builder: (context, constraints) {
               final freeColumn = _ComparisonColumn(
-                title: 'FREE',
-                items: const [
-                  'Ads included',
-                  'Limited invoices each month',
-                  'Basic invoice style',
-                  'Basic reports',
-                  'PDF includes EzInvoice branding',
+                title: t.free,
+                items: [
+                  t.adsIncluded,
+                  t.limitedInvoicesPerMonth,
+                  t.basicInvoiceStyle,
+                  t.basicReports,
+                  t.pdfIncludesBranding,
                 ],
               );
               final proColumn = _ComparisonColumn(

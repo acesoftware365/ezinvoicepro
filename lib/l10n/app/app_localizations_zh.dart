@@ -730,77 +730,76 @@ class AppLocalizationsZh extends AppLocalizations {
   String get unsentLabel => '未发送';
 
   @override
-  String get servicePresetsTitle => 'Service presets';
+  String get servicePresetsTitle => '已保存的服务';
 
   @override
-  String get servicePresetsScreenTitle => 'Service Presets';
+  String get servicePresetsScreenTitle => '已保存的服务';
 
   @override
-  String get servicePresetsAddNew => 'Add new preset';
+  String get servicePresetsAddNew => '添加新服务';
 
   @override
-  String get servicePresetsHint => 'e.g. Cleaning, Repair, Consultation...';
+  String get servicePresetsHint => '例如：清洁、维修、咨询...';
 
   @override
-  String get servicePresetsAddButton => 'Add';
+  String get servicePresetsAddButton => '添加';
 
   @override
-  String get addServiceLabel => 'Add a service';
+  String get addServiceLabel => '添加服务';
 
   @override
-  String get yourPresets => 'Your presets';
+  String get yourPresets => '您保存的服务';
 
   @override
-  String get noPresetsYet => 'No presets yet.';
+  String get noPresetsYet => '尚无已保存的服务。';
 
   @override
-  String get notNow => 'Not now';
+  String get notNow => '暂不';
 
   @override
-  String get openPaywallPlaceholder =>
-      'Open Paywall (connect PaywallScreen here)';
+  String get openPaywallPlaceholder => '打开订阅';
 
   @override
-  String get invoiceStyleTitle => 'Invoice style';
+  String get invoiceStyleTitle => '发票样式';
 
   @override
   String get invoiceFreeStyleHint =>
-      'Free plan uses one invoice version (Minimal). Upgrade to Pro to unlock all layouts and palettes.';
+      '免费方案使用一个发票版本（Minimal）。升级到 Pro 可解锁所有布局和配色方案。';
 
   @override
-  String get invoicePaletteLabel => 'Invoice palette';
+  String get invoicePaletteLabel => '发票配色方案';
 
   @override
-  String get invoiceLayoutLabel => 'Invoice layout';
+  String get invoiceLayoutLabel => '发票布局';
 
   @override
-  String get saveInvoicePaletteError => 'Could not save invoice palette.';
+  String get saveInvoicePaletteError => '无法保存发票配色方案。';
 
   @override
-  String get saveInvoiceLayoutError => 'Could not save invoice layout.';
+  String get saveInvoiceLayoutError => '无法保存发票布局。';
 
   @override
-  String get reportStyleTitle => 'Report style';
+  String get reportStyleTitle => '报告样式';
 
   @override
   String get reportFreeStyleHint =>
-      'Free plan uses one report version (Minimal). Upgrade to Pro to unlock all layouts and palettes.';
+      '免费方案使用一个报告版本（Minimal）。升级到 Pro 可解锁所有布局和配色方案。';
 
   @override
-  String get reportPaletteLabel => 'Report palette';
+  String get reportPaletteLabel => '报告配色方案';
 
   @override
-  String get reportLayoutLabel => 'Report layout';
+  String get reportLayoutLabel => '报告布局';
 
   @override
-  String get saveReportPaletteError => 'Could not save report palette.';
+  String get saveReportPaletteError => '无法保存报告配色方案。';
 
   @override
-  String get saveReportLayoutError => 'Could not save report layout.';
+  String get saveReportLayoutError => '无法保存报告布局。';
 
   @override
   String stylePaletteFootnote(Object docType, Object style, Object palette) {
-    return '$docType style: $style | Palette: $palette';
+    return '$docType 样式：$style | 配色：$palette';
   }
 
   @override
@@ -844,4 +843,792 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get totalInvoicedTitle => '开票总额';
+
+  @override
+  String versionLabel(Object version) {
+    return '版本 $version';
+  }
+
+  @override
+  String errorWithDetails(Object error) {
+    return '错误：$error';
+  }
+
+  @override
+  String get rememberEmail => '记住我的电子邮件';
+
+  @override
+  String get forgotPassword => '忘记密码？';
+
+  @override
+  String get passwordResetEnterEmail => '请输入您的电子邮件以发送重置链接。';
+
+  @override
+  String get passwordResetSent => '我们已发送密码重置邮件。请查看垃圾邮件箱。';
+
+  @override
+  String get passwordResetNoAccount => '未找到使用该电子邮件的账户。';
+
+  @override
+  String get invalidEmail => '电子邮件无效。';
+
+  @override
+  String get passwordResetError => '无法发送电子邮件。请重试。';
+
+  @override
+  String get updateRequired => '需要更新';
+
+  @override
+  String get updateRequiredBody => 'Ez Invoice 有新版本可用。请在商店更新应用后继续。';
+
+  @override
+  String get updateNow => '立即更新';
+
+  @override
+  String get open => '打开';
+
+  @override
+  String get share => '分享';
+
+  @override
+  String get actions => '操作';
+
+  @override
+  String get message => '消息';
+
+  @override
+  String get done => '完成';
+
+  @override
+  String get confirm => '确认';
+
+  @override
+  String get free => '免费';
+
+  @override
+  String get clientInformation => '客户信息';
+
+  @override
+  String get clientName => '客户名称';
+
+  @override
+  String get notesOptional => '备注（可选）';
+
+  @override
+  String get saveClient => '保存客户';
+
+  @override
+  String get importFromContacts => '从通讯录导入';
+
+  @override
+  String get importContactsDescription => '即时填写姓名、电话和电子邮件。';
+
+  @override
+  String get loadContacts => '加载通讯录';
+
+  @override
+  String get clientPhone => '客户电话';
+
+  @override
+  String get searchContacts => '搜索通讯录';
+
+  @override
+  String get shareClient => '分享客户';
+
+  @override
+  String get clientProfile => '客户资料';
+
+  @override
+  String get chooseSavedService => '选择已保存的服务';
+
+  @override
+  String get searchSavedServices => '搜索已保存的服务';
+
+  @override
+  String get noSavedServicesFound => '未找到已保存的服务';
+
+  @override
+  String get noSavedServicesToUse => '尚无已保存的服务。请在上方输入一项并保存以便以后使用。';
+
+  @override
+  String savedServiceAlreadyExists(Object service) {
+    return '已保存：$service';
+  }
+
+  @override
+  String savedService(Object service) {
+    return '已保存服务：$service';
+  }
+
+  @override
+  String savePresetError(Object error) {
+    return '无法保存服务：$error';
+  }
+
+  @override
+  String get saveServiceForLater => '保存服务以便以后使用';
+
+  @override
+  String get removeClient => '移除客户';
+
+  @override
+  String get service => '服务';
+
+  @override
+  String get taxAndTip => '税费和小费';
+
+  @override
+  String get totals => '合计';
+
+  @override
+  String dueDate(Object date) {
+    return '到期日：$date';
+  }
+
+  @override
+  String paidDate(Object date) {
+    return '付款日期：$date';
+  }
+
+  @override
+  String get notPaidYet => '尚未付款';
+
+  @override
+  String paymentMethodWithValue(Object method) {
+    return '方式：$method';
+  }
+
+  @override
+  String paymentNoteWithValue(Object note) {
+    return '备注：$note';
+  }
+
+  @override
+  String get markAsPaid => '标记为已付款';
+
+  @override
+  String get markAsUnpaid => '标记为未付款';
+
+  @override
+  String get editTax => '编辑';
+
+  @override
+  String get addClient => '添加客户';
+
+  @override
+  String get firstClientHint => '创建您的第一个客户，以便在今后的发票中重复使用。';
+
+  @override
+  String get searchSavedClients => '搜索已保存的客户';
+
+  @override
+  String get paymentMethod => '付款方式';
+
+  @override
+  String get cash => '现金';
+
+  @override
+  String get card => '银行卡';
+
+  @override
+  String get check => '支票';
+
+  @override
+  String get other => '其他';
+
+  @override
+  String get noteOptional => '备注（可选）';
+
+  @override
+  String invoiceMarkPaidError(Object error) {
+    return '无法将发票标记为已付款：$error';
+  }
+
+  @override
+  String invoiceMarkUnpaidError(Object error) {
+    return '无法将发票标记为未付款：$error';
+  }
+
+  @override
+  String deleteError(Object error) {
+    return '无法删除发票：$error';
+  }
+
+  @override
+  String get invoiceDeleted => '发票已删除';
+
+  @override
+  String get invoiceMarkedSent => '已标记为已发送 ✅';
+
+  @override
+  String invoiceMarkSentError(Object error) {
+    return '无法标记为已发送：$error';
+  }
+
+  @override
+  String get invoiceMarkedUnsent => '已标记为未发送 ✅';
+
+  @override
+  String invoiceMarkUnsentError(Object error) {
+    return '无法标记为未发送：$error';
+  }
+
+  @override
+  String get invoiceMarkedPaid => '已标记为已付款 ✅';
+
+  @override
+  String get invoiceMarkedUnpaid => '已标记为未付款 ✅';
+
+  @override
+  String get invoiceLoadingError => '无法加载发票';
+
+  @override
+  String get tipType => '小费类型';
+
+  @override
+  String get amountOption => '金额 (\$)';
+
+  @override
+  String get percentageOption => '百分比 (%)';
+
+  @override
+  String get pdfPreview => 'PDF 预览';
+
+  @override
+  String get openPdf => '打开 PDF';
+
+  @override
+  String get sharePdf => '分享 PDF';
+
+  @override
+  String get selectReportMonth => '选择报告月份';
+
+  @override
+  String reportForBusiness(Object business) {
+    return '报告 • $business';
+  }
+
+  @override
+  String get tapToChangeMonth => '轻点以更改月份';
+
+  @override
+  String csvSaved(Object path) {
+    return 'CSV 已保存：$path';
+  }
+
+  @override
+  String csvExportError(Object error) {
+    return '无法导出 CSV：$error';
+  }
+
+  @override
+  String get aboutTitle => '关于';
+
+  @override
+  String get aboutTagline => '为不断发展的企业提供清晰的发票';
+
+  @override
+  String get aboutAppTitle => '应用';
+
+  @override
+  String get aboutAppBody => 'EzInvoice 将发票、客户、付款和报告整合为简单流程，让您掌握重点并安心收款。';
+
+  @override
+  String get aboutCompanyTitle => '公司';
+
+  @override
+  String get aboutCompanyBody => 'Liisgo LLC 为小型企业打造实用工具，帮助其更有条理、更清晰、更自信地工作。';
+
+  @override
+  String get aboutPromiseTitle => '为您的日常而设计';
+
+  @override
+  String get aboutPromiseBody => 'EzInvoice 的每项设计都旨在减少步骤、清晰呈现细节，让业务管理更简单。';
+
+  @override
+  String get visitLiisgo => '访问 Liisgo';
+
+  @override
+  String get contactSupport => '联系支持团队';
+
+  @override
+  String get shareEzInvoice => '分享 EzInvoice';
+
+  @override
+  String get sendIdeaOrBug => '提交建议或问题';
+
+  @override
+  String get feedbackTitle => '您的反馈很重要';
+
+  @override
+  String get feedbackSubtitle => '告诉我们您希望改进什么，或哪些地方运行不佳。';
+
+  @override
+  String get feedbackIdea => '建议';
+
+  @override
+  String get feedbackBug => '问题';
+
+  @override
+  String get feedbackHint => '写下您的建议或说明发生了什么…';
+
+  @override
+  String get feedbackRequired => '发送前请填写消息。';
+
+  @override
+  String get continueToEmail => '继续发送邮件';
+
+  @override
+  String get couldNotOpenLink => '无法打开此链接。';
+
+  @override
+  String shareAppText(Object storeUrl) {
+    return '了解 EzInvoice Pro：在一处管理发票、客户和报告。\n$storeUrl';
+  }
+
+  @override
+  String feedbackEmailSubject(Object kind) {
+    return 'EzInvoice $kind';
+  }
+
+  @override
+  String get supportEmailSubject => 'EzInvoice 支持';
+
+  @override
+  String get changePassword => '更改密码';
+
+  @override
+  String get changePasswordSubtitle => '更新您的账户密码。';
+
+  @override
+  String get confirmCurrentPasswordHint => '为保障安全，请先确认您当前的密码。';
+
+  @override
+  String get currentPassword => '当前密码';
+
+  @override
+  String get newPassword => '新密码';
+
+  @override
+  String get confirmNewPassword => '确认新密码';
+
+  @override
+  String get updatePassword => '更新密码';
+
+  @override
+  String get passwordAtLeastSix => '至少需要 6 个字符。';
+
+  @override
+  String get noActiveSession => '没有活动会话。';
+
+  @override
+  String get passwordsDoNotMatch => '新密码不匹配。';
+
+  @override
+  String get passwordMustDiffer => '新密码必须不同。';
+
+  @override
+  String get passwordUpdated => '密码已成功更新。';
+
+  @override
+  String get incorrectPassword => '当前密码不正确。';
+
+  @override
+  String get weakPassword => '新密码过于简单。';
+
+  @override
+  String get reauthenticationNeeded => '为保障安全，请重新登录后再试。';
+
+  @override
+  String get changePasswordError => '无法更改密码。';
+
+  @override
+  String get confirmPassword => '确认密码';
+
+  @override
+  String get reauthCancelled => '已取消重新验证。';
+
+  @override
+  String get accountDeleted => '您的账户和数据已被永久删除。';
+
+  @override
+  String get deleteAccountIncorrectPassword => '密码不正确。';
+
+  @override
+  String get deleteAccountError => '无法删除账户。';
+
+  @override
+  String get deleteAccountBody =>
+      '如果您删除账户：\n\n• 您的客户、发票、报告和企业资料将被永久删除。\n• 此操作无法撤销。\n• 如果您有有效订阅，请在 App Store/Google Play 中管理或取消订阅。';
+
+  @override
+  String get termsConditions => '条款和条件';
+
+  @override
+  String get agreeTermsPrivacy => '请先同意条款和条件以及隐私政策。';
+
+  @override
+  String get currentPlan => '当前套餐';
+
+  @override
+  String get currentPlanFree => '当前套餐：免费';
+
+  @override
+  String get proPlanDescription =>
+      '免费版包含广告和使用限制。Pro 可移除广告，并解锁无限发票、报告、高级模板、导出和云备份。';
+
+  @override
+  String get adsIncluded => '包含广告';
+
+  @override
+  String get limitedInvoicesPerMonth => '每月发票数量有限';
+
+  @override
+  String get basicInvoiceStyle => '基础发票样式';
+
+  @override
+  String get basicReports => '基础报告';
+
+  @override
+  String get pdfIncludesBranding => 'PDF 包含 EzInvoice 品牌标识';
+
+  @override
+  String get unpaidLabel => '未付款';
+
+  @override
+  String get loading => '加载中...';
+
+  @override
+  String get store => '商店';
+
+  @override
+  String get storeProductLoadingOne => '一个订阅产品仍在加载。您可以先使用可用套餐，等待另一个产品加载完成。';
+
+  @override
+  String get storeProductsLoading => '正在连接商店订阅产品。如果加载未完成，请在商店控制台确认订阅已准备就绪。';
+
+  @override
+  String get agreeTo => '我同意';
+
+  @override
+  String get and => '和';
+
+  @override
+  String get currentProPlanDescription =>
+      '您已经拥有 Ez Invoice Pro。您可以在下方查看两种订阅选项。';
+
+  @override
+  String freeVsPro(Object pro) {
+    return '免费版与 $pro';
+  }
+
+  @override
+  String get openInvoices => '打开发票。';
+
+  @override
+  String get allCaughtUp => '全部处理完毕';
+
+  @override
+  String itemsToReview(Object count) {
+    return '$count 项待查看';
+  }
+
+  @override
+  String get pdfInvoice => '发票';
+
+  @override
+  String get pdfReceipt => '收据';
+
+  @override
+  String get pdfBusiness => '企业';
+
+  @override
+  String get pdfPhone => '电话';
+
+  @override
+  String get pdfEmail => '电子邮件';
+
+  @override
+  String get pdfNumber => '编号';
+
+  @override
+  String get pdfDate => '日期';
+
+  @override
+  String get pdfDue => '到期';
+
+  @override
+  String get pdfPaid => '已付款';
+
+  @override
+  String get pdfPaidDate => '付款日期';
+
+  @override
+  String get pdfMethod => '方式';
+
+  @override
+  String get pdfBillTo => '账单发送至';
+
+  @override
+  String get pdfClient => '客户';
+
+  @override
+  String get pdfDescription => '描述';
+
+  @override
+  String get pdfQuantity => '数量';
+
+  @override
+  String get pdfPrice => '价格';
+
+  @override
+  String get pdfSubtotal => '小计';
+
+  @override
+  String get pdfTax => '税费';
+
+  @override
+  String pdfTaxWithRate(Object rate) {
+    return '税费 ($rate%)';
+  }
+
+  @override
+  String get pdfTip => '小费';
+
+  @override
+  String pdfTipWithRate(Object rate) {
+    return '小费 ($rate%)';
+  }
+
+  @override
+  String get pdfDiscount => '折扣';
+
+  @override
+  String get pdfMessage => '消息';
+
+  @override
+  String get pdfPaymentNote => '付款备注';
+
+  @override
+  String get pdfThankYou => '感谢您的惠顾。';
+
+  @override
+  String get pdfPoweredBy => '由 EzInvoice 提供支持';
+
+  @override
+  String get pdfFreeVersion => '免费版本';
+
+  @override
+  String get pdfTotal => '总计';
+
+  @override
+  String get styleMinimal => '极简';
+
+  @override
+  String get styleProfessional => '专业';
+
+  @override
+  String get styleCorporate => '企业';
+
+  @override
+  String get styleModern => '现代';
+
+  @override
+  String get styleSlate => '石板';
+
+  @override
+  String get reportDocument => '报告';
+
+  @override
+  String get reportPrintDocument => '打印报告';
+
+  @override
+  String get reportMonth => '月份';
+
+  @override
+  String get reportYear => '年份';
+
+  @override
+  String get reportGeneratedOn => '生成于';
+
+  @override
+  String get reportInvoices => '发票';
+
+  @override
+  String get reportStatus => '状态';
+
+  @override
+  String get reportTotals => '合计';
+
+  @override
+  String get reportSales => '销售额';
+
+  @override
+  String get reportTotalTax => '税额合计';
+
+  @override
+  String get reportTotalTip => '小费合计';
+
+  @override
+  String get reportTotalInvoiced => '开票总额';
+
+  @override
+  String get reportUnsent => '未发送';
+
+  @override
+  String get reportSent => '已发送';
+
+  @override
+  String get reportPaid => '已付款';
+
+  @override
+  String get reportOverdue => '逾期';
+
+  @override
+  String get reportInvoiceNumber => '发票编号';
+
+  @override
+  String get reportClient => '客户';
+
+  @override
+  String get reportDueDate => '到期日';
+
+  @override
+  String get reportDescription => '描述';
+
+  @override
+  String get reportDate => '日期';
+
+  @override
+  String get reportFreeVersion => '免费版';
+
+  @override
+  String get reportPoweredBy => '由 EzInvoice 提供支持';
+
+  @override
+  String reportPdfShareText(Object title) {
+    return 'PDF 报告：$title';
+  }
+
+  @override
+  String reportCsvShareText(Object title) {
+    return 'CSV 报告：$title';
+  }
+
+  @override
+  String reportPrintShareText(Object title) {
+    return '打印：$title';
+  }
+
+  @override
+  String reportFileMonthly(Object month, Object year) {
+    return '报告_${month}_$year';
+  }
+
+  @override
+  String reportFileYearly(Object year) {
+    return '报告_年份_$year';
+  }
+
+  @override
+  String reportTextMonthly(Object month, Object year) {
+    return '报告 | $month $year';
+  }
+
+  @override
+  String reportTextYearly(Object year) {
+    return '报告 | $year';
+  }
+
+  @override
+  String get reportBreakdown => '明细';
+
+  @override
+  String get reportInvoicesStatus => '发票状态';
+
+  @override
+  String get viewReport => '查看报告';
+
+  @override
+  String get reviewBeforeExport => '导出前查看 PDF 或 CSV。';
+
+  @override
+  String get customizeReport => '自定义报告';
+
+  @override
+  String get reportPreviewUpdates => '更改会立即显示在预览中。';
+
+  @override
+  String get yourReportPreview => '报告预览';
+
+  @override
+  String get reportStyleLiveHint => '更改设计并实时查看。';
+
+  @override
+  String get watchAdToExportReport => '观看完整广告以导出此报告。升级到 Pro 可无广告导出。';
+
+  @override
+  String reportExportError(Object error) {
+    return '无法导出报告: $error';
+  }
+
+  @override
+  String get shareCsvFile => '分享 CSV 文件';
+
+  @override
+  String get shareCsvFileDescription => '通过电子邮件、Drive 或其他应用分享 .csv 附件。';
+
+  @override
+  String get shareReportAsText => '以文本分享 (WhatsApp / SMS)';
+
+  @override
+  String get shareReportAsTextDescription => '以文本发送报告摘要。';
+
+  @override
+  String get printCsv => '打印 CSV';
+
+  @override
+  String get printReportDescription => '将报告打印为 PDF 表格。';
+
+  @override
+  String get reportPreview => '预览';
+
+  @override
+  String get live => '实时';
+
+  @override
+  String get proFeatureUnlimitedInvoices => '无限发票';
+
+  @override
+  String get proFeatureRemovePdfBranding => '移除 PDF 品牌标记';
+
+  @override
+  String get proFeatureExportCsv => '导出 CSV';
+
+  @override
+  String get proFeaturePremiumTemplates => '高级模板';
+
+  @override
+  String get proFeatureDetailedTaxReport => '详细税务报告';
+
+  @override
+  String proFeatureUnlimitedInvoicesDescription(Object limit) {
+    return '免费方案每月最多可创建 $limit 张发票。';
+  }
+
+  @override
+  String get proFeatureRemovePdfBrandingDescription =>
+      '从 PDF 中移除“由 EzInvoice 提供支持”。';
+
+  @override
+  String get proFeatureExportCsvDescription => '将您的发票导出为 CSV。';
+
+  @override
+  String get proFeaturePremiumTemplatesDescription => '解锁高级发票模板。';
+
+  @override
+  String get proFeatureDetailedTaxReportDescription => '查看详细税务明细报告。';
+
+  @override
+  String get pdfShareText => '来自 EzInvoice 的发票 PDF';
 }

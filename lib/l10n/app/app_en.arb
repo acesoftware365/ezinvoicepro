@@ -1,8 +1,6 @@
 {
   "@@locale": "en",
-
   "appName": "Ez Invoice",
-
   "loginSubtitle": "Create your account",
   "email": "Email",
   "password": "Password",
@@ -15,7 +13,6 @@
   "processing": "Processing...",
   "invalidCredentials": "Enter a valid email and password (6+ characters)",
   "authError": "Authentication error",
-
   "home": "Home",
   "clients": "Clients",
   "invoices": "Invoices",
@@ -23,35 +20,28 @@
   "settings": "Settings",
   "logout": "Log out",
   "business": "Business",
-
   "settingsLanguage": "Language",
   "settingsLanguageDescription": "Choose the language for the app.",
   "systemDefault": "System default",
-
   "privacyPolicy": "Privacy Policy",
-
   "clientMessageTemplateMultiline": "Hi {name},\nsending your invoice from EzInvoice. ✅",
   "@clientMessageTemplateMultiline": {
-    "placeholders": { "name": {} }
+    "placeholders": {
+      "name": {}
+    }
   },
-
   "invoiceEmailSubject": "Invoice - EzInvoice",
-
   "dashboardTitle": "Dashboard",
   "monthWord": "Month",
-
   "planLabel": "Plan",
   "invoicesRemaining": "Invoices remaining",
   "proUnlimitedLabel": "PRO · Unlimited",
-
   "createNewInvoice": "Create new invoice",
   "limitReachedSubtitle": "Limit reached • Upgrade to Pro",
   "createInvoiceFastSubtitle": "Create invoice + PDF in seconds",
-
   "limitReachedTitle": "Limit reached",
   "limitReachedBody": "Upgrade to Pro for unlimited invoices and remove ads.",
   "upgrade": "Upgrade",
-
   "monthSummaryTitle": "Month summary",
   "salesTitle": "Sales",
   "tipTitle": "Tip",
@@ -59,37 +49,34 @@
   "taxTitle": "Tax",
   "beforeTaxTip": "Before tax/tip",
   "collectedThisMonth": "Collected this month",
-
   "quickAccessTitle": "Quick access",
   "clientsManageSubtitle": "Create / edit clients",
   "invoicesViewSendSubtitle": "View and send PDF",
   "monthlyYearlySubtitle": "Monthly / yearly",
   "businessProfileSubtitle": "Profile / logo / tax",
-
   "invoiceCount": "{count} invoice(s)",
-  "@invoiceCount": { "placeholders": { "count": {} } },
-
+  "@invoiceCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "paywallTitle": "Ez Invoice Pro",
   "close": "Close",
   "paywallHeaderTitle": "Unlock everything for your business",
   "paywallHeaderSubtitle": "No ads • Unlimited invoices • Tax reports • Premium templates",
-
   "bestValue": "Best value",
   "proYearly": "Pro Yearly",
   "saveMoreYearly": "Save more by paying yearly",
   "proMonthly": "Pro Monthly",
   "flexible": "Flexible",
   "cancelAnytime": "Cancel anytime",
-
   "processingPurchase": "Processing purchase…",
   "restoringPurchases": "Restoring purchases…",
   "restorePurchases": "Restore purchases",
   "continueFreeWithAds": "Continue with free version with Ads",
-
   "alreadyProTitle": "You are Pro ✅",
   "alreadyProBody": "Enjoy unlimited invoices, reports, and no ads.",
   "continueText": "Continue",
-
   "includesInPro": "Included in Pro",
   "benefitNoAds": "No ads (Banner/Interstitial/Rewarded)",
   "benefitUnlimitedInvoices": "Unlimited invoices + statuses (draft/sent/paid)",
@@ -98,180 +85,215 @@
   "benefitTaxReports": "Tax reports: monthly and yearly (taxes/tips/net)",
   "benefitExport": "Export PDF/CSV/Excel (for accounting)",
   "benefitCloudBackup": "Cloud backup + restore (multi-device)",
-
   "continueWithPlan": "Continue with {plan}",
-  "@continueWithPlan": { "placeholders": { "plan": {} } },
-
+  "@continueWithPlan": {
+    "placeholders": {
+      "plan": {}
+    }
+  },
   "paywallFinePrint": "By subscribing, payment will be charged to your {store} account. The subscription renews automatically unless you cancel at least 24 hours before the end of the current period. You can manage or cancel your subscription in your store settings.",
-  "@paywallFinePrint": { "placeholders": { "store": {} } },
-
+  "@paywallFinePrint": {
+    "placeholders": {
+      "store": {}
+    }
+  },
   "reportsTitle": "Reports",
   "proBadge": "PRO",
-
   "byMonth": "By month",
   "byYear": "By year",
   "monthLabel": "Month",
   "yearLabel": "Year",
-
   "businessProfileTitle": "Business Profile",
   "save": "Save",
   "uploadLogo": "Upload logo",
   "remove": "Remove",
-
   "businessNameLabel": "Business name",
   "ownerNameLabel": "Owner / contact name",
   "phoneLabel": "Phone",
   "addressLabel": "Address",
-
   "currencyLabel": "Currency",
   "taxDefaultLabel": "Default tax (%)",
-
   "invalidNumber": "Invalid number",
   "range0to100": "Must be between 0 and 100",
   "requiredField": "Required",
-
   "footerNoteLabel": "Footer note (PDF)",
   "saveChanges": "Save changes",
-
   "businessFooterDefault": "Thank you for your business.",
   "businessSavedSuccess": "Business profile saved successfully",
-
   "businessInfoSection": "Business information",
   "settingsSection": "Settings",
   "footerSection": "Footer note (PDF)",
   "upgradeToPro": "Upgrade to Pro",
-
   "bestValueStar": "⭐ Best value",
-
   "invoicesTitle": "Invoices",
   "noInvoicesYet": "No invoices yet.",
-
   "freePlanMonthlyLimitBanner": "Free plan: monthly limit {limit} invoices • Upgrade for unlimited",
-  "@freePlanMonthlyLimitBanner": { "placeholders": { "limit": {} } },
-
+  "@freePlanMonthlyLimitBanner": {
+    "placeholders": {
+      "limit": {}
+    }
+  },
   "filtersTitle": "Filters",
   "clientLabel": "Client",
   "allMonths": "All months",
   "allClients": "All clients",
   "clear": "Clear",
-
   "invoicesSummaryLabel": "Invoices",
   "totalTitle": "Total",
   "dateLabel": "Date",
-
   "noResultsForFilters": "No results for selected filters.",
-
   "freePlanLimitDialogBody": "Free plan: {current} / {limit} invoices this month.\n\nUpgrade to Pro for unlimited.",
-  "@freePlanLimitDialogBody": { "placeholders": { "current": {}, "limit": {} } },
-
+  "@freePlanLimitDialogBody": {
+    "placeholders": {
+      "current": {},
+      "limit": {}
+    }
+  },
   "deleteInvoiceTitle": "Delete invoice?",
   "deleteInvoiceBody": "Are you sure you want to delete {invNo}?",
-  "@deleteInvoiceBody": { "placeholders": { "invNo": {} } },
-
+  "@deleteInvoiceBody": {
+    "placeholders": {
+      "invNo": {}
+    }
+  },
   "cancel": "Cancel",
   "delete": "Delete",
   "edit": "Edit",
   "sendPdf": "Send PDF",
-
   "shareInvoiceText": "Invoice {invNo} - {client}",
-  "@shareInvoiceText": { "placeholders": { "invNo": {}, "client": {} } },
-
+  "@shareInvoiceText": {
+    "placeholders": {
+      "invNo": {},
+      "client": {}
+    }
+  },
   "pdfSendError": "Error creating/sending PDF: {error}",
-  "@pdfSendError": { "placeholders": { "error": {} } },
-
+  "@pdfSendError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "reportTitleMonth": "Report • {month} {year}",
-  "@reportTitleMonth": { "placeholders": { "month": {}, "year": {} } },
-
+  "@reportTitleMonth": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
   "reportTitleYear": "Report • Year {year}",
-  "@reportTitleYear": { "placeholders": { "year": {} } },
-
+  "@reportTitleYear": {
+    "placeholders": {
+      "year": {}
+    }
+  },
   "invoicesLine": "Invoices: {count}",
-  "@invoicesLine": { "placeholders": { "count": {} } },
-
+  "@invoicesLine": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "totalSalesLine": "Total Sales: ${amount}",
-  "@totalSalesLine": { "placeholders": { "amount": {} } },
-
+  "@totalSalesLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "totalTaxLine": "Total Tax: ${amount}",
-  "@totalTaxLine": { "placeholders": { "amount": {} } },
-
+  "@totalTaxLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "totalTipLine": "Total Tip: ${amount}",
-  "@totalTipLine": { "placeholders": { "amount": {} } },
-
+  "@totalTipLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "netLine": "Net: ${amount}",
-  "@netLine": { "placeholders": { "amount": {} } },
-
+  "@netLine": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "calculatedFromInvoices": "Calculated from your invoices in Firestore.",
   "noInvoicesInPeriod": "No invoices in that period.",
-
   "exportPdf": "Export PDF",
   "exportCsv": "Export CSV",
-
   "yearlyProReason": "Yearly report is PRO. Upgrade to unlock it.",
   "exportPdfProReason": "Exporting report PDF is PRO.",
   "exportCsvProReason": "Exporting CSV is PRO.",
-
   "noDataToExport": "No data to export.",
   "freePlanReportsNote": "Free plan: monthly reports only. Upgrade for yearly reports and export.",
-
   "genericError": "Something went wrong. Try again.",
-
-
   "newInvoiceTitle": "New Invoice",
   "editInvoiceTitle": "Edit Invoice",
   "pickClient": "Pick client",
-
   "invoiceAutoNumberLabel": "Invoice # (auto)",
   "invoiceDateLabel": "Invoice date: {date}",
-  "@invoiceDateLabel": { "placeholders": { "date": {} } },
-
+  "@invoiceDateLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
   "clientNameLabel": "Client name",
   "clientNameRequired": "Client name required",
   "clientEmailOptionalLabel": "Client email (optional)",
   "clientPhoneOptionalLabel": "Client phone (optional)",
   "invalidEmailFormat": "Invalid email format",
-
   "itemsTitle": "Items",
   "descriptionLabel": "Description",
   "itemDateLabel": "Item date: {date}",
-  "@itemDateLabel": { "placeholders": { "date": {} } },
-
+  "@itemDateLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
   "qtyLabel": "Qty",
   "priceLabel": "Price",
   "lineTotalLabel": "Line total: ${amount}",
-  "@lineTotalLabel": { "placeholders": { "amount": {} } },
-
+  "@lineTotalLabel": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "taxDefaultOwnerLabel": "Tax % (default owner)",
-
   "tipPercentChip": "Tip %",
   "tipAmountChip": "Tip $",
   "tipPercentLabel": "Tip percent (%)",
   "tipAmountLabel": "Tip amount ($)",
-
   "messageOptionalLabel": "Message (optional)",
-
   "totalsBlock": "Subtotal: ${sub}\nTax: ${tax}\nTip: ${tip}\nTotal: ${total}",
   "@totalsBlock": {
-    "placeholders": { "sub": {}, "tax": {}, "tip": {}, "total": {} }
+    "placeholders": {
+      "sub": {},
+      "tax": {},
+      "tip": {},
+      "total": {}
+    }
   },
-
   "saving": "Saving…",
   "saveInvoice": "Save invoice",
   "updateInvoice": "Update invoice",
-
   "addAtLeastOneItem": "Add at least 1 item",
   "errorSavingInvoice": "Error saving invoice: {error}",
-  "@errorSavingInvoice": { "placeholders": { "error": {} } },
-
+  "@errorSavingInvoice": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "savedTab": "Saved",
   "contactsTab": "Contacts",
   "noSavedClients": "No saved clients",
   "permissionDeniedContacts": "Permission denied: Contacts",
   "noContactsFound": "No contacts found on this device/emulator",
   "contactsError": "Contacts error: {error}",
-  "@contactsError": { "placeholders": { "error": {} } },
-
+  "@contactsError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "noName": "(No name)",
-
   "newClientTitle": "New client",
   "editClientTitle": "Edit client",
   "clientInfoSection": "Client information",
@@ -280,30 +302,36 @@
   "clientCreateHint": "Tip: Add email/phone to send invoices faster.",
   "clientEditHint": "You can update client info anytime.",
   "errorSavingClient": "Error saving client: {error}",
-  "@errorSavingClient": { "placeholders": { "error": {} } },
-
+  "@errorSavingClient": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "clientsTitle": "Clients",
   "searchClientsLabel": "Search clients",
   "clientsCount": "{count} client(s)",
-  "@clientsCount": { "placeholders": { "count": {} } },
-
+  "@clientsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "noClientsYet": "No clients yet.",
   "noClientsForSearch": "No clients match your search.",
-
   "cannotOpenDialer": "Cannot open dialer",
   "cannotOpenSms": "Cannot open SMS",
   "whatsAppNotAvailable": "WhatsApp not available",
   "cannotOpenEmail": "Cannot open email",
-
   "deleteClientTitle": "Delete client?",
   "deleteClientBody": "Remove {name}?",
-  "@deleteClientBody": { "placeholders": { "name": {} } },
-
+  "@deleteClientBody": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "call": "Call",
   "sms": "SMS",
   "whatsapp": "WhatsApp",
   "emailAction": "Email",
-
   "shareAppTitle": "Try EzInvoice 👇",
   "shareAppBody": "Create invoices, send PDFs, and track reports easily.",
   "shareAppTooltip": "Share app",
@@ -312,7 +340,6 @@
   "openWebsiteTooltip": "Open website",
   "availableLanguages": "Available languages",
   "usePhoneLanguage": "Use your phone language",
-
   "shareReceiptText": "Receipt {invoiceNumber} for {clientName}",
   "@shareReceiptText": {
     "placeholders": {
@@ -363,8 +390,6 @@
       "palette": {}
     }
   },
-
-
   "deleteAccountTitle": "Delete Account",
   "deleteAccountWarning": "This action will permanently delete your account and all associated data.",
   "deleteAccountButton": "Delete Account",
@@ -378,5 +403,407 @@
   "profileDefaults": "Invoice defaults",
   "profileTaxInvalid": "Check the tax rate (0–100%).",
   "metricLoadError": "Could not load this report. Try again.",
-  "totalInvoicedTitle": "Total invoiced"
+  "totalInvoicedTitle": "Total invoiced",
+  "versionLabel": "Version {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "errorWithDetails": "Error: {error}",
+  "@errorWithDetails": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "rememberEmail": "Remember my email",
+  "forgotPassword": "Forgot password?",
+  "passwordResetEnterEmail": "Enter your email to send the reset link.",
+  "passwordResetSent": "We sent you an email to reset your password. Check Spam or Junk.",
+  "passwordResetNoAccount": "No account was found for that email.",
+  "invalidEmail": "Invalid email.",
+  "passwordResetError": "Could not send the email. Try again.",
+  "updateRequired": "Update required",
+  "updateRequiredBody": "A new version of Ez Invoice is available. To continue, update the app from the store.",
+  "updateNow": "Update now",
+  "open": "Open",
+  "share": "Share",
+  "actions": "Actions",
+  "message": "Message",
+  "done": "Done",
+  "confirm": "Confirm",
+  "free": "FREE",
+  "clientInformation": "Client information",
+  "clientName": "Client name",
+  "notesOptional": "Notes (optional)",
+  "saveClient": "Save client",
+  "importFromContacts": "Import from contacts",
+  "importContactsDescription": "Fill name, phone, and email instantly.",
+  "loadContacts": "Load contacts",
+  "clientPhone": "Client phone",
+  "searchContacts": "Search contacts",
+  "shareClient": "Share client",
+  "clientProfile": "Client profile",
+  "chooseSavedService": "Choose saved service",
+  "searchSavedServices": "Search saved services",
+  "noSavedServicesFound": "No saved services found",
+  "noSavedServicesToUse": "No saved services yet. Type one above, then save it for later.",
+  "savedServiceAlreadyExists": "Already saved: {service}",
+  "@savedServiceAlreadyExists": {
+    "placeholders": {
+      "service": {}
+    }
+  },
+  "savedService": "Saved service: {service}",
+  "@savedService": {
+    "placeholders": {
+      "service": {}
+    }
+  },
+  "savePresetError": "Could not save the service: {error}",
+  "@savePresetError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "saveServiceForLater": "Save service for later",
+  "removeClient": "Remove client",
+  "service": "Service",
+  "taxAndTip": "Tax & tip",
+  "totals": "Totals",
+  "dueDate": "Due date: {date}",
+  "@dueDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "paidDate": "Paid date: {date}",
+  "@paidDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "notPaidYet": "Not paid yet",
+  "paymentMethodWithValue": "Method: {method}",
+  "@paymentMethodWithValue": {
+    "placeholders": {
+      "method": {}
+    }
+  },
+  "paymentNoteWithValue": "Note: {note}",
+  "@paymentNoteWithValue": {
+    "placeholders": {
+      "note": {}
+    }
+  },
+  "markAsPaid": "Mark as paid",
+  "markAsUnpaid": "Mark as unpaid",
+  "editTax": "Edit",
+  "addClient": "Add a client",
+  "firstClientHint": "Create your first client to reuse it in future invoices.",
+  "searchSavedClients": "Search saved clients",
+  "paymentMethod": "Payment method",
+  "cash": "Cash",
+  "card": "Card",
+  "check": "Check",
+  "other": "Other",
+  "noteOptional": "Note (optional)",
+  "invoiceMarkPaidError": "Could not mark the invoice as paid: {error}",
+  "@invoiceMarkPaidError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkUnpaidError": "Could not mark the invoice as unpaid: {error}",
+  "@invoiceMarkUnpaidError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "deleteError": "Could not delete the invoice: {error}",
+  "@deleteError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceDeleted": "Invoice deleted",
+  "invoiceMarkedSent": "Marked as sent ✅",
+  "invoiceMarkSentError": "Could not mark as sent: {error}",
+  "@invoiceMarkSentError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkedUnsent": "Marked as unsent ✅",
+  "invoiceMarkUnsentError": "Could not mark as unsent: {error}",
+  "@invoiceMarkUnsentError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invoiceMarkedPaid": "Marked as paid ✅",
+  "invoiceMarkedUnpaid": "Marked as unpaid ✅",
+  "invoiceLoadingError": "Could not load invoices",
+  "tipType": "Tip type",
+  "amountOption": "Amount ($)",
+  "percentageOption": "Percentage (%)",
+  "pdfPreview": "PDF preview",
+  "openPdf": "Open PDF",
+  "sharePdf": "Share PDF",
+  "selectReportMonth": "Select report month",
+  "reportForBusiness": "Reports • {business}",
+  "@reportForBusiness": {
+    "placeholders": {
+      "business": {}
+    }
+  },
+  "tapToChangeMonth": "Tap to change the month",
+  "csvSaved": "CSV saved: {path}",
+  "@csvSaved": {
+    "placeholders": {
+      "path": {}
+    }
+  },
+  "csvExportError": "Could not export CSV: {error}",
+  "@csvExportError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "aboutTitle": "About",
+  "aboutTagline": "Clear invoicing for businesses in motion",
+  "aboutAppTitle": "The app",
+  "aboutAppBody": "EzInvoice brings invoices, clients, payments, and reports into one simple flow so you can see what matters and get paid with confidence.",
+  "aboutCompanyTitle": "The company",
+  "aboutCompanyBody": "Liisgo LLC creates practical tools that help small businesses work with more order, clarity, and confidence.",
+  "aboutPromiseTitle": "Made for your day-to-day",
+  "aboutPromiseBody": "Every EzInvoice decision aims to reduce steps, keep details visible, and make running your business feel simpler.",
+  "visitLiisgo": "Visit Liisgo",
+  "contactSupport": "Contact support",
+  "shareEzInvoice": "Share EzInvoice",
+  "sendIdeaOrBug": "Send an idea or bug",
+  "feedbackTitle": "Your feedback matters",
+  "feedbackSubtitle": "Tell us what you would improve or what did not work well.",
+  "feedbackIdea": "Idea",
+  "feedbackBug": "Bug",
+  "feedbackHint": "Write your idea or explain what happened…",
+  "feedbackRequired": "Write a message before sending.",
+  "continueToEmail": "Continue to email",
+  "couldNotOpenLink": "Could not open this link.",
+  "shareAppText": "Meet EzInvoice Pro: invoices, clients, and reports in one place.\n{storeUrl}",
+  "@shareAppText": {
+    "placeholders": {
+      "storeUrl": {}
+    }
+  },
+  "feedbackEmailSubject": "{kind} for EzInvoice",
+  "@feedbackEmailSubject": {
+    "placeholders": {
+      "kind": {}
+    }
+  },
+  "supportEmailSubject": "EzInvoice support",
+  "changePassword": "Change password",
+  "changePasswordSubtitle": "Update your account password.",
+  "confirmCurrentPasswordHint": "For security, confirm your current password first.",
+  "currentPassword": "Current password",
+  "newPassword": "New password",
+  "confirmNewPassword": "Confirm new password",
+  "updatePassword": "Update password",
+  "passwordAtLeastSix": "Must be at least 6 characters.",
+  "noActiveSession": "No active session.",
+  "passwordsDoNotMatch": "The new password does not match.",
+  "passwordMustDiffer": "The new password must be different.",
+  "passwordUpdated": "Password updated successfully.",
+  "incorrectPassword": "Current password is wrong.",
+  "weakPassword": "The new password is too weak.",
+  "reauthenticationNeeded": "For security, sign in again and try once more.",
+  "changePasswordError": "Could not change password.",
+  "confirmPassword": "Confirm password",
+  "reauthCancelled": "Reauthentication cancelled.",
+  "accountDeleted": "Your account and data were permanently deleted.",
+  "deleteAccountIncorrectPassword": "Incorrect password.",
+  "deleteAccountError": "Could not delete account.",
+  "deleteAccountBody": "If you delete your account:\n\n• Your clients, invoices, reports, and business profile will be permanently deleted.\n• This action cannot be undone.\n• If you have an active subscription, manage or cancel it in App Store/Google Play.",
+  "termsConditions": "Terms & Conditions",
+  "agreeTermsPrivacy": "Please agree to the Terms & Conditions and Privacy Policy first.",
+  "currentPlan": "Current plan",
+  "currentPlanFree": "Current plan: Free",
+  "proPlanDescription": "Free includes ads and limited usage. Pro removes ads and unlocks unlimited invoices, reports, premium templates, exports, and cloud backup.",
+  "adsIncluded": "Ads included",
+  "limitedInvoicesPerMonth": "Limited invoices each month",
+  "basicInvoiceStyle": "Basic invoice style",
+  "basicReports": "Basic reports",
+  "pdfIncludesBranding": "PDF includes EzInvoice branding",
+  "unpaidLabel": "Unpaid",
+  "loading": "Loading...",
+  "store": "Store",
+  "storeProductLoadingOne": "One subscription product is still loading. You can continue with the available plan while the other product loads.",
+  "storeProductsLoading": "Connecting to store subscription products. If this does not finish loading, confirm the subscriptions are ready in your store console.",
+  "agreeTo": "I agree to the ",
+  "and": " and ",
+  "currentProPlanDescription": "You already have Ez Invoice Pro. You can review both subscription options below.",
+  "freeVsPro": "Free vs {pro}",
+  "@freeVsPro": {
+    "placeholders": {
+      "pro": {}
+    }
+  },
+  "openInvoices": "Open invoices.",
+  "allCaughtUp": "All caught up",
+  "itemsToReview": "{count} to review",
+  "@itemsToReview": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "pdfInvoice": "Invoice",
+  "pdfReceipt": "Receipt",
+  "pdfBusiness": "Business",
+  "pdfPhone": "Phone",
+  "pdfEmail": "Email",
+  "pdfNumber": "No.",
+  "pdfDate": "Date",
+  "pdfDue": "Due",
+  "pdfPaid": "Paid",
+  "pdfPaidDate": "Paid date",
+  "pdfMethod": "Method",
+  "pdfBillTo": "Bill to",
+  "pdfClient": "Client",
+  "pdfDescription": "Description",
+  "pdfQuantity": "Qty",
+  "pdfPrice": "Price",
+  "pdfSubtotal": "Subtotal",
+  "pdfTax": "Tax",
+  "pdfTaxWithRate": "Tax ({rate}%)",
+  "@pdfTaxWithRate": {
+    "placeholders": {
+      "rate": {}
+    }
+  },
+  "pdfTip": "Tip",
+  "pdfTipWithRate": "Tip ({rate}%)",
+  "@pdfTipWithRate": {
+    "placeholders": {
+      "rate": {}
+    }
+  },
+  "pdfDiscount": "Discount",
+  "pdfMessage": "Message",
+  "pdfPaymentNote": "Payment note",
+  "pdfThankYou": "Thank you for your business.",
+  "pdfPoweredBy": "Powered by EzInvoice",
+  "pdfFreeVersion": "FREE VERSION",
+  "pdfTotal": "Total",
+  "styleMinimal": "Minimal",
+  "styleProfessional": "Professional",
+  "styleCorporate": "Corporate",
+  "styleModern": "Modern",
+  "styleSlate": "Slate",
+  "reportDocument": "Report",
+  "reportPrintDocument": "Print report",
+  "reportMonth": "Month",
+  "reportYear": "Year",
+  "reportGeneratedOn": "Generated on",
+  "reportInvoices": "Invoices",
+  "reportStatus": "Status",
+  "reportTotals": "Totals",
+  "reportSales": "Sales",
+  "reportTotalTax": "Total tax",
+  "reportTotalTip": "Total tip",
+  "reportTotalInvoiced": "Total invoiced",
+  "reportUnsent": "Unsent",
+  "reportSent": "Sent",
+  "reportPaid": "Paid",
+  "reportOverdue": "Overdue",
+  "reportInvoiceNumber": "Invoice no.",
+  "reportClient": "Client",
+  "reportDueDate": "Due date",
+  "reportDescription": "Description",
+  "reportDate": "Date",
+  "reportFreeVersion": "FREE VERSION",
+  "reportPoweredBy": "Powered by EzInvoice",
+  "reportPdfShareText": "PDF report: {title}",
+  "@reportPdfShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportCsvShareText": "CSV report: {title}",
+  "@reportCsvShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportPrintShareText": "Print: {title}",
+  "@reportPrintShareText": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "reportFileMonthly": "Report_{month}_{year}",
+  "@reportFileMonthly": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
+  "reportFileYearly": "Report_Year_{year}",
+  "@reportFileYearly": {
+    "placeholders": {
+      "year": {}
+    }
+  },
+  "reportTextMonthly": "Report | {month} {year}",
+  "@reportTextMonthly": {
+    "placeholders": {
+      "month": {},
+      "year": {}
+    }
+  },
+  "reportTextYearly": "Report | {year}",
+  "@reportTextYearly": {
+    "placeholders": {
+      "year": {}
+    }
+  },
+  "reportBreakdown": "Breakdown",
+  "reportInvoicesStatus": "Invoice status",
+  "viewReport": "View report",
+  "reviewBeforeExport": "Review the PDF or CSV before exporting.",
+  "customizeReport": "Customize the report",
+  "reportPreviewUpdates": "Changes appear immediately in your preview.",
+  "yourReportPreview": "Your report preview",
+  "reportStyleLiveHint": "Change the design and see it live.",
+  "watchAdToExportReport": "Watch the full ad to export this report. Upgrade to Pro to export without ads.",
+  "reportExportError": "Could not export report: {error}",
+  "@reportExportError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "shareCsvFile": "Share CSV file",
+  "shareCsvFileDescription": "Share the .csv attachment by email, Drive, or another app.",
+  "shareReportAsText": "Share as text (WhatsApp / SMS)",
+  "shareReportAsTextDescription": "Send a report summary as text.",
+  "printCsv": "Print CSV",
+  "printReportDescription": "Print the report as a PDF table.",
+  "reportPreview": "Preview",
+  "live": "Live",
+  "proFeatureUnlimitedInvoices": "Unlimited invoices",
+  "proFeatureRemovePdfBranding": "Remove PDF branding",
+  "proFeatureExportCsv": "Export CSV",
+  "proFeaturePremiumTemplates": "Premium templates",
+  "proFeatureDetailedTaxReport": "Detailed tax report",
+  "proFeatureUnlimitedInvoicesDescription": "Free plan allows up to {limit} invoices per month.",
+  "@proFeatureUnlimitedInvoicesDescription": {
+    "placeholders": {
+      "limit": {}
+    }
+  },
+  "proFeatureRemovePdfBrandingDescription": "Remove “Powered by EzInvoice” from PDFs.",
+  "proFeatureExportCsvDescription": "Export your invoices to CSV.",
+  "proFeaturePremiumTemplatesDescription": "Unlock premium invoice templates.",
+  "proFeatureDetailedTaxReportDescription": "See detailed tax breakdown reports.",
+  "pdfShareText": "Invoice PDF from EzInvoice"
 }

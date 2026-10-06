@@ -15,7 +15,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  static const String _forcedVersionText = 'Version 1.0.113';
+  static const String _forcedVersionText = 'Version 1.0.114';
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -74,53 +74,29 @@ class _LoginScreenState extends State<LoginScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
-  bool get _isSpanish {
-    return Localizations.localeOf(context).languageCode.toLowerCase() == 'es';
-  }
-
   Future<void> _sendPasswordResetEmail() async {
     final email = _normalizeDemoEmail(_emailController.text.trim());
-    final isEs = _isSpanish;
+    final t = AppLocalizations.of(context);
 
     if (email.isEmpty || !email.contains('@')) {
-      _showMessage(
-        isEs
-            ? 'Ingresa tu email para enviarte el enlace.'
-            : 'Enter your email to send the reset link.',
-      );
+      _showMessage(t.passwordResetEnterEmail);
       return;
     }
 
     setState(() => _loading = true);
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      _showMessage(
-        isEs
-            ? 'Te enviamos un email para restablecer tu contrasena. Revisa Spam o Correo no deseado.'
-            : 'We sent you an email to reset your password. Check Spam or Junk.',
-      );
+      _showMessage(t.passwordResetSent);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        _showMessage(
-          isEs
-              ? 'No encontramos una cuenta con ese email.'
-              : 'No account was found for that email.',
-        );
+        _showMessage(t.passwordResetNoAccount);
       } else if (e.code == 'invalid-email') {
-        _showMessage(isEs ? 'Email invalido.' : 'Invalid email.');
+        _showMessage(t.invalidEmail);
       } else {
-        _showMessage(
-          isEs
-              ? 'No se pudo enviar el email. Intenta otra vez.'
-              : 'Could not send the email. Try again.',
-        );
+        _showMessage(t.passwordResetError);
       }
     } catch (_) {
-      _showMessage(
-        isEs
-            ? 'No se pudo enviar el email. Intenta otra vez.'
-            : 'Could not send the email. Try again.',
-      );
+      _showMessage(t.passwordResetError);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -206,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } on FirebaseAuthException catch (e) {
       _showMessage(e.message ?? t.authError);
     } catch (e) {
-      _showMessage('Error: $e');
+      _showMessage(t.errorWithDetails(e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -363,7 +339,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       visualDensity: VisualDensity.compact,
                       activeColor: brandGreen,
                       title: Text(
-                        _isSpanish ? 'Recordar mi email' : 'Remember my email',
+                        t.rememberEmail,
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),
@@ -412,9 +388,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextButton(
                       onPressed: _loading ? null : _sendPasswordResetEmail,
                       child: Text(
-                        _isSpanish
-                            ? 'Olvidaste tu contrasena?'
-                            : 'Forgot password?',
+                        t.forgotPassword,
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),

@@ -1,3 +1,4 @@
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 enum TipMode { amount, percent }
@@ -8,7 +9,8 @@ class TipSelector extends StatelessWidget {
 
   final TextEditingController controller; // valor escrito
   final double subtotal;
-  final ValueChanged<double> onTipAmountChanged; // tip ya calculado (monto final)
+  final ValueChanged<double>
+  onTipAmountChanged; // tip ya calculado (monto final)
 
   const TipSelector({
     super.key,
@@ -41,6 +43,7 @@ class TipSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Column(
       children: [
         Row(
@@ -48,18 +51,18 @@ class TipSelector extends StatelessWidget {
             Expanded(
               child: DropdownButtonFormField<TipMode>(
                 value: mode,
-                decoration: const InputDecoration(
-                  labelText: 'Tip tipo',
+                decoration: InputDecoration(
+                  labelText: t.tipType,
                   border: OutlineInputBorder(),
                 ),
-                items: const [
+                items: [
                   DropdownMenuItem(
                     value: TipMode.amount,
-                    child: Text('Monto (\$)'),
+                    child: Text(t.amountOption),
                   ),
                   DropdownMenuItem(
                     value: TipMode.percent,
-                    child: Text('Porcentaje (%)'),
+                    child: Text(t.percentageOption),
                   ),
                 ],
                 onChanged: (v) {
@@ -73,9 +76,13 @@ class TipSelector extends StatelessWidget {
             Expanded(
               child: TextFormField(
                 controller: controller,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
-                  labelText: mode == TipMode.percent ? 'Tip %' : 'Tip \$',
+                  labelText: mode == TipMode.percent
+                      ? t.tipPercentChip
+                      : t.tipAmountChip,
                   border: const OutlineInputBorder(),
                 ),
                 onChanged: (_) => _emit(mode),

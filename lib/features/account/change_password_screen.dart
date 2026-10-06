@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -19,10 +20,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _obscureNew = true;
   bool _obscureConfirm = true;
 
-  bool get _isEs {
-    return Localizations.localeOf(context).languageCode.toLowerCase() == 'es';
-  }
-
   void _showSnack(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(
@@ -33,20 +30,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   String? _requiredPassword(String? value) {
     final text = value?.trim() ?? '';
     if (text.length < 6) {
-      return _isEs
-          ? 'Debe tener al menos 6 caracteres.'
-          : 'Must be at least 6 characters.';
+      return AppLocalizations.of(context).passwordAtLeastSix;
     }
     return null;
   }
 
   Future<void> _changePassword() async {
     if (!_formKey.currentState!.validate()) return;
+    final t = AppLocalizations.of(context);
 
     final user = FirebaseAuth.instance.currentUser;
     final email = user?.email;
     if (user == null || email == null || email.isEmpty) {
-      _showSnack(_isEs ? 'No hay sesion activa.' : 'No active session.');
+      _showSnack(t.noActiveSession);
       return;
     }
 
@@ -55,20 +51,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final confirmPassword = _confirmPasswordController.text.trim();
 
     if (newPassword != confirmPassword) {
-      _showSnack(
-        _isEs
-            ? 'La nueva contrasena no coincide.'
-            : 'The new password does not match.',
-      );
+      _showSnack(t.passwordsDoNotMatch);
       return;
     }
 
     if (currentPassword == newPassword) {
-      _showSnack(
-        _isEs
-            ? 'La nueva contrasena debe ser diferente.'
-            : 'The new password must be different.',
-      );
+      _showSnack(t.passwordMustDiffer);
       return;
     }
 
@@ -85,43 +73,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       _newPasswordController.clear();
       _confirmPasswordController.clear();
 
-      _showSnack(
-        _isEs
-            ? 'Contrasena actualizada correctamente.'
-            : 'Password updated successfully.',
-      );
+      _showSnack(t.passwordUpdated);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
-        _showSnack(
-          _isEs
-              ? 'Contrasena actual incorrecta.'
-              : 'Current password is wrong.',
-        );
+        _showSnack(t.incorrectPassword);
       } else if (e.code == 'weak-password') {
-        _showSnack(
-          _isEs
-              ? 'La nueva contrasena es muy debil.'
-              : 'The new password is too weak.',
-        );
+        _showSnack(t.weakPassword);
       } else if (e.code == 'requires-recent-login') {
-        _showSnack(
-          _isEs
-              ? 'Por seguridad, vuelve a iniciar sesion e intenta otra vez.'
-              : 'For security, sign in again and try once more.',
-        );
+        _showSnack(t.reauthenticationNeeded);
       } else {
-        _showSnack(
-          _isEs
-              ? 'No se pudo cambiar la contrasena.'
-              : 'Could not change password.',
-        );
+        _showSnack(t.changePasswordError);
       }
     } catch (_) {
-      _showSnack(
-        _isEs
-            ? 'No se pudo cambiar la contrasena.'
-            : 'Could not change password.',
-      );
+      _showSnack(t.changePasswordError);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -160,12 +124,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isEs = _isEs;
+    final t = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(isEs ? 'Cambiar contrasena' : 'Change password'),
-      ),
+      appBar: AppBar(title: Text(t.changePassword)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
@@ -183,9 +145,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      isEs
-                          ? 'Actualiza la contrasena de tu cuenta.'
-                          : 'Update your account password.',
+                      t.changePasswordSubtitle,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -193,15 +153,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      isEs
-                          ? 'Por seguridad, primero confirma tu contrasena actual.'
-                          : 'For security, confirm your current password first.',
+                      t.confirmCurrentPasswordHint,
                       style: const TextStyle(color: Colors.black54),
                     ),
                     const SizedBox(height: 16),
                     _passwordField(
                       controller: _currentPasswordController,
-                      label: isEs ? 'Contrasena actual' : 'Current password',
+                      label: t.currentPassword,
                       obscure: _obscureCurrent,
                       onToggle: () {
                         setState(() => _obscureCurrent = !_obscureCurrent);
@@ -210,7 +168,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     const SizedBox(height: 12),
                     _passwordField(
                       controller: _newPasswordController,
-                      label: isEs ? 'Nueva contrasena' : 'New password',
+                      label: t.newPassword,
                       obscure: _obscureNew,
                       onToggle: () {
                         setState(() => _obscureNew = !_obscureNew);
@@ -219,9 +177,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     const SizedBox(height: 12),
                     _passwordField(
                       controller: _confirmPasswordController,
-                      label: isEs
-                          ? 'Confirmar nueva contrasena'
-                          : 'Confirm new password',
+                      label: t.confirmNewPassword,
                       obscure: _obscureConfirm,
                       onToggle: () {
                         setState(() => _obscureConfirm = !_obscureConfirm);
@@ -237,13 +193,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.lock_reset),
-                      label: Text(
-                        _saving
-                            ? (isEs ? 'Guardando...' : 'Saving...')
-                            : (isEs
-                                  ? 'Actualizar contrasena'
-                                  : 'Update password'),
-                      ),
+                      label: Text(_saving ? t.saving : t.updatePassword),
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 48),
                       ),

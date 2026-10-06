@@ -279,7 +279,7 @@ class _NewClientScreenState extends State<NewClientScreen> {
                 icon: const Icon(Icons.arrow_back_ios_new_rounded),
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
               ),
-              title: Text(_isEdit ? t.editClientTitle : 'New Client'),
+              title: Text(_isEdit ? t.editClientTitle : t.newClientTitle),
               actions: [
                 Padding(
                   padding: const EdgeInsets.only(right: 12),
@@ -364,7 +364,7 @@ class _NewClientScreenState extends State<NewClientScreen> {
           ClientSaveButton(
             label: _saving
                 ? AppLocalizations.of(context).saving
-                : 'Save Client',
+                : AppLocalizations.of(context).saveClient,
             saving: _saving,
             onPressed: _save,
           ),
@@ -419,7 +419,7 @@ class _NewClientScreenState extends State<NewClientScreen> {
                         child: ClientSaveButton(
                           label: _saving
                               ? AppLocalizations.of(context).saving
-                              : 'Save Client',
+                              : AppLocalizations.of(context).saveClient,
                           saving: _saving,
                           onPressed: _save,
                         ),
@@ -474,14 +474,14 @@ class ClientFormCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionHeader(
+          _SectionHeader(
             icon: Icons.badge_outlined,
-            title: 'Client Information',
+            title: t.clientInformation,
           ),
           const SizedBox(height: 18),
           _Field(
             controller: nameController,
-            label: 'Client Name',
+            label: t.clientName,
             icon: Icons.person_outline_rounded,
             textInputAction: TextInputAction.next,
             validator: (value) {
@@ -492,7 +492,7 @@ class ClientFormCard extends StatelessWidget {
           const SizedBox(height: 12),
           _Field(
             controller: emailController,
-            label: 'Client Email (optional)',
+            label: t.clientEmailOptionalLabel,
             icon: Icons.alternate_email_rounded,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
@@ -511,7 +511,7 @@ class ClientFormCard extends StatelessWidget {
           const SizedBox(height: 12),
           _Field(
             controller: notesController,
-            label: 'Notes (optional)',
+            label: t.notesOptional,
             icon: Icons.sticky_note_2_outlined,
             minLines: 3,
             maxLines: 5,
@@ -569,13 +569,13 @@ class ImportFromContactsButton extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 14),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Import From Contacts',
-                      style: TextStyle(
+                      AppLocalizations.of(context).importFromContacts,
+                      style: const TextStyle(
                         color: Color(0xFF17201C),
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
@@ -583,8 +583,8 @@ class ImportFromContactsButton extends StatelessWidget {
                     ),
                     SizedBox(height: 3),
                     Text(
-                      'Fill name, phone, and email instantly.',
-                      style: TextStyle(
+                      AppLocalizations.of(context).importContactsDescription,
+                      style: const TextStyle(
                         color: Color(0xFF65726C),
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -667,10 +667,10 @@ class _ContactPickerBottomSheetState extends State<ContactPickerBottomSheet> {
                 padding: const EdgeInsets.fromLTRB(18, 14, 10, 8),
                 child: Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Import From Contacts',
-                        style: TextStyle(
+                        AppLocalizations.of(context).importFromContacts,
+                        style: const TextStyle(
                           fontSize: 21,
                           fontWeight: FontWeight.w900,
                         ),
@@ -888,7 +888,7 @@ class _ContactList extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: onRefresh,
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Load Contacts'),
+                label: Text(AppLocalizations.of(context).loadContacts),
               ),
             ],
           ),
@@ -968,9 +968,9 @@ class _PhoneField extends StatelessWidget {
       keyboardType: TextInputType.phone,
       textInputAction: TextInputAction.next,
       inputFormatters: const [_UsPhoneTextInputFormatter()],
-      decoration: const InputDecoration(
-        labelText: 'Client Phone',
-        prefixIcon: Icon(Icons.phone_outlined, color: Color(0xFF1F7A63)),
+      decoration: InputDecoration(
+        labelText: AppLocalizations.of(context).clientPhone,
+        prefixIcon: const Icon(Icons.phone_outlined, color: Color(0xFF1F7A63)),
       ),
       onChanged: (value) {
         final digits = value.replaceAll(RegExp(r'\D'), '');
@@ -1026,7 +1026,7 @@ class _ContactSearchField extends StatelessWidget {
       onChanged: onChanged,
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        hintText: 'Search contacts',
+        hintText: AppLocalizations.of(context).searchContacts,
         prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1F7A63)),
         filled: true,
         fillColor: Colors.white,
@@ -1114,14 +1114,14 @@ class _TipCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFD6ECE4)),
       ),
-      child: const Row(
+      child: Row(
         children: [
-          Icon(Icons.lightbulb_outline_rounded, color: Color(0xFF1F7A63)),
-          SizedBox(width: 10),
+          const Icon(Icons.lightbulb_outline_rounded, color: Color(0xFF1F7A63)),
+          const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Tip: Add email or phone to send invoices faster.',
-              style: TextStyle(
+              AppLocalizations.of(context).clientCreateHint,
+              style: const TextStyle(
                 color: Color(0xFF315247),
                 fontSize: 13,
                 fontWeight: FontWeight.w700,

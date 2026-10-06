@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -9,11 +10,15 @@ class PlanGuard {
   PlanGuard._();
 
   static DateTime _monthStart(DateTime now) => DateTime(now.year, now.month, 1);
-  static DateTime _monthEnd(DateTime now) => DateTime(now.year, now.month + 1, 1);
+  static DateTime _monthEnd(DateTime now) =>
+      DateTime(now.year, now.month + 1, 1);
 
   static Future<int> _getFreeLimitFromUserDoc() async {
     final user = FirebaseAuth.instance.currentUser!;
-    final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
     final data = doc.data() ?? {};
     final limit = data['freeMonthlyInvoiceLimit'];
     if (limit is int) return limit;
@@ -61,26 +66,24 @@ class PlanGuard {
     if (count < limit) return true;
 
     if (!context.mounted) return false;
+    final t = AppLocalizations.of(context);
 
     await showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Límite alcanzado'),
-        content: Text(
-          'Plan Free: $count / $limit facturas este mes.\n\n'
-              'Upgrade a Pro para ilimitado.',
-        ),
+        title: Text(t.limitReachedTitle),
+        content: Text(t.freePlanLimitDialogBody(count, limit)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
+            child: Text(t.close),
           ),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
               await _openPaywall(context);
             },
-            child: const Text('Upgrade'),
+            child: Text(t.upgrade),
           ),
         ],
       ),

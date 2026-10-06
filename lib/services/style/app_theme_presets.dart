@@ -1,3 +1,5 @@
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
+
 class StylePreset {
   final String id;
   final String label;
@@ -106,5 +108,35 @@ class AppThemePresets {
       if (l.id == normalized) return l.label;
     }
     return 'Minimal';
+  }
+
+  static String localizedPaletteLabel(AppLocalizations t, String? id) {
+    switch (normalizePalette(id)) {
+      case paletteProfessional:
+        return t.styleProfessional;
+      case paletteCorporate:
+        return t.styleCorporate;
+      case paletteModern:
+        return t.styleModern;
+      case paletteSlate:
+        return t.styleSlate;
+      case paletteMinimal:
+      default:
+        return t.styleMinimal;
+    }
+  }
+
+  static String localizedLayoutLabel(AppLocalizations t, String? id) {
+    switch (normalizeLayout(id)) {
+      case layoutProfessional:
+        return t.styleProfessional;
+      case layoutCorporate:
+        return t.styleCorporate;
+      case layoutModern:
+        return t.styleModern;
+      case layoutMinimal:
+      default:
+        return t.styleMinimal;
+    }
   }
 }

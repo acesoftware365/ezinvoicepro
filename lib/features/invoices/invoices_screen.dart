@@ -167,8 +167,8 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(t.delete),
-        content: Text('${t.delete} ${inv.invoiceNumber}?'),
+        title: Text(t.deleteInvoiceTitle),
+        content: Text(t.deleteInvoiceBody(inv.invoiceNumber)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -190,13 +190,13 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('${t.delete} ✅')));
+        ).showSnackBar(SnackBar(content: Text(t.invoiceDeleted)));
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Delete error: $e')));
+        ).showSnackBar(SnackBar(content: Text(t.deleteError(e))));
       }
     } finally {
       if (mounted) setState(() => _deletingInvoice = false);
@@ -204,40 +204,43 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
   }
 
   Future<void> _markSent(BuildContext context, Invoice inv) async {
+    final t = AppLocalizations.of(context);
     try {
       await InvoicesService.markAsSent(id: inv.id);
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Marked as sent ✅')));
+        ).showSnackBar(SnackBar(content: Text(t.invoiceMarkedSent)));
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Mark sent error: $e')));
+        ).showSnackBar(SnackBar(content: Text(t.invoiceMarkSentError(e))));
       }
     }
   }
 
   Future<void> _markUnsent(BuildContext context, Invoice inv) async {
+    final t = AppLocalizations.of(context);
     try {
       await InvoicesService.markAsUnsent(id: inv.id);
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Marked as unsent ✅')));
+        ).showSnackBar(SnackBar(content: Text(t.invoiceMarkedUnsent)));
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Unsend error: $e')));
+        ).showSnackBar(SnackBar(content: Text(t.invoiceMarkUnsentError(e))));
       }
     }
   }
 
   Future<void> _markPaid(BuildContext context, Invoice inv) async {
+    final t = AppLocalizations.of(context);
     final res = await showDialog<_PayResult>(
       context: context,
       builder: (_) => _MarkPaidDialog(
@@ -256,30 +259,31 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Marked as paid ✅')));
+        ).showSnackBar(SnackBar(content: Text(t.invoiceMarkedPaid)));
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Mark paid error: $e')));
+        ).showSnackBar(SnackBar(content: Text(t.invoiceMarkPaidError(e))));
       }
     }
   }
 
   Future<void> _markUnpaid(BuildContext context, Invoice inv) async {
+    final t = AppLocalizations.of(context);
     try {
       await InvoicesService.markAsUnpaid(id: inv.id);
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Marked as unpaid ✅')));
+        ).showSnackBar(SnackBar(content: Text(t.invoiceMarkedUnpaid)));
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Mark unpaid error: $e')));
+        ).showSnackBar(SnackBar(content: Text(t.invoiceMarkUnpaidError(e))));
       }
     }
   }
@@ -450,9 +454,9 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                               color: Colors.red,
                             ),
                             const SizedBox(height: 16),
-                            const Text(
-                              'Error loading invoices',
-                              style: TextStyle(
+                            Text(
+                              t.invoiceLoadingError,
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
                               ),

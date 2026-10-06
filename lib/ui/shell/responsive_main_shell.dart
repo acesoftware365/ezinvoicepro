@@ -841,7 +841,9 @@ class _DashboardScreenState extends State<_DashboardScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(24),
                   child: Text(
-                    'Error: ${invoiceSnap.error}',
+                    AppLocalizations.of(
+                      context,
+                    ).errorWithDetails(invoiceSnap.error ?? ''),
                     textAlign: TextAlign.center,
                     style: const TextStyle(color: Colors.red),
                   ),
@@ -935,7 +937,7 @@ class _DashboardScreenState extends State<_DashboardScreen> {
       initialDate: _selectedMonth,
       firstDate: DateTime(2020),
       lastDate: DateTime(DateTime.now().year + 2, 12, 31),
-      helpText: 'Select report month',
+      helpText: AppLocalizations.of(context).selectReportMonth,
     );
     if (picked == null) return;
     setState(() => _selectedMonth = DateTime(picked.year, picked.month));
@@ -1888,7 +1890,11 @@ class _AlertsSheet extends StatelessWidget {
                               borderRadius: BorderRadius.circular(999),
                             ),
                             child: Text(
-                              isClear ? 'All caught up' : '$count to review',
+                              isClear
+                                  ? AppLocalizations.of(context).allCaughtUp
+                                  : AppLocalizations.of(
+                                      context,
+                                    ).itemsToReview(count),
                               textScaler: TextScaler.noScaling,
                               maxLines: 1,
                               style: TextStyle(
@@ -2646,7 +2652,7 @@ class _SettingsHubScreenState extends State<_SettingsHubScreen> {
           ),
           _SettingsTile(
             icon: Icons.description_outlined,
-            title: 'Terms & Conditions',
+            title: t.termsConditions,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const TermsScreen()),
@@ -2683,9 +2689,9 @@ class _AppVersionCard extends StatelessWidget {
       future: packageInfo,
       builder: (context, snapshot) {
         final info = snapshot.data;
-        final version = info == null
-            ? 'Version'
-            : 'Version ${info.version} (${info.buildNumber})';
+        final version = AppLocalizations.of(context).versionLabel(
+          info == null ? '' : '${info.version} (${info.buildNumber})',
+        );
 
         return _SoftCard(
           child: Row(
@@ -2721,7 +2727,7 @@ class _SettingsPlanComparisonCard extends StatelessWidget {
     return ValueListenableBuilder<SubscriptionState>(
       valueListenable: SubscriptionManager.instance.state,
       builder: (context, sub, _) {
-        final current = sub.isPro ? t.proBadge : 'FREE';
+        final current = sub.isPro ? t.proBadge : t.free;
 
         return _SoftCard(
           child: Column(
@@ -2736,7 +2742,7 @@ class _SettingsPlanComparisonCard extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Free vs ${t.proBadge}',
+                      t.freeVsPro(t.proBadge),
                       style: const TextStyle(
                         color: Colors.black87,
                         fontSize: 16,
@@ -2768,13 +2774,13 @@ class _SettingsPlanComparisonCard extends StatelessWidget {
               LayoutBuilder(
                 builder: (context, constraints) {
                   final freeColumn = _PlanColumn(
-                    title: 'FREE',
+                    title: t.free,
                     items: [
-                      'Ads included',
-                      'Limited invoices each month',
-                      'Basic invoice style',
-                      'Basic reports',
-                      'PDF includes EzInvoice branding',
+                      t.adsIncluded,
+                      t.limitedInvoicesPerMonth,
+                      t.basicInvoiceStyle,
+                      t.basicReports,
+                      t.pdfIncludesBranding,
                     ],
                   );
                   final proColumn = _PlanColumn(

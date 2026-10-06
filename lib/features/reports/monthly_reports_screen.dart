@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:ezinvoice/l10n/app/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../models/invoice.dart';
@@ -14,10 +16,7 @@ import 'date_ranges.dart';
 class MonthlyReportsScreen extends StatefulWidget {
   final List<Invoice> invoices;
 
-  const MonthlyReportsScreen({
-    super.key,
-    required this.invoices,
-  });
+  const MonthlyReportsScreen({super.key, required this.invoices});
 
   @override
   State<MonthlyReportsScreen> createState() => _MonthlyReportsScreenState();
@@ -82,12 +81,8 @@ class _MonthlyReportsScreenState extends State<MonthlyReportsScreen> {
     _recalc();
   }
 
-  String _monthLabel(DateTime d) {
-    const months = [
-      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-    ];
-    return '${months[d.month - 1]} ${d.year}';
+  String _monthLabel(DateTime d, AppLocalizations t) {
+    return DateFormat.yMMMM(t.localeName).format(d);
   }
 
   String _currencySymbol(String code) {
@@ -128,7 +123,7 @@ class _MonthlyReportsScreenState extends State<MonthlyReportsScreen> {
         'total',
         'currency',
         'businessName',
-      ]
+      ],
     ];
 
     for (final inv in filtered) {
@@ -139,7 +134,7 @@ class _MonthlyReportsScreenState extends State<MonthlyReportsScreen> {
         inv.subtotal.toStringAsFixed(2),
         inv.taxRate.toStringAsFixed(2),
         inv.taxAmount.toStringAsFixed(2),
-        (inv.tip ?? 0.0).toStringAsFixed(2),
+        inv.tip.toStringAsFixed(2),
         inv.total.toStringAsFixed(2),
         _business.currencyCode,
         _business.businessName,
@@ -187,21 +182,28 @@ class _MonthlyReportsScreenState extends State<MonthlyReportsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final label = _monthLabel(_selectedMonth);
+    final t = AppLocalizations.of(context);
+    final label = _monthLabel(_selectedMonth, t);
 
     final businessTitle = _loadingProfile
-        ? 'Cargando negocio...'
-        : (_business.businessName.trim().isEmpty ? 'Business Profile' : _business.businessName.trim());
+        ? t.processing
+        : (_business.businessName.trim().isEmpty
+              ? t.businessProfileTitle
+              : _business.businessName.trim());
 
-    final currencyLine = _loadingProfile ? '' : 'Moneda: ${_business.currencyCode}';
-    final taxLine = _loadingProfile ? '' : 'Tax default: ${_business.defaultTaxRate.toStringAsFixed(2)}%';
+    final currencyLine = _loadingProfile
+        ? ''
+        : '${t.currencyLabel}: ${_business.currencyCode}';
+    final taxLine = _loadingProfile
+        ? ''
+        : '${t.taxDefaultLabel}: ${_business.defaultTaxRate.toStringAsFixed(2)}%';
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reports • $businessTitle'),
+        title: Text(t.reportForBusiness(businessTitle)),
         actions: [
           IconButton(
-            tooltip: 'Elegir mes',
+            tooltip: t.selectReportMonth,
             onPressed: _pickMonth,
             icon: const Icon(Icons.calendar_month_outlined),
           ),
@@ -216,7 +218,10 @@ class _MonthlyReportsScreenState extends State<MonthlyReportsScreen> {
                 leading: const Icon(Icons.store_outlined),
                 title: Text(businessTitle),
                 subtitle: Text(
-                  [currencyLine, taxLine].where((e) => e.isNotEmpty).join('  •  '),
+                  [
+                    currencyLine,
+                    taxLine,
+                  ].where((e) => e.isNotEmpty).join('  •  '),
                 ),
               ),
             ),
@@ -226,7 +231,7 @@ class _MonthlyReportsScreenState extends State<MonthlyReportsScreen> {
               child: ListTile(
                 leading: const Icon(Icons.date_range_outlined),
                 title: Text(label),
-                subtitle: const Text('Toca para cambiar el mes'),
+                subtitle: Text(t.tapToChangeMonth),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: _pickMonth,
               ),
@@ -239,17 +244,20 @@ class _MonthlyReportsScreenState extends State<MonthlyReportsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Resumen',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    Text(
+                      t.monthSummaryTitle,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 10),
-                    _kv('Invoices', _summary.invoiceCount.toString()),
-                    _kv('Subtotal', _money(_summary.subtotal)),
-                    _kv('Tax', _money(_summary.tax)),
-                    _kv('Tip', _money(_summary.tip)),
+                    _kv(t.invoicesLabel, _summary.invoiceCount.toString()),
+                    _kv(t.subtotalTitle, _money(_summary.subtotal)),
+                    _kv(t.taxTitle, _money(_summary.tax)),
+                    _kv(t.tipTitle, _money(_summary.tip)),
                     const Divider(),
-                    _kv('Total', _money(_summary.total), bold: true),
+                    _kv(t.totalTitle, _money(_summary.total), bold: true),
                   ],
                 ),
               ),
@@ -262,27 +270,30 @@ class _MonthlyReportsScreenState extends State<MonthlyReportsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Acciones',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    Text(
+                      t.actions,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.download_outlined),
-                        label: const Text('Export CSV'),
+                        label: Text(t.exportCsv),
                         onPressed: () async {
                           try {
                             final file = await _exportMonthlyCsv();
                             if (!mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('CSV guardado: ${file.path}')),
+                              SnackBar(content: Text(t.csvSaved(file.path))),
                             );
                           } catch (e) {
                             if (!mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error exportando CSV: $e')),
+                              SnackBar(content: Text(t.csvExportError(e))),
                             );
                           }
                         },
@@ -299,7 +310,9 @@ class _MonthlyReportsScreenState extends State<MonthlyReportsScreen> {
   }
 
   Widget _kv(String k, String v, {bool bold = false}) {
-    final style = TextStyle(fontWeight: bold ? FontWeight.bold : FontWeight.normal);
+    final style = TextStyle(
+      fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
